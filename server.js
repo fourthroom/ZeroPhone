@@ -5,7 +5,10 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.get('/health', (req, res) => {
   res.status(200).send('Signaling server is healthy');
 });
@@ -55,6 +58,34 @@ app.post('/api/incoming-sms', (req, res) => {
   io.emit('sms-reply', { from: fromNumber, message: bodyText });
 
   res.type('text/xml').send('<Response></Response>');
+});
+// Endpoint to handle sending SMS from web page
+app.post('/api/send-sms', async (req, res) => {
+  const { to, message } = req.body;
+
+  if (!to || !message) {
+    return res.status(400).json({ success: false, error: 'Missing phone number or message.' });
+  }
+
+  try {
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+    const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
+
+    const client = require('twilio')(accountSid, authToken);
+
+    const result = await client.messages.create({
+      body: message,
+      from: twilioPhone,
+      to: to
+    });
+
+    console.log(`SMS sent successfully! SID: ${result.sid}`);
+    res.json({ success: true, sid: result.sid });
+  } catch (error) {
+    console.error('Twilio Error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
