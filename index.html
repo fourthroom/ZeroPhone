@@ -250,6 +250,7 @@
 </div>
 
 <script>
+<script>
 async function sendSMS() {
   const to = document.getElementById('sms-to').value.trim();
   const message = document.getElementById('sms-body').value.trim();
@@ -264,11 +265,13 @@ async function sendSMS() {
   statusEl.style.color = 'black';
   statusEl.innerText = 'Sending message...';
 
+  const endpoint = "https://webrtc-signaling-do2l.onrender.com/api/send-sms";
+
   try {
-    const response = await fetch('https://webrtc-signaling-do2l.onrender.com/api/send-sms',{
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ to, message })
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ to: to, message: message })
     });
 
     const data = await response.json();
@@ -287,5 +290,4 @@ async function sendSMS() {
   }
 }
 </script>
-</body>
-</html>
+
