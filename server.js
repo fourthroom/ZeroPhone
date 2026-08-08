@@ -86,7 +86,7 @@ app.post('/api/send-sms', async (req, res) => {
     console.error('Twilio Error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
-});
+
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Signaling server listening on port ${PORT}`);
