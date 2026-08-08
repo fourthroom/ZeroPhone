@@ -235,21 +235,57 @@
       };
     }
   </script>
-  <!-- SMS Texting Module -->
-<div id="sms-container" style="margin-top: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; max-width: 500px; margin-left: auto; margin-right: auto; text-align: center;">
-  <h3>Send Text to Mobile Phone</h3>
+  <!-- SMS Texting Module & Reply Feed -->
+<div id="sms-container" style="margin-top: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; max-width: 500px; margin-left: auto; margin-right: auto; text-align: center; font-family: sans-serif;">
+  <h3>Text Messaging</h3>
   
+  <!-- Message Feed -->
+  <div id="sms-thread" style="height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 10px; overflow-y: auto; background-color: #f9f9f9; text-align: left; margin-bottom: 15px;">
+    <p style="color: #888; font-style: italic; margin: 0;">Messages will appear here...</p>
+  </div>
+
   <label for="sms-to" style="display:block; text-align:left; margin-bottom: 4px; font-weight: bold;">Recipient Phone Number:</label>
   <input type="tel" id="sms-to" placeholder="+12065550199" style="width: 100%; padding: 10px; margin-bottom: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
   
   <label for="sms-body" style="display:block; text-align:left; margin-bottom: 4px; font-weight: bold;">Message:</label>
-  <textarea id="sms-body" placeholder="Type your SMS message here..." style="width: 100%; height: 80px; padding: 10px; margin-bottom: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+  <textarea id="sms-body" placeholder="Type your SMS message here..." style="width: 100%; height: 70px; padding: 10px; margin-bottom: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;"></textarea>
   
-  <button type="button" id="sms-send-btn" style="padding: 10px 24px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px;">Send SMS</button>
+  <button type="button" id="sms-send-btn" style="width: 100%; padding: 12px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold;">Send SMS</button>
   <p id="sms-status" style="margin-top: 12px; font-weight: bold;"></p>
 </div>
 
 <script>
+  // Helper to add messages to the on-screen feed
+  function appendMessage(sender, text, isIncoming = false) {
+    const thread = document.getElementById('sms-thread');
+    const placeholder = thread.querySelector('p');
+    if (placeholder && placeholder.style.fontStyle === 'italic') {
+      thread.innerHTML = '';
+    }
+
+    const msgBox = document.createElement('div');
+    msgBox.style.marginBottom = '10px';
+    msgBox.style.padding = '8px 12px';
+    msgBox.style.borderRadius = '6px';
+    msgBox.style.maxWidth = '80%';
+    msgBox.style.wordBreak = 'break-word';
+
+    if (isIncoming) {
+      msgBox.style.backgroundColor = '#e9ecef';
+      msgBox.style.color = '#333';
+      msgBox.style.marginRight = 'auto';
+    } else {
+      msgBox.style.backgroundColor = '#007bff';
+      msgBox.style.color = '#fff';
+      msgBox.style.marginLeft = 'auto';
+    }
+
+    msgBox.innerHTML = '<strong>' + sender + ':</strong> ' + text;
+    thread.appendChild(msgBox);
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  // Send SMS handler
   document.getElementById('sms-send-btn').addEventListener('click', async function() {
     const toInput = document.getElementById('sms-to');
     const messageInput = document.getElementById('sms-body');
@@ -272,9 +308,7 @@
     try {
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json" 
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ to: to, message: message })
       });
 
@@ -283,6 +317,7 @@
       if (data.success) {
         statusEl.style.color = 'green';
         statusEl.innerText = 'Message sent successfully!';
+        appendMessage(' You', message, false);
         messageInput.value = '';
       } else {
         statusEl.style.color = 'red';
