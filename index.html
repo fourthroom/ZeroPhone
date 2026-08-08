@@ -256,7 +256,7 @@
 
 <script>
   // Helper to add messages to the on-screen feed
-  function appendMessage(sender, text, isIncoming = false) {
+  function appendMessage(sender, text, isIncoming) {
     const thread = document.getElementById('sms-thread');
     const placeholder = thread.querySelector('p');
     if (placeholder && placeholder.style.fontStyle === 'italic') {
@@ -286,7 +286,7 @@
   }
 
   // Send SMS handler
-  document.getElementById('sms-send-btn').addEventListener('click', async function() {
+  document.getElementById('sms-send-btn').addEventListener('click', function() {
     const toInput = document.getElementById('sms-to');
     const messageInput = document.getElementById('sms-body');
     const statusEl = document.getElementById('sms-status');
@@ -303,29 +303,33 @@
     statusEl.style.color = '#333';
     statusEl.innerText = 'Sending message...';
 
-    const endpoint = "https://webrtc-signaling-do2l.onrender.com/api/send-sms";
+    const url = "https://webrtc-signaling-do2l.onrender.com/api/send-sms";
+    const payload = JSON.stringify({ to: to, message: message });
 
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: to, message: message })
-      });
-
-      const data = await response.json();
-
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: payload
+    })
+    .then(function(res) {
+      return res.json();
+    })
+    .then(function(data) {
       if (data.success) {
         statusEl.style.color = 'green';
         statusEl.innerText = 'Message sent successfully!';
-        appendMessage(' You', message, false);
+        appendMessage('You', message, false);
         messageInput.value = '';
       } else {
         statusEl.style.color = 'red';
         statusEl.innerText = 'Failed: ' + (data.error || 'Unknown error');
       }
-    } catch (err) {
+    })
+    .catch(function(err) {
       statusEl.style.color = 'red';
       statusEl.innerText = 'Network Error: ' + err.message;
-    }
+    });
   });
 </script>
