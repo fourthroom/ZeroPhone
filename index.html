@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebRTC Video Call Test</title>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #121212; color: #fff; text-align: center; margin: 0; padding: 20px; }
+    h2 { margin-bottom: 20px; }
+    .video-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
+    video { width: 45%; max-width: 500px; height: 320px; background: #000; border-radius: 8px; border: 2px solid #333; object-fit: cover; }
+    .controls { margin-bottom: 20px; }
+    input, button { padding: 10px 16px; font-size: 16px; border-radius: 6px; border: none; }
+    input { width: 200px; margin-right: 10px; }
+    button { background: #007aff; color: white; cursor: pointer; font-weight: bold; }
+    button:hover { background: #005bb5; }
+    #status { font-weight: bold; color: #4cd964; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <h2>WebRTC Video Calling Test</h2>
+
+  <div class="controls">
+    <input type="text" id="roomId" placeholder="Enter Room ID" value="test-room">
+    <button id="joinBtn">Join Room</button>
+  </div>
+
+  <div id="status">Disconnected</div>
+
+  <div class="video-grid">
+    <div>
+      <h3>Local Video (You)</h3>
+      <video id="localVideo" autoplay playsinline muted></video>
+    </div>
+    <div>
+      <h3>Remote Video (Peer)</h3>
+      <video id="remoteVideo" autoplay playsinline></video>
+    </div>
+  </div>
+
+  <script>
+    // Replace with your exact Render signaling URL
+    const SIGNALING_SERVER = "https://webrtc-signaling-do2l.onrender.com";
+    
+    const socket = io(SIGNALING_SERVER);
+    let localStream;
+    let peerConnection;
+    const roomIdInput = document.getElementById('roomId');
+    const joinBtn = document.getElementById('joinBtn');
+    const statusDiv = document.getElementById('status');
+
+    const rtcConfig = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    };
+
+    socket.on('connect', () => {
+      statusDiv.innerText = "Connected to Signaling Server! Click 'Join Room' to start.";
+    });
+
+    joinBtn.addEventListener('click', async () => {
+      const roomId = roomIdInput.value.trim();
+      if (!roomId) return alert("Please enter a room ID");
+
+      // 1. Get camera and mic stream
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById('localVideo').srcObject = localStream;
+      } catch (err) {
+        console.error("Camera access denied:", err);
+        return alert("Unable to access camera/microphone.");
+      }
+
+      // 2. Join the room on the signaling server
+      socket.emit('join-room', roomId);
+      statusDiv.innerText = `Joined room: ${roomId}. Waiting for another peer...`;
+    });
+
+    // When another user joins the same room
+    socket.on('user-joined', async ({ peerId }) => {
+      statusDiv.innerText = "Peer joined! Creating connection offer...";
+      createPeerConnection();
+
+      // Create WebRTC Offer
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      socket.emit('offer', { offer, roomId: roomIdInput.value });
+    });
+
+    // When receiving an offer from another peer
+    socket.on('offer', async ({ offer, senderId }) => {
+      statusDiv.innerText = "Received connection offer. Sending answer...";
+      createPeerConnection();
+
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+
+      socket.emit('answer', { answer, roomId: roomIdInput.value });
+    });
+
+    // When receiving an answer from another peer
+    socket.on('answer', async ({ answer }) => {
+      statusDiv.innerText = "Connected! Establishing video stream...";
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    });
+
+    // Handling ICE Candidates (network paths)
+    socket.on('ice-candidate', async ({ candidate }) => {
+      if (peerConnection) {
+        try {
+          await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (e) {
+          console.error('Error adding ICE candidate', e);
+        }
+      }
+    });
+
+    function createPeerConnection() {
+      if (peerConnection) return;
+
+      peerConnection = new RTCPeerConnection(rtcConfig);
+
+      // Add local media tracks to connection
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+      });
+
+      // Receive remote media tracks
+      peerConnection.ontrack = (event) => {
+        document.getElementById('remoteVideo').srcObject = event.streams[0];
+        statusDiv.innerText = "Live Video Stream Connected!";
+      };
+
+      // Send network candidate information to peer via signaling server
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit('ice-candidate', {
+            candidate: event.candidate,
+            roomId: roomIdInput.value
+          });
+        }
+      };
+    }
+  </script>
+</body>
+</html>
