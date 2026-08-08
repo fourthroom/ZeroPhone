@@ -236,58 +236,61 @@
     }
   </script>
   <!-- SMS Texting Module -->
-<div id="sms-container" style="margin-top: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; max-width: 500px; margin-left: auto; margin-right: auto;">
+<div id="sms-container" style="margin-top: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; max-width: 500px; margin-left: auto; margin-right: auto; text-align: center;">
   <h3>Send Text to Mobile Phone</h3>
   
-  <label for="sms-to" style="display:block; text-align:left; margin-bottom: 4px;">Recipient Phone Number:</label>
-  <input type="tel" id="sms-to" placeholder="+12065550199" style="width: 100%; padding: 8px; margin-bottom: 12px; box-sizing: border-box;">
+  <label for="sms-to" style="display:block; text-align:left; margin-bottom: 4px; font-weight: bold;">Recipient Phone Number:</label>
+  <input type="tel" id="sms-to" placeholder="+12065550199" style="width: 100%; padding: 10px; margin-bottom: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;">
   
-  <label for="sms-body" style="display:block; text-align:left; margin-bottom: 4px;">Message:</label>
-  <textarea id="sms-body" placeholder="Type your SMS message here..." style="width: 100%; height: 80px; padding: 8px; margin-bottom: 12px; box-sizing: border-box;"></textarea>
+  <label for="sms-body" style="display:block; text-align:left; margin-bottom: 4px; font-weight: bold;">Message:</label>
+  <textarea id="sms-body" placeholder="Type your SMS message here..." style="width: 100%; height: 80px; padding: 10px; margin-bottom: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;"></textarea>
   
-  <button onclick="sendSMS()" style="padding: 10px 20px; cursor: pointer;">Send SMS</button>
-  <p id="sms-status" style="margin-top: 10px; font-weight: bold;"></p>
+  <button type="button" id="sms-send-btn" style="padding: 10px 24px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px;">Send SMS</button>
+  <p id="sms-status" style="margin-top: 12px; font-weight: bold;"></p>
 </div>
 
 <script>
-<script>
-async function sendSMS() {
-  const to = document.getElementById('sms-to').value.trim();
-  const message = document.getElementById('sms-body').value.trim();
-  const statusEl = document.getElementById('sms-status');
+  document.getElementById('sms-send-btn').addEventListener('click', async function() {
+    const toInput = document.getElementById('sms-to');
+    const messageInput = document.getElementById('sms-body');
+    const statusEl = document.getElementById('sms-status');
 
-  if (!to || !message) {
-    statusEl.style.color = 'red';
-    statusEl.innerText = 'Please enter both a phone number and a message.';
-    return;
-  }
+    const to = toInput.value.trim();
+    const message = messageInput.value.trim();
 
-  statusEl.style.color = 'black';
-  statusEl.innerText = 'Sending message...';
-
-  const endpoint = "https://webrtc-signaling-do2l.onrender.com/api/send-sms";
-
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to: to, message: message })
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      statusEl.style.color = 'green';
-      statusEl.innerText = 'Message sent successfully!';
-      document.getElementById('sms-body').value = '';
-    } else {
+    if (!to || !message) {
       statusEl.style.color = 'red';
-      statusEl.innerText = 'Failed: ' + data.error;
+      statusEl.innerText = 'Please enter both a phone number and a message.';
+      return;
     }
-  } catch (err) {
-    statusEl.style.color = 'red';
-    statusEl.innerText = 'Network Error: ' + err.message;
-  }
-}
-</script>
 
+    statusEl.style.color = '#333';
+    statusEl.innerText = 'Sending message...';
+
+    const endpoint = "https://webrtc-signaling-do2l.onrender.com/api/send-sms";
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json" 
+        },
+        body: JSON.stringify({ to: to, message: message })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        statusEl.style.color = 'green';
+        statusEl.innerText = 'Message sent successfully!';
+        messageInput.value = '';
+      } else {
+        statusEl.style.color = 'red';
+        statusEl.innerText = 'Failed: ' + (data.error || 'Unknown error');
+      }
+    } catch (err) {
+      statusEl.style.color = 'red';
+      statusEl.innerText = 'Network Error: ' + err.message;
+    }
+  });
+</script>
