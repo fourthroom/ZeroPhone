@@ -44,7 +44,18 @@ io.on('connection', (socket) => {
     io.emit('user-left', { peerId: socket.id });
   });
 });
+// Webhook for incoming SMS replies from Twilio
+app.post('/api/incoming-sms', (req, res) => {
+  const fromNumber = req.body.From;
+  const bodyText = req.body.Body;
 
+  console.log(`Incoming SMS from ${fromNumber}: ${bodyText}`);
+
+  // Broadcast to all connected clients via Socket.io
+  io.emit('sms-reply', { from: fromNumber, message: bodyText });
+
+  res.type('text/xml').send('<Response></Response>');
+});
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Signaling server listening on port ${PORT}`);
