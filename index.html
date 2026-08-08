@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Family Video Call</title>
   
-  <!-- PWA & Mobile Web App Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Family Call">
@@ -16,7 +15,6 @@
     body { font-family: system-ui, -apple-system, sans-serif; background: #121212; color: #fff; text-align: center; margin: 0; padding: 20px; }
     h2 { margin-bottom: 15px; }
     
-    /* PWA Install Banner */
     #pwaBanner {
       display: none;
       background: #1c1c1e;
@@ -36,17 +34,18 @@
 
     .video-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
     video { width: 100%; max-width: 480px; height: 320px; background: #000; border-radius: 12px; border: 2px solid #333; object-fit: cover; }
-    .controls { margin-bottom: 20px; }
+    .controls { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
     input, button { padding: 10px 16px; font-size: 16px; border-radius: 8px; border: none; }
-    input { width: 180px; margin-right: 10px; background: #2c2c2e; color: #fff; border: 1px solid #444; }
+    input { width: 160px; background: #2c2c2e; color: #fff; border: 1px solid #444; }
     .join-btn { background: #0a84ff; color: white; cursor: pointer; font-weight: bold; }
     .join-btn:hover { background: #0066cc; }
+    .invite-btn { background: #30d158; color: #000; cursor: pointer; font-weight: bold; }
+    .invite-btn:hover { background: #28b84c; }
     #status { font-weight: bold; color: #30d158; margin-top: 10px; }
   </style>
 </head>
 <body>
 
-  <!-- PWA Installation Suggestion Banner -->
   <div id="pwaBanner">
     <h4>📲 Add Family Call to Home Screen</h4>
     <p id="pwaInstructions">Access video calls with one tap directly from your home screen!</p>
@@ -61,6 +60,7 @@
   <div class="controls">
     <input type="text" id="roomId" placeholder="Enter Room ID" value="familyroom">
     <button id="joinBtn" class="join-btn">Join Room</button>
+    <button id="inviteBtn" class="invite-btn">💬 Text Invite Link</button>
   </div>
 
   <div id="status">Disconnected</div>
@@ -86,13 +86,30 @@
 
     const roomIdInput = document.getElementById('roomId');
     const joinBtn = document.getElementById('joinBtn');
+    const inviteBtn = document.getElementById('inviteBtn');
     const statusDiv = document.getElementById('status');
     const pwaBanner = document.getElementById('pwaBanner');
     const pwaInstructions = document.getElementById('pwaInstructions');
     const installAppBtn = document.getElementById('installAppBtn');
     const dismissBannerBtn = document.getElementById('dismissBannerBtn');
 
-    // Detect if running in Standalone (already added to Home Screen)
+    // Automatically check URL for ?room=roomName parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomParam = urlParams.get('room');
+    if (roomParam) {
+      roomIdInput.value = roomParam;
+    }
+
+    // Handle Text Invite Button
+    inviteBtn.addEventListener('click', () => {
+      const currentRoom = roomIdInput.value.trim() || 'familyroom';
+      const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}`;
+      const message = `Join me for a video call! Tap this link to connect: ${inviteUrl}`;
+      
+      // Opens native SMS application with pre-filled message
+      window.location.href = `sms:?&body=${encodeURIComponent(message)}`;
+    });
+
     const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
 
     if (!isStandalone) {
@@ -103,7 +120,6 @@
       }
     }
 
-    // Capture Android/Chrome install prompt
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -136,6 +152,11 @@
 
     socket.on('connect', () => {
       statusDiv.innerText = "Connected to Server! Click 'Join Room' to start.";
+      
+      // Auto-join if user arrived via invitation link
+      if (roomParam) {
+        joinBtn.click();
+      }
     });
 
     joinBtn.addEventListener('click', async () => {
