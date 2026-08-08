@@ -3,28 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebRTC Video Call Test</title>
+  <title>Family Video Call</title>
+  
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Family Call">
+  <meta name="theme-color" content="#121212">
+
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <style>
-    body { font-family: system-ui, sans-serif; background: #121212; color: #fff; text-align: center; margin: 0; padding: 20px; }
-    h2 { margin-bottom: 20px; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #121212; color: #fff; text-align: center; margin: 0; padding: 20px; }
+    h2 { margin-bottom: 15px; }
+    
+    /* PWA Install Banner */
+    #pwaBanner {
+      display: none;
+      background: #1c1c1e;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 0 auto 20px auto;
+      max-width: 450px;
+      text-align: left;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    #pwaBanner h4 { margin: 0 0 6px 0; color: #0a84ff; font-size: 16px; }
+    #pwaBanner p { margin: 0 0 10px 0; font-size: 14px; color: #ccc; line-height: 1.4; }
+    .banner-btns { display: flex; gap: 10px; align-items: center; }
+    .install-btn { background: #30d158; color: #000; font-weight: bold; padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; }
+    .close-btn { background: transparent; color: #8e8e93; border: none; font-size: 14px; cursor: pointer; text-decoration: underline; }
+
     .video-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
-    video { width: 45%; max-width: 500px; height: 320px; background: #000; border-radius: 8px; border: 2px solid #333; object-fit: cover; }
+    video { width: 100%; max-width: 480px; height: 320px; background: #000; border-radius: 12px; border: 2px solid #333; object-fit: cover; }
     .controls { margin-bottom: 20px; }
-    input, button { padding: 10px 16px; font-size: 16px; border-radius: 6px; border: none; }
-    input { width: 200px; margin-right: 10px; }
-    button { background: #007aff; color: white; cursor: pointer; font-weight: bold; }
-    button:hover { background: #005bb5; }
-    #status { font-weight: bold; color: #4cd964; margin-top: 10px; }
+    input, button { padding: 10px 16px; font-size: 16px; border-radius: 8px; border: none; }
+    input { width: 180px; margin-right: 10px; background: #2c2c2e; color: #fff; border: 1px solid #444; }
+    .join-btn { background: #0a84ff; color: white; cursor: pointer; font-weight: bold; }
+    .join-btn:hover { background: #0066cc; }
+    #status { font-weight: bold; color: #30d158; margin-top: 10px; }
   </style>
 </head>
 <body>
 
-  <h2>WebRTC Video Calling Test</h2>
+  <!-- PWA Installation Suggestion Banner -->
+  <div id="pwaBanner">
+    <h4>📲 Add Family Call to Home Screen</h4>
+    <p id="pwaInstructions">Access video calls with one tap directly from your home screen!</p>
+    <div class="banner-btns">
+      <button id="installAppBtn" class="install-btn" style="display:none;">Add to Home Screen</button>
+      <button id="dismissBannerBtn" class="close-btn">Dismiss</button>
+    </div>
+  </div>
+
+  <h2>Family Video Calling</h2>
 
   <div class="controls">
-    <input type="text" id="roomId" placeholder="Enter Room ID" value="test-room">
-    <button id="joinBtn">Join Room</button>
+    <input type="text" id="roomId" placeholder="Enter Room ID" value="familyroom">
+    <button id="joinBtn" class="join-btn">Join Room</button>
   </div>
 
   <div id="status">Disconnected</div>
@@ -41,15 +77,55 @@
   </div>
 
   <script>
-    // Replace with your exact Render signaling URL
     const SIGNALING_SERVER = "https://webrtc-signaling-do2l.onrender.com";
     
     const socket = io(SIGNALING_SERVER);
     let localStream;
     let peerConnection;
+    let deferredPrompt;
+
     const roomIdInput = document.getElementById('roomId');
     const joinBtn = document.getElementById('joinBtn');
     const statusDiv = document.getElementById('status');
+    const pwaBanner = document.getElementById('pwaBanner');
+    const pwaInstructions = document.getElementById('pwaInstructions');
+    const installAppBtn = document.getElementById('installAppBtn');
+    const dismissBannerBtn = document.getElementById('dismissBannerBtn');
+
+    // Detect if running in Standalone (already added to Home Screen)
+    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+
+    if (!isStandalone) {
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+      if (isIOS) {
+        pwaInstructions.innerHTML = 'Tap the <strong>Share</strong> button <span style="font-size:16px;">⎋</span> at the bottom of Safari, then select <strong>"Add to Home Screen"</strong>.';
+        pwaBanner.style.display = 'block';
+      }
+    }
+
+    // Capture Android/Chrome install prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      pwaInstructions.textContent = 'Install this app on your device for quick access anytime.';
+      installAppBtn.style.display = 'inline-block';
+      pwaBanner.style.display = 'block';
+    });
+
+    installAppBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          pwaBanner.style.display = 'none';
+        }
+        deferredPrompt = null;
+      }
+    });
+
+    dismissBannerBtn.addEventListener('click', () => {
+      pwaBanner.style.display = 'none';
+    });
 
     const rtcConfig = {
       iceServers: [
@@ -59,14 +135,13 @@
     };
 
     socket.on('connect', () => {
-      statusDiv.innerText = "Connected to Signaling Server! Click 'Join Room' to start.";
+      statusDiv.innerText = "Connected to Server! Click 'Join Room' to start.";
     });
 
     joinBtn.addEventListener('click', async () => {
       const roomId = roomIdInput.value.trim();
       if (!roomId) return alert("Please enter a room ID");
 
-      // 1. Get camera and mic stream
       try {
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         document.getElementById('localVideo').srcObject = localStream;
@@ -75,26 +150,22 @@
         return alert("Unable to access camera/microphone.");
       }
 
-      // 2. Join the room on the signaling server
       socket.emit('join-room', roomId);
-      statusDiv.innerText = `Joined room: ${roomId}. Waiting for another peer...`;
+      statusDiv.innerText = `Joined room: ${roomId}. Waiting for peer...`;
     });
 
-    // When another user joins the same room
     socket.on('user-joined', async ({ peerId }) => {
-      statusDiv.innerText = "Peer joined! Creating connection offer...";
+      statusDiv.innerText = "Peer joined! Connecting video...";
       createPeerConnection();
 
-      // Create WebRTC Offer
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
 
       socket.emit('offer', { offer, roomId: roomIdInput.value });
     });
 
-    // When receiving an offer from another peer
     socket.on('offer', async ({ offer, senderId }) => {
-      statusDiv.innerText = "Received connection offer. Sending answer...";
+      statusDiv.innerText = "Connecting video stream...";
       createPeerConnection();
 
       await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
@@ -104,13 +175,11 @@
       socket.emit('answer', { answer, roomId: roomIdInput.value });
     });
 
-    // When receiving an answer from another peer
     socket.on('answer', async ({ answer }) => {
-      statusDiv.innerText = "Connected! Establishing video stream...";
+      statusDiv.innerText = "Connected!";
       await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
     });
 
-    // Handling ICE Candidates (network paths)
     socket.on('ice-candidate', async ({ candidate }) => {
       if (peerConnection) {
         try {
@@ -126,18 +195,15 @@
 
       peerConnection = new RTCPeerConnection(rtcConfig);
 
-      // Add local media tracks to connection
       localStream.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStream);
       });
 
-      // Receive remote media tracks
       peerConnection.ontrack = (event) => {
         document.getElementById('remoteVideo').srcObject = event.streams[0];
-        statusDiv.innerText = "Live Video Stream Connected!";
+        statusDiv.innerText = "Live Video Connected!";
       };
 
-      // Send network candidate information to peer via signaling server
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
           socket.emit('ice-candidate', {
