@@ -265,7 +265,7 @@ async function sendSMS() {
   statusEl.innerText = 'Sending message...';
 
   try {
-    const response = await fetch('https://webrtc-signaling-do2l.onrender.com/api/send-sms', {
+    const response = await fetch('https://webrtc-signaling-do2l.onrender.com/api/send-sms',{
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ to, message })
