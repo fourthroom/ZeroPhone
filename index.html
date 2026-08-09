@@ -23,7 +23,7 @@
       padding: 0; 
     }
 
-    /* Top Centered Header with Icon */
+    /* Top Centered Header */
     .top-header {
       display: flex;
       flex-direction: column;
@@ -158,7 +158,7 @@
       text-align: center; 
     }
 
-    /* Call Buttons */
+    /* Buttons */
     .btn-dark-pink { background: #d81b60; color: #fff; cursor: pointer; font-weight: bold; }
     .btn-dark-pink:hover { background: #c2185b; }
     
@@ -243,6 +243,37 @@
     .video-card { flex: 1; min-width: 340px; max-width: 520px; }
     video { width: 100%; height: 380px; background: #000; border-radius: 12px; border: 2px solid #333; object-fit: cover; }
 
+    /* SINGLE BUTTON SENIOR INVITE MODE */
+    #responderAccessBox {
+      display: none;
+      background: #1c1c1e;
+      border: 2px solid #30d158;
+      border-radius: 20px;
+      padding: 40px 20px;
+      max-width: 450px;
+      margin: 40px auto;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+
+    .btn-mega-enter {
+      background: #30d158;
+      color: #000;
+      font-size: 26px;
+      font-weight: 900;
+      padding: 24px 36px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 6px 20px rgba(48, 209, 88, 0.4);
+      transition: transform 0.1s;
+    }
+
+    .btn-mega-enter:active {
+      transform: scale(0.97);
+    }
+
     .web-chat-box {
       background: #1c1c1e;
       border: 1px solid #af52de;
@@ -312,7 +343,6 @@
       border: none;
     }
 
-    /* Radio Layout Styling */
     .radio-box {
       background: #1c1c1e;
       border: 1px solid #e040fb;
@@ -348,7 +378,6 @@
       border-color: #e040fb;
     }
 
-    /* Two-Column Radio Split Layout */
     .radio-layout {
       display: flex;
       gap: 20px;
@@ -467,7 +496,7 @@
 <body>
 
   <!-- Top Centered Header with Icon -->
-  <div class="top-header">
+  <div id="mainHeader" class="top-header">
     <div class="brand-container">
       <img src="icon.png" alt="ZeroPhone Logo" class="app-header-logo" onerror="this.style.display='none'">
       <h1 class="app-brand-title">ZeroPhone</h1>
@@ -505,11 +534,18 @@
       </div>
     </div>
 
+    <!-- RESPONDER SINGLE-BUTTON INVITE VIEW (FOR YOUR PARENTS) -->
+    <div id="responderAccessBox">
+      <h2 style="font-size:24px; margin-top:0; color:#30d158;">You have been invited to a Call!</h2>
+      <p style="color:#aaa; font-size:15px; margin-bottom:25px;">Tap the big green button below to enter directly:</p>
+      <button id="megaEnterBtn" class="btn-mega-enter">📹 Enter Video</button>
+    </div>
+
     <!-- TAB 1: LEVEL 1 - WEBPHONE -->
     <div id="tab-level1" class="tab-content active">
       <div id="status">Connected to Server! Enter Room Name</div>
 
-      <div class="controls-bar">
+      <div id="controlsBar" class="controls-bar">
         <div class="button-row" style="margin-top: 6px;">
           <input type="text" id="callerName" placeholder="Your Name">
           <input type="text" id="roomId" placeholder="Room Name">
@@ -534,7 +570,6 @@
             <span style="font-size: 13px; color: #aaa; margin-left: 10px; margin-right: 2px;">2. Start Call:</span>
             <button id="joinVideoBtn" class="btn-dark-pink">📹 Video Call</button>
             <button id="joinVoiceBtn" class="btn-light-pink">🎙️ Voice Call</button>
-            <button id="hangUpBtn" class="btn-red" style="display:none;">🔴 Hang Up</button>
           </div>
 
           <div id="textControlsGroup" class="button-row" style="display:none; justify-content: center;">
@@ -543,6 +578,7 @@
         </div>
       </div>
 
+      <!-- FOCUS CALL VIEW: Clean Video Stream + Single End Call Button -->
       <div id="videoStreamView" class="video-grid">
         <div class="video-card">
           <h3 style="margin: 0 0 8px 0; font-size: 16px;">Local Stream (You)</h3>
@@ -552,6 +588,10 @@
           <h3 style="margin: 0 0 8px 0; font-size: 16px;">Remote Stream (Peer)</h3>
           <video id="remoteVideo" autoplay playsinline></video>
         </div>
+      </div>
+
+      <div style="margin-top: 15px; text-align: center;">
+        <button id="hangUpBtn" class="btn-red" style="display:none; font-size:18px; padding:12px 28px; font-weight:bold; border-radius:10px;">🔴 End Video Call</button>
       </div>
 
       <div id="webChatView" class="web-chat-box" style="display:none;">
@@ -612,13 +652,12 @@
       </div>
     </div>
 
-    <!-- TAB 4: RADIO (SPLIT LAYOUT WITH LEFT STATION BANK) -->
+    <!-- TAB 4: RADIO -->
     <div id="tab-radio" class="tab-content">
       <h2 style="color: #e040fb; margin-top: 0;">📻 Local Live Internet Radio</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre to populate the Left Station Bank</p>
 
       <div class="radio-box">
-        <!-- Top Genre Selector Bar -->
         <div class="radio-genre-bar">
           <button class="genre-btn" onclick="fetchRadioBrowserGenre('classical', 'Classical')">🎼 Classical</button>
           <button class="genre-btn" onclick="fetchRadioBrowserGenre('pop', 'Pop / Indie')">🎤 Pop</button>
@@ -628,10 +667,7 @@
           <button class="genre-btn" onclick="fetchRadioBrowserGenre('news', 'News / NPR')">📰 News & NPR</button>
         </div>
 
-        <!-- Split Layout: Left Station Bank + Right Player Console -->
         <div class="radio-layout">
-          
-          <!-- LEFT COLUMN: Dynamic Station Selector Bank -->
           <div class="station-bank-container">
             <h4 class="station-bank-header">📻 Station Bank</h4>
             <div id="stationBankList" class="station-bank-list">
@@ -639,7 +675,6 @@
             </div>
           </div>
 
-          <!-- RIGHT COLUMN: Active Player Console -->
           <div class="radio-console">
             <h3 id="radioStationTitle" class="now-playing-title">📻 Select a Station</h3>
             <span id="radioStationLocation" class="now-playing-sub">Choose a station from the Bank on the left</span>
@@ -661,7 +696,6 @@
             </div>
 
           </div>
-
         </div>
 
       </div>
@@ -687,6 +721,40 @@
     const pwaInstructions = document.getElementById('pwaInstructions');
     const installAppBtn = document.getElementById('installAppBtn');
     const dismissBannerBtn = document.getElementById('dismissBannerBtn');
+
+    // Parse URL Parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomParam = urlParams.get('room');
+    const modeParam = urlParams.get('mode');
+
+    if (roomParam) roomIdInput.value = roomParam;
+
+    // Check if Responder Direct Invite Link
+    window.addEventListener('DOMContentLoaded', () => {
+      if (roomParam) {
+        // Hide standard interface elements for invited guests
+        document.getElementById('mainHeader').style.display = 'none';
+        document.getElementById('controlsBar').style.display = 'none';
+        document.getElementById('videoStreamView').style.display = 'none';
+        document.getElementById('status').style.display = 'none';
+        
+        // Show giant single Enter Video button
+        document.getElementById('responderAccessBox').style.display = 'block';
+      }
+    });
+
+    document.getElementById('megaEnterBtn').addEventListener('click', () => {
+      document.getElementById('responderAccessBox').style.display = 'none';
+      document.getElementById('status').style.display = 'block';
+      
+      if (modeParam === 'voice') {
+        startCall(true);
+      } else if (modeParam === 'text') {
+        switchLevel1Mode('chat');
+      } else {
+        startCall(false);
+      }
+    });
 
     function switchTab(tabName) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -760,12 +828,9 @@
       }
     }
 
-    // ===================================================
-    // RADIO ENGINE WITH LEFT-HAND STATION SELECTOR BANK
-    // ===================================================
+    // Radio Engine
     const RADIO_API_BASE = "https://de1.api.radio-browser.info/json/stations/search";
 
-    // Direct Local Fallbacks
     const localFallbacks = {
       pop: [
         { name: "KEXP 90.3 FM Seattle", url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3", loc: "Seattle, WA" },
@@ -947,12 +1012,6 @@
       }
     }
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomParam = urlParams.get('room');
-    const modeParam = urlParams.get('mode');
-
-    if (roomParam) roomIdInput.value = roomParam;
-
     function sendInvite(mode) {
       const name = callerNameInput.value.trim() || 'Someone';
       const currentRoom = roomIdInput.value.trim() || 'room1';
@@ -1008,15 +1067,6 @@
 
     socket.on('connect', () => {
       statusDiv.innerText = "Connected to Server! Enter Room Name";
-      if (roomParam) {
-        if (modeParam === 'voice') {
-          startCall(true);
-        } else if (modeParam === 'text') {
-          switchLevel1Mode('chat');
-        } else {
-          startCall(false);
-        }
-      }
     });
 
     async function startCall(audioOnly) {
@@ -1031,6 +1081,9 @@
         });
         document.getElementById('localVideo').srcObject = localStream;
         document.getElementById('videoStreamView').style.display = isAudioOnly ? 'none' : 'flex';
+
+        // Hide controls bar during call for clean focus view
+        document.getElementById('controlsBar').style.display = 'none';
       } catch (err) {
         console.error("Device access denied:", err);
         return alert("Unable to access microphone/camera.");
@@ -1058,6 +1111,10 @@
       statusDiv.innerText = "Call ended.";
       statusDiv.style.color = "#ff3b30";
       hangUpBtn.style.display = 'none';
+
+      // Restore standard layout and controls
+      document.getElementById('mainHeader').style.display = 'flex';
+      document.getElementById('controlsBar').style.display = 'flex';
     }
 
     hangUpBtn.addEventListener('click', hangUpCall);
