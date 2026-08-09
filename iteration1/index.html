@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeroPhone</title>
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ZeroPhone">
+  <meta name="theme-color" content="#121212">
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    body { 
+      font-family: system-ui, -apple-system, sans-serif; 
+      background: #121212; 
+      color: #fff; 
+      margin: 0; 
+      padding: 0; 
+    }
+
+    /* Tab Bar Navigation */
+    .tab-bar {
+      display: flex;
+      background: #1c1c1e;
+      border-bottom: 2px solid #333;
+      padding-top: 10px;
+      padding-left: 10px;
+      gap: 5px;
+    }
+
+    .tab-btn {
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      border: none;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      cursor: pointer;
+      color: #fff;
+      opacity: 0.6;
+      transition: opacity 0.2s, background 0.2s;
+    }
+
+    .tab-btn.active {
+      opacity: 1.0;
+    }
+
+    /* Green Level 1 Tab */
+    .tab-level1 {
+      background: #1b4d2e;
+      border-top: 3px solid #30d158;
+    }
+    .tab-level1.active {
+      background: #30d158;
+      color: #000;
+    }
+
+    /* Blue Level 2 Tab */
+    .tab-level2 {
+      background: #0a3663;
+      border-top: 3px solid #0a84ff;
+    }
+    .tab-level2.active {
+      background: #0a84ff;
+      color: #fff;
+    }
+
+    .sub-tagline {
+      font-size: 13px;
+      display: block;
+      font-weight: normal;
+      margin-top: 2px;
+    }
+
+    /* Tab Content Areas */
+    .container {
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* PWA Banner */
+    #pwaBanner {
+      display: none;
+      background: #1c1c1e;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 0 auto 20px auto;
+      text-align: left;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    #pwaBanner h4 { margin: 0 0 6px 0; color: #0a84ff; font-size: 16px; }
+    #pwaBanner p { margin: 0 0 10px 0; font-size: 14px; color: #ccc; line-height: 1.4; }
+    .banner-btns { display: flex; gap: 10px; align-items: center; }
+    .install-btn { background: #30d158; color: #000; font-weight: bold; padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; }
+    .close-btn { background: transparent; color: #8e8e93; border: none; font-size: 14px; cursor: pointer; text-decoration: underline; }
+
+    /* Controls & Inputs */
+    .controls { 
+      margin-bottom: 20px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 12px; 
+      align-items: center; 
+    }
+    .input-group {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    input, button, select, textarea { padding: 12px 16px; font-size: 15px; border-radius: 8px; border: none; }
+    input { background: #2c2c2e; color: #fff; border: 1px solid #444; width: 220px; text-align: center; }
+    
+    .btn-green { background: #30d158; color: #000; cursor: pointer; font-weight: bold; }
+    .btn-green:hover { background: #28b84c; }
+    .btn-blue { background: #0a84ff; color: white; cursor: pointer; font-weight: bold; }
+    .btn-blue:hover { background: #0066cc; }
+
+    .call-mode-box {
+      background: #1c1c1e;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .video-grid { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
+    video { width: 100%; max-width: 260px; height: 180px; background: #000; border-radius: 12px; border: 2px solid #333; object-fit: cover; }
+    
+    #status { font-weight: bold; color: #30d158; margin: 15px 0; }
+
+    /* Level 2 Carrier SMS Box */
+    .carrier-box {
+      background: #1c1c1e;
+      border: 1px solid #0a84ff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Tab Navigation Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn tab-level1 active" onclick="switchTab('level1')">
+      Level 1 - WebPhone
+      <span class="sub-tagline">Completely Free</span>
+    </button>
+    <button class="tab-btn tab-level2" onclick="switchTab('level2')">
+      Level 2 - "CellPhone"
+      <span class="sub-tagline">Carrier Text & Calling</span>
+    </button>
+  </div>
+
+  <div class="container">
+
+    <!-- PWA Install Banner -->
+    <div id="pwaBanner">
+      <h4>📲 Add ZeroPhone to Home Screen</h4>
+      <p id="pwaInstructions">Access video & voice calls with one tap directly from your home screen!</p>
+      <div class="banner-btns">
+        <button id="installAppBtn" class="install-btn" style="display:none;">Add to Home Screen</button>
+        <button id="dismissBannerBtn" class="close-btn">Dismiss</button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: LEVEL 1 - WEBPHONE (COMPLETELY FREE) -->
+    <!-- ========================================== -->
+    <div id="tab-level1" class="tab-content active">
+      <h2>ZeroPhone WebPhone</h2>
+      <p style="color: #aaa; font-size: 14px; margin-top: -10px;">Free WebRTC Video & Audio Calls</p>
+
+      <div class="controls">
+        <div class="input-group">
+          <input type="text" id="callerName" placeholder="Your Name (e.g. Eric Scott)">
+          <input type="text" id="roomId" placeholder="Enter Room ID" value="familyroom">
+        </div>
+
+        <div class="call-mode-box" style="width: 100%; box-sizing: border-box;">
+          <h4 style="margin: 0 0 10px 0; color: #30d158;">1. Select Call Type</h4>
+          <div class="input-group">
+            <button id="joinVideoBtn" class="btn-green">📹 Start Video Call</button>
+            <button id="joinVoiceBtn" class="btn-green" style="background: #e5c158; color: #000;">🎙️ Start Voice-Only Call</button>
+          </div>
+        </div>
+
+        <div class="call-mode-box" style="width: 100%; box-sizing: border-box;">
+          <h4 style="margin: 0 0 10px 0; color: #30d158;">2. Invite Someone</h4>
+          <div class="input-group">
+            <button id="inviteVideoBtn" class="btn-blue">💬 Send Video Invite</button>
+            <button id="inviteVoiceBtn" class="btn-blue" style="background: #00a8ff;">💬 Send Voice Invite</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="status">Disconnected</div>
+
+      <div class="video-grid" id="videoContainer">
+        <div>
+          <h3>Local Stream (You)</h3>
+          <video id="localVideo" autoplay playsinline muted></video>
+        </div>
+        <div>
+          <h3>Remote Stream (Peer)</h3>
+          <video id="remoteVideo" autoplay playsinline></video>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: LEVEL 2 - "CELLPHONE" (CARRIER BACKEND) -->
+    <!-- ========================================== -->
+    <div id="tab-level2" class="tab-content">
+      <h2 style="color: #0a84ff;">ZeroPhone "CellPhone"</h2>
+      <p style="color: #aaa; font-size: 14px; margin-top: -10px;">Direct Carrier SMS & Phone Ringing</p>
+
+      <div class="carrier-box">
+        <h3>Direct Carrier SMS Console</h3>
+        
+        <div id="sms-thread" style="height: 180px; border: 1px solid #333; border-radius: 8px; padding: 10px; overflow-y: auto; background: #121212; text-align: left; margin-bottom: 15px;">
+          <p style="color: #666; font-style: italic; margin: 0;">Carrier messages will appear here...</p>
+        </div>
+
+        <label for="sms-to" style="display:block; text-align:left; margin-bottom: 4px; font-weight: bold; font-size: 13px;">Recipient Phone Number:</label>
+        <input type="tel" id="sms-to" placeholder="+12065550199" style="width: 100%; padding: 10px; margin-bottom: 12px; box-sizing: border-box;">
+        
+        <label for="sms-body" style="display:block; text-align:left; margin-bottom: 4px; font-weight: bold; font-size: 13px;">Message:</label>
+        <textarea id="sms-body" placeholder="Type your SMS message here..." style="width: 100%; height: 70px; padding: 10px; margin-bottom: 12px; box-sizing: border-box; background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 8px;"></textarea>
+        
+        <button type="button" id="sms-send-btn" class="btn-blue" style="width: 100%;">Send Carrier Text</button>
+        <p id="sms-status" style="margin-top: 12px; font-weight: bold; font-size: 14px;"></p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const SIGNALING_SERVER = "https://webrtc-signaling-do2l.onrender.com";
+    
+    const socket = io(SIGNALING_SERVER);
+    let localStream;
+    let peerConnection;
+    let deferredPrompt;
+    let isAudioOnly = false;
+
+    const roomIdInput = document.getElementById('roomId');
+    const callerNameInput = document.getElementById('callerName');
+    const statusDiv = document.getElementById('status');
+    const pwaBanner = document.getElementById('pwaBanner');
+    const pwaInstructions = document.getElementById('pwaInstructions');
+    const installAppBtn = document.getElementById('installAppBtn');
+    const dismissBannerBtn = document.getElementById('dismissBannerBtn');
+
+    // Tab Switcher Logic
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      if (tabName === 'level1') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-level1').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-level2').classList.add('active');
+      }
+    }
+
+    // Auto-check URL parameters (?room=name & ?mode=voice)
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomParam = urlParams.get('room');
+    const modeParam = urlParams.get('mode');
+
+    if (roomParam) roomIdInput.value = roomParam;
+
+    // Structured SMS Invitation Handlers ("Knock, Knock!")
+    function sendInvite(mode) {
+      const name = callerNameInput.value.trim() || 'Someone';
+      const currentRoom = roomIdInput.value.trim() || 'familyroom';
+      const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}&mode=${mode}`;
+      
+      const typeText = (mode === 'voice') ? 'speak to you by voice' : 'have a video call with you';
+      
+      const message = `Knock, Knock!\n\n${name} would like to ${typeText}. Press here to speak: ${inviteUrl}`;
+      
+      window.location.href = `sms:?&body=${encodeURIComponent(message)}`;
+    }
+
+    document.getElementById('inviteVideoBtn').addEventListener('click', () => sendInvite('video'));
+    document.getElementById('inviteVoiceBtn').addEventListener('click', () => sendInvite('voice'));
+
+    // PWA Support
+    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+    if (!isStandalone) {
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+      if (isIOS) {
+        pwaInstructions.innerHTML = 'Tap the <strong>Share</strong> button <span style="font-size:16px;">⎋</span> at the bottom of Safari, then select <strong>"Add to Home Screen"</strong>.';
+        pwaBanner.style.display = 'block';
+      }
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      pwaInstructions.textContent = 'Install ZeroPhone on your device for quick access anytime.';
+      installAppBtn.style.display = 'inline-block';
+      pwaBanner.style.display = 'block';
+    });
+
+    installAppBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') pwaBanner.style.display = 'none';
+        deferredPrompt = null;
+      }
+    });
+
+    dismissBannerBtn.addEventListener('click', () => pwaBanner.style.display = 'none');
+
+    // WebRTC PeerConnection Setup
+    const rtcConfig = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    };
+
+    socket.on('connect', () => {
+      statusDiv.innerText = "Connected to Server! Select a call type to begin.";
+      if (roomParam) {
+        if (modeParam === 'voice') {
+          startCall(true);
+        } else {
+          startCall(false);
+        }
+      }
+    });
+
+    async function startCall(audioOnly) {
+      isAudioOnly = audioOnly;
+      const roomId = roomIdInput.value.trim();
+      if (!roomId) return alert("Please enter a room ID");
+
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ 
+          video: !isAudioOnly, 
+          audio: true 
+        });
+        document.getElementById('localVideo').srcObject = localStream;
+        
+        // Hide video display if voice-only call
+        document.getElementById('videoContainer').style.display = isAudioOnly ? 'none' : 'flex';
+      } catch (err) {
+        console.error("Device access denied:", err);
+        return alert("Unable to access microphone/camera.");
+      }
+
+      socket.emit('join-room', roomId);
+      statusDiv.innerText = `Joined room: ${roomId} (${isAudioOnly ? 'Voice-Only' : 'Video'}). Waiting for peer...`;
+    }
+
+    document.getElementById('joinVideoBtn').addEventListener('click', () => startCall(false));
+    document.getElementById('joinVoiceBtn').addEventListener('click', () => startCall(true));
+
+    socket.on('user-joined', async () => {
+      statusDiv.innerText = "Peer joined! Connecting media...";
+      createPeerConnection();
+
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      socket.emit('offer', { offer, roomId: roomIdInput.value });
+    });
+
+    socket.on('offer', async ({ offer }) => {
+      statusDiv.innerText = "Connecting media stream...";
+      createPeerConnection();
+
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+
+      socket.emit('answer', { answer, roomId: roomIdInput.value });
+    });
+
+    socket.on('answer', async ({ answer }) => {
+      statusDiv.innerText = "Live Connected!";
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    });
+
+    socket.on('ice-candidate', async ({ candidate }) => {
+      if (peerConnection) {
+        try {
+          await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (e) {
+          console.error('Error adding ICE candidate', e);
+        }
+      }
+    });
+
+    function createPeerConnection() {
+      if (peerConnection) return;
+
+      peerConnection = new RTCPeerConnection(rtcConfig);
+
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+      });
+
+      peerConnection.ontrack = (event) => {
+        document.getElementById('remoteVideo').srcObject = event.streams[0];
+        statusDiv.innerText = isAudioOnly ? "Live Voice Connected!" : "Live Video Connected!";
+      };
+
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit('ice-candidate', {
+            candidate: event.candidate,
+            roomId: roomIdInput.value
+          });
+        }
+      };
+    }
+
+    // Level 2 Carrier Texting Backend Module
+    function appendMessage(sender, text, isIncoming) {
+      const thread = document.getElementById('sms-thread');
+      const placeholder = thread.querySelector('p');
+      if (placeholder && placeholder.style.fontStyle === 'italic') {
+        thread.innerHTML = '';
+      }
+
+      const msgBox = document.createElement('div');
+      msgBox.style.marginBottom = '10px';
+      msgBox.style.padding = '8px 12px';
+      msgBox.style.borderRadius = '6px';
+      msgBox.style.maxWidth = '80%';
+      msgBox.style.wordBreak = 'break-word';
+
+      if (isIncoming) {
+        msgBox.style.backgroundColor = '#2c2c2e';
+        msgBox.style.color = '#fff';
+        msgBox.style.marginRight = 'auto';
+      } else {
+        msgBox.style.backgroundColor = '#0a84ff';
+        msgBox.style.color = '#fff';
+        msgBox.style.marginLeft = 'auto';
+      }
+
+      msgBox.innerHTML = '<strong>' + sender + ':</strong> ' + text;
+      thread.appendChild(msgBox);
+      thread.scrollTop = thread.scrollHeight;
+    }
+
+    document.getElementById('sms-send-btn').addEventListener('click', function() {
+      const toInput = document.getElementById('sms-to');
+      const messageInput = document.getElementById('sms-body');
+      const statusEl = document.getElementById('sms-status');
+
+      const to = toInput.value.trim();
+      const message = messageInput.value.trim();
+
+      if (!to || !message) {
+        statusEl.style.color = '#ff453a';
+        statusEl.innerText = 'Please enter both a phone number and a message.';
+        return;
+      }
+
+      statusEl.style.color = '#aaa';
+      statusEl.innerText = 'Sending carrier message...';
+
+      fetch(`${SIGNALING_SERVER}/api/send-sms`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: to, message: message })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          statusEl.style.color = '#30d158';
+          statusEl.innerText = 'Message sent successfully!';
+          appendMessage('You', message, false);
+          messageInput.value = '';
+        } else {
+          statusEl.style.color = '#ff453a';
+          statusEl.innerText = 'Failed: ' + (data.error || 'Unknown error');
+        }
+      })
+      .catch(err => {
+        statusEl.style.color = '#ff453a';
+        statusEl.innerText = 'Network Error: ' + err.message;
+      });
+    });
+  </script>
+</body>
+</html>

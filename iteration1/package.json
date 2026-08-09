@@ -1,0 +1,15 @@
+{
+  "name": "zerophone",
+  "version": "1.0.0",
+  "description": "Zero-carrier web communication tool powered by WebRTC & Twilio",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5",
+    "twilio": "^4.0.0"
+  }
+}
