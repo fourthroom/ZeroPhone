@@ -138,9 +138,13 @@
       text-align: center; 
     }
 
-    .btn-green { background: #30d158; color: #000; cursor: pointer; font-weight: bold; }
-    .btn-green:hover { background: #28b84c; }
+    /* Dark Pink & Light Pink Call Buttons */
+    .btn-dark-pink { background: #d81b60; color: #fff; cursor: pointer; font-weight: bold; }
+    .btn-dark-pink:hover { background: #c2185b; }
     
+    .btn-light-pink { background: #f48fb1; color: #000; cursor: pointer; font-weight: bold; }
+    .btn-light-pink:hover { background: #f06292; }
+
     .btn-blue { background: #0a84ff; color: white; cursor: pointer; font-weight: bold; }
     .btn-blue:hover { background: #0066cc; }
 
@@ -150,7 +154,18 @@
     .btn-red { background: #ff3b30; color: white; cursor: pointer; font-weight: bold; }
     .btn-red:hover { background: #d70015; }
 
-    /* Two-line Invite Button */
+    .btn-green { background: #30d158; color: #000; cursor: pointer; font-weight: bold; }
+    .btn-green:hover { background: #28b84c; }
+
+    /* Two-line Stacked Invite Label & Button */
+    .stacked-label {
+      font-size: 13px;
+      color: #aaa;
+      text-align: center;
+      line-height: 1.25;
+      margin-right: 4px;
+    }
+
     .btn-two-line {
       line-height: 1.3;
       padding: 8px 16px;
@@ -348,19 +363,23 @@
           </div>
         </div>
 
-        <div class="button-row">
-          <div id="callControlsGroup" class="button-row">
-            <span style="font-size: 13px; color: #aaa; margin-right: 2px;">Enter Room Name, & Send Invite:</span>
+        <div class="button-row" style="justify-content: center;">
+          <div id="callControlsGroup" class="button-row" style="justify-content: center;">
+            <!-- Stacked Instructions Above Invites -->
+            <div class="stacked-label">
+              Enter Room Name,<br>& Send Invite:
+            </div>
             <button id="inviteVideoBtn" class="btn-blue">💬 Video Invite</button>
             <button id="inviteVoiceBtn" class="btn-blue" style="background: #00a8ff;">💬 Voice Invite</button>
 
-            <span style="font-size: 13px; color: #aaa; margin-left: 8px; margin-right: 2px;">2. Start Call:</span>
-            <button id="joinVideoBtn" class="btn-green">📹 Video Call</button>
-            <button id="joinVoiceBtn" class="btn-green" style="background: #e5c158; color: #000;">🎙️ Voice Call</button>
+            <span style="font-size: 13px; color: #aaa; margin-left: 10px; margin-right: 2px;">2. Start Call:</span>
+            <!-- Dark Pink & Light Pink Call Buttons -->
+            <button id="joinVideoBtn" class="btn-dark-pink">📹 Video Call</button>
+            <button id="joinVoiceBtn" class="btn-light-pink">🎙️ Voice Call</button>
             <button id="hangUpBtn" class="btn-red" style="display:none;">🔴 Hang Up</button>
           </div>
 
-          <div id="textControlsGroup" class="button-row" style="display:none;">
+          <div id="textControlsGroup" class="button-row" style="display:none; justify-content: center;">
             <button id="inviteTextBtn" class="btn-purple btn-two-line">💬 Enter Room Name<br>& Send Texting Invite</button>
           </div>
         </div>
@@ -428,11 +447,11 @@
       <div class="maps-box">
         <!-- Filter Category Buttons -->
         <div class="maps-filter-bar">
-          <button class="maps-filter-btn active" onclick="loadMapQuery('public wifi spot OR library OR starbucks OR mcdonalds', 15)">📶 Closest Public Wifi</button>
-          <button class="maps-filter-btn" onclick="loadMapQuery('public library branch', 14)">📚 City & County Libraries</button>
-          <button class="maps-filter-btn" onclick="loadMapQuery('fast food free wifi', 14)">🍔 Fast Food Wi-Fi</button>
-          <button class="maps-filter-btn" onclick="loadMapQuery('coffee shop free wifi', 15)">☕ Coffee Shops Wi-Fi</button>
-          <button class="maps-filter-btn" onclick="loadMapQuery('food bank shelter', 13)">🥫 Food Banks & Resources</button>
+          <button class="maps-filter-btn active" onclick="loadMapQuery('closest 2 free wifi locations', 16)">📶 Closest Public Wifi</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('public library OR King County Library System OR Seattle Public Library', 14)">📚 City & County Libraries</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('McDonalds OR Jack in the Box OR Wendys', 14)">🍔 Fast Food Wi-Fi</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('coffee shop OR cafe free wifi', 15)">☕ Coffee Shops Wi-Fi</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('food bank shelter resource', 13)">🥫 Food Banks & Resources</button>
         </div>
 
         <!-- Local Geolocation Status & Trigger -->
@@ -442,7 +461,7 @@
         </div>
 
         <div class="map-frame-container">
-          <iframe id="googleMapIframe" src="https://www.google.com/maps?q=public+wifi+spot+in+Seattle+WA&z=14&output=embed" allowfullscreen></iframe>
+          <iframe id="googleMapIframe" src="https://www.google.com/maps?q=closest+2+free+wifi+locations+in+Seattle+WA&z=15&output=embed" allowfullscreen></iframe>
         </div>
       </div>
     </div>
@@ -457,7 +476,7 @@
     let peerConnection;
     let deferredPrompt;
     let isAudioOnly = false;
-    let currentCoords = null; // Stores exact latitude,longitude
+    let currentCoords = null;
 
     const roomIdInput = document.getElementById('roomId');
     const callerNameInput = document.getElementById('callerName');
@@ -488,12 +507,12 @@
       }
     }
 
-    // Google Maps Loader: Centers on GPS lat/lng with a red location marker pin
+    // Google Maps Loader: Pins exact GPS location and searches targeted categories
     function loadMapQuery(categoryQuery, zoomLevel = 15) {
       const buttons = document.querySelectorAll('.maps-filter-btn');
       buttons.forEach(btn => {
         const keyword = categoryQuery.split(' ')[0].toLowerCase();
-        if (btn.innerText.toLowerCase().includes(keyword) || (keyword === 'public' && btn.innerText.includes('Closest'))) {
+        if (btn.innerText.toLowerCase().includes(keyword) || (keyword === 'closest' && btn.innerText.includes('Closest'))) {
           btn.classList.add('active');
         } else {
           btn.classList.remove('active');
@@ -511,7 +530,7 @@
       }
     }
 
-    // Native GPS Geolocation Location Detector with Red Location Marker Pin
+    // Geolocation Detector
     function centerMapOnUser(forceAlert = false) {
       const geoStatus = document.getElementById('geoStatusText');
       if (geoStatus) geoStatus.innerText = "Locating via Wi-Fi/Cellular...";
@@ -527,8 +546,8 @@
             if (geoStatus) geoStatus.innerText = "📍 Location Locked!";
 
             const iframe = document.getElementById('googleMapIframe');
-            const encodedQuery = encodeURIComponent(`public wifi spot OR library OR starbucks OR mcdonalds`);
-            iframe.src = `https://www.google.com/maps?q=${currentCoords.lat},${currentCoords.lng}+(${encodedQuery})&ll=${currentCoords.lat},${currentCoords.lng}&z=${15}&output=embed`;
+            const encodedQuery = encodeURIComponent(`closest 2 free wifi locations`);
+            iframe.src = `https://www.google.com/maps?q=${currentCoords.lat},${currentCoords.lng}+(${encodedQuery})&ll=${currentCoords.lat},${currentCoords.lng}&z=16&output=embed`;
 
             if (forceAlert) alert("Map centered on your current location!");
           },
