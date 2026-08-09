@@ -23,7 +23,7 @@
       padding: 0; 
     }
 
-    /* Top Centered Header with App Icon */
+    /* Top Centered Header with Icon */
     .top-header {
       display: flex;
       flex-direction: column;
@@ -544,24 +544,24 @@
       </div>
     </div>
 
-    <!-- TAB 4: RADIO -->
+    <!-- TAB 4: RADIO (POWERED BY RADIO-BROWSER API) -->
     <div id="tab-radio" class="tab-content">
       <h2 style="color: #e040fb; margin-top: 0;">📻 Local Live Internet Radio</h2>
-      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre or tune directly into a station stream</p>
+      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Powered by Open Radio-Browser Engine</p>
 
       <div class="radio-box">
         <div class="radio-genre-bar">
-          <button class="genre-btn" onclick="playGenre('classical')">🎼 Classical</button>
-          <button class="genre-btn" onclick="playGenre('pop')">🎤 Pop</button>
-          <button class="genre-btn" onclick="playGenre('rock')">🎸 Rock N' Roll</button>
-          <button class="genre-btn" onclick="playGenre('country')">🤠 Country</button>
-          <button class="genre-btn" onclick="playGenre('jazz')">🎷 Jazz</button>
-          <button class="genre-btn" onclick="playGenre('news')">📰 News & NPR</button>
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('classical', 'Classical')">🎼 Classical</button>
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('pop', 'Pop / Indie')">🎤 Pop</button>
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('rock', 'Classic Rock')">🎸 Rock N' Roll</button>
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('country', 'Country')">🤠 Country</button>
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('jazz', 'Jazz')">🎷 Jazz</button>
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('news', 'News / NPR')">📰 News & NPR</button>
         </div>
 
         <div class="radio-console">
-          <h3 id="radioStationTitle" class="now-playing-title">📻 Select a Station or Enter Call Letters</h3>
-          <span id="radioStationLocation" class="now-playing-sub">Tap a Genre above to stream instantly</span>
+          <h3 id="radioStationTitle" class="now-playing-title">📻 Select a Genre or Enter Station Name</h3>
+          <span id="radioStationLocation" class="now-playing-sub">Queries live open streams matching your selection</span>
 
           <audio id="radioAudioPlayer" controls preload="none">
             Your browser does not support the audio element.
@@ -571,11 +571,11 @@
 
           <div class="tuner-box">
             <label for="customStreamInput" style="display:block; font-size: 12px; color: #aaa; font-weight: bold; margin-bottom: 6px;">
-              📻 Direct Station Call Letters / Stream URL:
+              📻 Search Station Name / Call Letters:
             </label>
             <div style="display: flex; gap: 8px;">
               <input type="text" id="customStreamInput" placeholder="e.g., KEXP, KING, KNKX, KUOW..." style="flex: 1; text-align: left; background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 6px;">
-              <button onclick="tuneCustomStation()" class="btn-purple" style="font-size: 13px; padding: 8px 14px;">Tune In</button>
+              <button onclick="searchRadioBrowserCustom()" class="btn-purple" style="font-size: 13px; padding: 8px 14px;">Tune In</button>
             </div>
           </div>
 
@@ -676,118 +676,122 @@
       }
     }
 
-    // Direct, CORS-Friendly HTTPS Radio Streams
-    const radioStreams = {
-      classical: {
-        title: "🎼 Classical KING FM 98.1",
-        location: "Local Classical Broadcast • Seattle",
-        url: "https://king.streamguys1.com/king-fm-aac-64"
-      },
-      pop: {
-        title: "🎤 KEXP 90.3 FM Seattle",
-        location: "Local Independent Broadcast • Seattle",
-        url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3"
-      },
-      rock: {
-        title: "🎸 Seattle Classic Rock",
-        location: "Classic Rock Stream • Pacific Northwest",
-        url: "https://stream.radiojar.com/4v817347vbef0"
-      },
-      country: {
-        title: "🤠 Country Legends & Hits",
-        location: "Country Live Stream • West Coast",
-        url: "https://stream.radiojar.com/8smy1513y18uv"
-      },
-      jazz: {
-        title: "🎷 KNKX 88.5 FM Jazz & Blues",
-        location: "Local Jazz Broadcast • Seattle / Tacoma",
-        url: "https://knkx-aac-128.streamguys1.com/knkx-128"
-      },
-      news: {
-        title: "📰 KUOW 94.9 FM NPR News",
-        location: "Local Public Radio & News • Seattle",
-        url: "https://kuow.streamguys1.com/kuow1-hi"
-      }
+    // ===================================================
+    // OPTION C: RADIO-BROWSER OPEN API ENGINE
+    // ===================================================
+    const RADIO_API_BASE = "https://de1.api.radio-browser.info/json/stations/search";
+
+    // Direct local streams fallback list
+    const localFallbacks = {
+      pop: { name: "KEXP 90.3 FM Seattle", url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3", loc: "Seattle, WA" },
+      classical: { name: "KING FM 98.1 Classical", url: "https://king.streamguys1.com/king-fm-aac-64", loc: "Seattle, WA" },
+      jazz: { name: "KNKX 88.5 FM Jazz", url: "https://knkx-aac-128.streamguys1.com/knkx-128", loc: "Seattle / Tacoma, WA" },
+      news: { name: "KUOW 94.9 FM NPR News", url: "https://kuow.streamguys1.com/kuow1-hi", loc: "Seattle, WA" },
+      rock: { name: "Seattle Rock Live", url: "https://stream.radiojar.com/4v817347vbef0", loc: "Pacific NW" },
+      country: { name: "Country Hits Live", url: "https://stream.radiojar.com/8smy1513y18uv", loc: "West Coast" }
     };
 
-    function playGenre(genreKey) {
-      const station = radioStreams[genreKey];
-      if (!station) return;
-
+    async function fetchRadioBrowserGenre(tag, labelName) {
       document.querySelectorAll('.genre-btn').forEach(btn => btn.classList.remove('active'));
       if (event && event.target) event.target.classList.add('active');
 
-      document.getElementById('radioStationTitle').innerText = station.title;
-      document.getElementById('radioStationLocation').innerText = station.location;
-
-      const player = document.getElementById('radioAudioPlayer');
+      const titleEl = document.getElementById('radioStationTitle');
+      const subEl = document.getElementById('radioStationLocation');
       const statusText = document.getElementById('radioStatusText');
+      const player = document.getElementById('radioAudioPlayer');
 
-      statusText.innerText = "⏳ Connecting to live stream...";
+      statusText.innerText = "⏳ Querying Radio-Browser for HTTPS stream...";
       statusText.style.color = "#ff9500";
 
-      player.pause();
-      player.src = station.url;
-      player.load();
+      try {
+        const response = await fetch(`${RADIO_API_BASE}?tag=${tag}&countrycode=US&limit=10&is_https=true&order=votes&reverse=true`);
+        const stations = await response.json();
 
-      // Play with fallback error notification
-      const playPromise = player.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          statusText.innerText = "● Live Streaming";
-          statusText.style.color = "#30d158";
-        }).catch(err => {
-          console.error("Playback error:", err);
-          statusText.innerText = "Tap Play arrow on player to start stream";
-          statusText.style.color = "#e040fb";
-        });
+        let selected = stations.find(s => s.url_resolved && s.url_resolved.startsWith('https://'));
+
+        if (selected) {
+          titleEl.innerText = `📻 ${selected.name}`;
+          subEl.innerText = `${selected.state || 'Live Stream'} • ${selected.codec || 'MP3'} ${selected.bitrate ? selected.bitrate + 'kbps' : ''}`;
+          playRadioStream(selected.url_resolved);
+        } else if (localFallbacks[tag]) {
+          const fb = localFallbacks[tag];
+          titleEl.innerText = `📻 ${fb.name}`;
+          subEl.innerText = `${fb.loc} • Direct Feed`;
+          playRadioStream(fb.url);
+        } else {
+          statusText.innerText = "No HTTPS stream found for this genre";
+          statusText.style.color = "#ff3b30";
+        }
+      } catch (err) {
+        if (localFallbacks[tag]) {
+          const fb = localFallbacks[tag];
+          titleEl.innerText = `📻 ${fb.name}`;
+          subEl.innerText = `${fb.loc} • Direct Local Stream`;
+          playRadioStream(fb.url);
+        } else {
+          statusText.innerText = "Network query failed";
+          statusText.style.color = "#ff3b30";
+        }
       }
     }
 
-    function tuneCustomStation() {
+    async function searchRadioBrowserCustom() {
       const input = document.getElementById('customStreamInput').value.trim();
-      if (!input) return alert("Please enter station call letters or a stream URL.");
+      if (!input) return alert("Please enter a station name or call letters.");
+
+      const titleEl = document.getElementById('radioStationTitle');
+      const subEl = document.getElementById('radioStationLocation');
+      const statusText = document.getElementById('radioStatusText');
 
       const lower = input.toLowerCase();
-
-      if (lower.includes("kexp")) {
-        playGenre('pop');
-        return;
-      } else if (lower.includes("king")) {
-        playGenre('classical');
-        return;
-      } else if (lower.includes("knkx")) {
-        playGenre('jazz');
-        return;
-      } else if (lower.includes("kuow")) {
-        playGenre('news');
+      if (localFallbacks[lower]) {
+        const fb = localFallbacks[lower];
+        titleEl.innerText = `📻 ${fb.name}`;
+        subEl.innerText = `${fb.loc} • Direct Stream`;
+        playRadioStream(fb.url);
         return;
       }
 
-      if (input.startsWith("http://") || input.startsWith("https://")) {
-        const player = document.getElementById('radioAudioPlayer');
-        const titleEl = document.getElementById('radioStationTitle');
-        const subEl = document.getElementById('radioStationLocation');
-        const statusText = document.getElementById('radioStatusText');
+      statusText.innerText = "⏳ Searching Radio-Browser database...";
+      statusText.style.color = "#ff9500";
 
-        titleEl.innerText = "📻 Custom Stream";
-        subEl.innerText = input;
+      try {
+        const response = await fetch(`${RADIO_API_BASE}?name=${encodeURIComponent(input)}&limit=5&is_https=true`);
+        const stations = await response.json();
 
-        statusText.innerText = "⏳ Tuning in...";
-        statusText.style.color = "#ff9500";
+        let selected = stations.find(s => s.url_resolved && s.url_resolved.startsWith('https://'));
 
-        player.pause();
-        player.src = input;
-        player.load();
-        player.play().then(() => {
+        if (selected) {
+          titleEl.innerText = `📻 ${selected.name}`;
+          subEl.innerText = `${selected.country || 'Global'} • ${selected.codec || 'Stream'}`;
+          playRadioStream(selected.url_resolved);
+        } else {
+          statusText.innerText = "No HTTPS station found. Try KEXP, KING, KNKX, or KUOW";
+          statusText.style.color = "#ff9500";
+        }
+      } catch (err) {
+        statusText.innerText = "Station search error";
+        statusText.style.color = "#ff3b30";
+      }
+    }
+
+    function playRadioStream(streamUrl) {
+      const player = document.getElementById('radioAudioPlayer');
+      const statusText = document.getElementById('radioStatusText');
+
+      player.pause();
+      player.src = streamUrl;
+      player.load();
+
+      const promise = player.play();
+      if (promise !== undefined) {
+        promise.then(() => {
           statusText.innerText = "● Live Streaming";
           statusText.style.color = "#30d158";
-        }).catch(() => {
-          statusText.innerText = "Tap Play arrow on player to listen";
+        }).catch(err => {
+          statusText.innerText = "Tap Play arrow on player to start audio";
           statusText.style.color = "#e040fb";
         });
-      } else {
-        alert("Station '" + input.toUpperCase() + "' recognized! Tap a genre preset or enter a direct stream link.");
       }
     }
 
