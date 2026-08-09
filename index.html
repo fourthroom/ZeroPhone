@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZeroPhone</title>
   
+  <!-- PWA App Icons -->
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ZeroPhone">
@@ -20,7 +23,7 @@
       padding: 0; 
     }
 
-    /* Top Centered Header */
+    /* Top Centered Header with New App Icon */
     .top-header {
       display: flex;
       flex-direction: column;
@@ -30,6 +33,20 @@
       border-bottom: 2px solid #333;
       padding: 12px 15px 0 15px;
       gap: 12px;
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-header-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
     }
 
     .app-brand-title {
@@ -388,9 +405,12 @@
 </head>
 <body>
 
-  <!-- Top Centered Header -->
+  <!-- Top Centered Header with New Icon -->
   <div class="top-header">
-    <h1 class="app-brand-title">ZeroPhone</h1>
+    <div class="brand-container">
+      <img src="icon.png" alt="ZeroPhone Logo" class="app-header-logo" onerror="this.style.display='none'">
+      <h1 class="app-brand-title">ZeroPhone</h1>
+    </div>
 
     <div class="tab-bar">
       <button class="tab-btn tab-level1 active" onclick="switchTab('level1')">
@@ -663,7 +683,6 @@
       }
     }
 
-    // Fully Verified Open MP3/AAC Streams (CORS & Mobile Friendly)
     const radioStreams = {
       classical: {
         title: "🎼 Classical KING FM 98.1",
