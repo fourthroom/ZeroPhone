@@ -20,34 +20,34 @@
       padding: 0; 
     }
 
-    /* Top Navigation Bar with Branding & Level Tabs */
+    /* Top Centered Header */
     .top-header {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       background: #1c1c1e;
       border-bottom: 2px solid #333;
-      padding: 8px 15px 0 15px;
-      flex-wrap: wrap;
-      gap: 10px;
+      padding: 12px 15px 0 15px;
+      gap: 12px;
     }
 
     .app-brand-title {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 900;
       letter-spacing: -0.5px;
       color: #fff;
       margin: 0;
-      padding-bottom: 8px;
     }
 
     .tab-bar {
       display: flex;
-      gap: 5px;
+      justify-content: center;
+      gap: 8px;
     }
 
     .tab-btn {
-      padding: 8px 16px;
+      padding: 8px 18px;
       font-size: 13px;
       font-weight: bold;
       border: none;
@@ -146,7 +146,7 @@
     .btn-red { background: #ff3b30; color: white; cursor: pointer; font-weight: bold; }
     .btn-red:hover { background: #d70015; }
 
-    /* Level 1 Mode Switcher Buttons */
+    /* Mode Switcher Buttons */
     .mode-switcher {
       display: inline-flex;
       background: #2c2c2e;
@@ -220,7 +220,7 @@
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Top Centered Header -->
   <div class="top-header">
     <h1 class="app-brand-title">ZeroPhone</h1>
 
@@ -253,10 +253,10 @@
     <!-- ========================================== -->
     <div id="tab-level1" class="tab-content active">
       <div class="controls-bar">
-        <!-- Caller Inputs -->
+        <!-- Caller Inputs with Generic Placeholders -->
         <div class="button-row">
-          <input type="text" id="callerName" placeholder="Your Name (e.g. Eric Scott)">
-          <input type="text" id="roomId" placeholder="Enter Room ID" value="familyroom">
+          <input type="text" id="callerName" placeholder="Your Name">
+          <input type="text" id="roomId" placeholder="Room Name">
         </div>
 
         <!-- Mode Selector Switcher -->
@@ -386,6 +386,12 @@
         callBtn.classList.remove('active');
         chatView.style.display = 'block';
         videoView.style.display = 'none';
+        
+        // Auto-join room socket channel if entering web chat mode directly
+        const currentRoom = roomIdInput.value.trim();
+        if (currentRoom) {
+          socket.emit('join-room', currentRoom);
+        }
       }
     }
 
@@ -397,7 +403,7 @@
 
     function sendInvite(mode) {
       const name = callerNameInput.value.trim() || 'Someone';
-      const currentRoom = roomIdInput.value.trim() || 'familyroom';
+      const currentRoom = roomIdInput.value.trim() || 'room1';
       const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}&mode=${mode}`;
       
       const typeText = (mode === 'voice') ? 'speak to you by voice' : 'have a video call with you';
@@ -447,7 +453,7 @@
     };
 
     socket.on('connect', () => {
-      statusDiv.innerText = "Connected to Server! Select a call type to begin.";
+      statusDiv.innerText = "Connected to Server! Enter room and select a mode to begin.";
       if (roomParam) {
         if (modeParam === 'voice') {
           startCall(true);
@@ -460,7 +466,7 @@
     async function startCall(audioOnly) {
       isAudioOnly = audioOnly;
       const roomId = roomIdInput.value.trim();
-      if (!roomId) return alert("Please enter a room ID");
+      if (!roomId) return alert("Please enter a room name");
 
       try {
         localStream = await navigator.mediaDevices.getUserMedia({ 
@@ -551,7 +557,7 @@
 
       peerConnection.ontrack = (event) => {
         document.getElementById('remoteVideo').srcObject = event.streams[0];
-        statusDiv.innerText = isAudioOnly ? "Live Voice Connected!" : "Live Video Connected!";
+        statusDiv.innerText = isAudioOnly ? "Live Voice Connected!" : "Live Voice/Video Connected!";
       };
 
       peerConnection.onicecandidate = (event) => {
@@ -564,7 +570,7 @@
       };
     }
 
-    // Free Web Text Messaging
+    // Free Web Text Messaging Logic
     function appendWebMessage(sender, text) {
       const thread = document.getElementById('web-chat-thread');
       const placeholder = thread.querySelector('p');
@@ -585,20 +591,33 @@
       thread.scrollTop = thread.scrollHeight;
     }
 
-    document.getElementById('sendWebChatBtn').addEventListener('click', function() {
+    function sendWebChatMessage() {
       const input = document.getElementById('webChatInput');
       const msg = input.value.trim();
-      const sender = callerNameInput.value.trim() || 'Guest';
-      const roomId = roomIdInput.value.trim();
+      const sender = callerNameInput.value.trim() || 'You';
+      const roomId = roomIdInput.value.trim() || 'room1';
 
-      if (msg && roomId) {
+      if (msg) {
+        socket.emit('join-room', roomId);
         socket.emit('send-web-chat', { roomId: roomId, message: msg, sender: sender });
+        appendWebMessage(sender, msg);
         input.value = '';
+      }
+    }
+
+    document.getElementById('sendWebChatBtn').addEventListener('click', sendWebChatMessage);
+    
+    document.getElementById('webChatInput').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        sendWebChatMessage();
       }
     });
 
     socket.on('receive-web-chat', ({ message, sender }) => {
-      appendWebMessage(sender, message);
+      const currentUser = callerNameInput.value.trim() || 'You';
+      if (sender !== currentUser) {
+        appendWebMessage(sender, message);
+      }
     });
 
     socket.on('load-chat-history', (history) => {
