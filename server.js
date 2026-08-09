@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Health Check
 app.get('/health', (req, res) => {
-  res.status(200).send('Signaling server is healthy');
+  res.status(200).send('ZeroPhone signaling server is healthy');
 });
 
 const server = http.createServer(app);
@@ -95,5 +95,5 @@ app.post('/api/send-sms', async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`Signaling server listening on port ${PORT}`);
+  console.log(`ZeroPhone signaling server listening on port ${PORT}`);
 });

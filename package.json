@@ -1,7 +1,7 @@
 {
-  "name": "webrtc-signaling-server",
+  "name": "zerophone",
   "version": "1.0.0",
-  "description": "Lightweight Socket.io signaling server for WebRTC video calling",
+  "description": "Zero-carrier web communication tool powered by WebRTC & Twilio",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
