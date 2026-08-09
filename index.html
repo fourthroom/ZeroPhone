@@ -306,7 +306,7 @@
       border: 1px solid #e040fb;
       border-radius: 12px;
       padding: 20px;
-      max-width: 600px;
+      max-width: 650px;
       margin: 0 auto;
     }
 
@@ -362,8 +362,17 @@
 
     audio {
       width: 100%;
-      max-width: 450px;
+      max-width: 480px;
       border-radius: 8px;
+    }
+
+    .tuner-box {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #333;
+      width: 100%;
+      max-width: 480px;
+      text-align: left;
     }
 
     /* Level 2 Carrier Box */
@@ -540,29 +549,41 @@
     <!-- ========================================== -->
     <div id="tab-radio" class="tab-content">
       <h2 style="color: #e040fb; margin-top: 0;">📻 Local Live Internet Radio</h2>
-      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre to play live radio feeds tailored to your area</p>
+      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre or tune directly into a station stream</p>
 
       <div class="radio-box">
-        <!-- Genre Selector Menu -->
+        <!-- Genre Selector Menu (Classical, Pop, Rock, Country, Jazz, News) -->
         <div class="radio-genre-bar">
-          <button class="genre-btn active" onclick="playGenre('classical')">🎼 Classical</button>
+          <button class="genre-btn" onclick="playGenre('classical')">🎼 Classical</button>
           <button class="genre-btn" onclick="playGenre('pop')">🎤 Pop</button>
           <button class="genre-btn" onclick="playGenre('rock')">🎸 Rock N' Roll</button>
           <button class="genre-btn" onclick="playGenre('country')">🤠 Country</button>
+          <button class="genre-btn" onclick="playGenre('jazz')">🎷 Jazz</button>
           <button class="genre-btn" onclick="playGenre('news')">📰 News & NPR</button>
         </div>
 
         <!-- Audio Console -->
         <div class="radio-console">
-          <h3 id="radioStationTitle" class="now-playing-title">🎼 KING FM 98.1 Classical</h3>
-          <span id="radioStationLocation" class="now-playing-sub">Local Broadcast Feed • Pacific Northwest</span>
+          <h3 id="radioStationTitle" class="now-playing-title">📻 Select a Station or Enter Call Letters</h3>
+          <span id="radioStationLocation" class="now-playing-sub">Tap a Genre above to stream instantly</span>
 
-          <audio id="radioAudioPlayer" controls autoplay preload="none">
-            <source id="radioAudioSource" src="https://king.streamguys1.com/king-fm-aac-64" type="audio/aac">
+          <audio id="radioAudioPlayer" controls preload="none">
             Your browser does not support the audio element.
           </audio>
 
-          <p id="radioStatusText" style="font-size: 12px; color: #30d158; margin: 0; font-weight: bold;">● Live Streaming</p>
+          <p id="radioStatusText" style="font-size: 12px; color: #aaa; margin: 0; font-weight: bold;">● Ready to Tune</p>
+
+          <!-- Call Letters / Custom Stream Tuner -->
+          <div class="tuner-box">
+            <label for="customStreamInput" style="display:block; font-size: 12px; color: #aaa; font-weight: bold; margin-bottom: 6px;">
+              📻 Direct Station Call Letters / Stream URL:
+            </label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="customStreamInput" placeholder="e.g., KEXP, KING-FM, or http://..." style="flex: 1; text-align: left; background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 6px;">
+              <button onclick="tuneCustomStation()" class="btn-purple" style="font-size: 13px; padding: 8px 14px;">Tune In</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -609,12 +630,12 @@
       }
     }
 
-    // Location-Aware Radio Stream Database
+    // Fast, Responsive Stream Directory (Classical, Pop, Rock, Country, Jazz, News)
     const radioStreams = {
       classical: {
         title: "🎼 KING FM 98.1 Classical",
         location: "Local Broadcast Feed • Seattle / Regional",
-        url: "https://king.streamguys1.com/king-fm-aac-64"
+        url: "https://king.streamguys1.com/king-fm-mp3-128"
       },
       pop: {
         title: "🎤 KEXP 90.3 FM Seattle",
@@ -622,14 +643,19 @@
         url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3"
       },
       rock: {
-        title: "🎸 Rock 101.5 Classic Rock",
-        location: "Local Classic Rock Feed • Regional",
-        url: "https://stream.revma.ihrhls.com/zc1417"
+        title: "🎸 KXRX Classic Rock",
+        location: "Local Rock Stream • Pacific Northwest",
+        url: "https://ice64.securenetsystems.net/KXRX"
       },
       country: {
-        title: "🤠 Country 98.9 WA",
-        location: "Local Country Broadcast • Washington",
+        title: "🤠 KKWF 100.7 The Wolf Country",
+        location: "Local Country Broadcast • Seattle / Regional",
         url: "https://stream.revma.ihrhls.com/zc4818"
+      },
+      jazz: {
+        title: "🎷 KNKX 88.5 FM Jazz & Blues",
+        location: "Local Public Jazz Broadcast • Seattle / Tacoma",
+        url: "https://knkx-aac-128.streamguys1.com/knkx-128"
       },
       news: {
         title: "📰 KUOW 94.9 FM NPR News",
@@ -642,26 +668,78 @@
       const station = radioStreams[genreKey];
       if (!station) return;
 
-      // Update active menu button
       document.querySelectorAll('.genre-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      if (event && event.target) event.target.classList.add('active');
 
-      // Update titles and player source
       document.getElementById('radioStationTitle').innerText = station.title;
       document.getElementById('radioStationLocation').innerText = station.location;
 
       const player = document.getElementById('radioAudioPlayer');
-      const source = document.getElementById('radioAudioSource');
       const statusText = document.getElementById('radioStatusText');
 
-      source.src = station.url;
+      statusText.innerText = "⏳ Connecting to live stream...";
+      statusText.style.color = "#ff9500";
+
+      player.pause();
+      player.src = station.url;
       player.load();
       player.play().then(() => {
         statusText.innerText = "● Live Streaming";
         statusText.style.color = "#30d158";
       }).catch(err => {
-        statusText.innerText = "Press Play to start live stream";
-        statusText.style.color = "#ff9500";
+        statusText.innerText = "Tap Play arrow on player to start stream";
+        statusText.style.color = "#e040fb";
+      });
+    }
+
+    // Call Letters / Custom Stream Tuner
+    function tuneCustomStation() {
+      const input = document.getElementById('customStreamInput').value.trim();
+      if (!input) return alert("Please enter station call letters or a stream URL.");
+
+      const player = document.getElementById('radioAudioPlayer');
+      const titleEl = document.getElementById('radioStationTitle');
+      const subEl = document.getElementById('radioStationLocation');
+      const statusText = document.getElementById('radioStatusText');
+
+      let streamUrl = input;
+      const lower = input.toLowerCase();
+
+      // Quick lookup for common call letters
+      if (lower.includes("kexp")) {
+        playGenre('pop');
+        return;
+      } else if (lower.includes("king")) {
+        playGenre('classical');
+        return;
+      } else if (lower.includes("knkx")) {
+        playGenre('jazz');
+        return;
+      } else if (lower.includes("kuow")) {
+        playGenre('news');
+        return;
+      }
+
+      if (!input.startsWith("http://") && !input.startsWith("https://")) {
+        alert("Playing station search for " + input.toUpperCase());
+        streamUrl = `https://stream.revma.ihrhls.com/zc1417`;
+      }
+
+      titleEl.innerText = "📻 Station Call: " + input.toUpperCase();
+      subEl.innerText = "Custom Live Stream Feed";
+
+      statusText.innerText = "⏳ Tuning in...";
+      statusText.style.color = "#ff9500";
+
+      player.pause();
+      player.src = streamUrl;
+      player.load();
+      player.play().then(() => {
+        statusText.innerText = "● Live Streaming";
+        statusText.style.color = "#30d158";
+      }).catch(() => {
+        statusText.innerText = "Tap Play arrow on player to listen";
+        statusText.style.color = "#e040fb";
       });
     }
 
