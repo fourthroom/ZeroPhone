@@ -44,6 +44,7 @@
       display: flex;
       justify-content: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .tab-btn {
@@ -66,6 +67,9 @@
 
     .tab-level2 { background: #0a3663; border-top: 3px solid #0a84ff; }
     .tab-level2.active { background: #0a84ff; color: #fff; }
+
+    .tab-maps { background: #5c3800; border-top: 3px solid #ff9500; }
+    .tab-maps.active { background: #ff9500; color: #000; }
 
     .sub-tagline {
       font-size: 11px;
@@ -142,6 +146,9 @@
 
     .btn-purple { background: #af52de; color: white; cursor: pointer; font-weight: bold; }
     .btn-purple:hover { background: #9d38d0; }
+
+    .btn-orange { background: #ff9500; color: black; cursor: pointer; font-weight: bold; }
+    .btn-orange:hover { background: #e08300; }
 
     .btn-red { background: #ff3b30; color: white; cursor: pointer; font-weight: bold; }
     .btn-red:hover { background: #d70015; }
@@ -221,6 +228,56 @@
       margin-bottom: 12px;
     }
 
+    /* Maps Tab Styling */
+    .maps-box {
+      background: #1c1c1e;
+      border: 1px solid #ff9500;
+      border-radius: 12px;
+      padding: 15px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .maps-filter-bar {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .maps-filter-btn {
+      background: #2c2c2e;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .maps-filter-btn:hover, .maps-filter-btn.active {
+      background: #ff9500;
+      color: #000;
+      border-color: #ff9500;
+    }
+
+    .map-frame-container {
+      width: 100%;
+      height: 480px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #444;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
     /* Level 2 Carrier Box */
     .carrier-box {
       background: #1c1c1e;
@@ -247,6 +304,10 @@
         Level 2 - "CellPhone"
         <span class="sub-tagline">Carrier Text & Calling</span>
       </button>
+      <button class="tab-btn tab-maps" onclick="switchTab('maps')">
+        📍 Maps
+        <span class="sub-tagline">Wi-Fi & Resource Finder</span>
+      </button>
     </div>
   </div>
 
@@ -267,17 +328,14 @@
     <!-- ========================================== -->
     <div id="tab-level1" class="tab-content active">
       
-      <!-- Status directly above room input boxes -->
       <div id="status">Connected to Server! Enter Room Name</div>
 
       <div class="controls-bar">
-        <!-- Room Inputs -->
         <div class="button-row" style="margin-top: 6px;">
           <input type="text" id="callerName" placeholder="Your Name">
           <input type="text" id="roomId" placeholder="Room Name">
         </div>
 
-        <!-- Mode Selector Switcher with "Select a Mode" header -->
         <div class="mode-switcher-container">
           <span class="mode-label">Select a Mode</span>
           <div class="mode-switcher">
@@ -286,9 +344,7 @@
           </div>
         </div>
 
-        <!-- Action Row (Send Invite & Start Call Lateral / Text Mode Invite) -->
         <div class="button-row">
-          <!-- Call Mode Buttons (Invites & Call Start on same row) -->
           <div id="callControlsGroup" class="button-row">
             <span style="font-size: 13px; color: #aaa; margin-right: 2px;">1. Send Invite:</span>
             <button id="inviteVideoBtn" class="btn-blue">💬 Video Invite</button>
@@ -300,7 +356,6 @@
             <button id="hangUpBtn" class="btn-red" style="display:none;">🔴 Hang Up</button>
           </div>
 
-          <!-- Free Web Text Mode Controls -->
           <div id="textControlsGroup" class="button-row" style="display:none;">
             <button id="inviteTextBtn" class="btn-purple">💬 Send Texting Invite</button>
           </div>
@@ -359,6 +414,30 @@
       </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- TAB 3: MAPS - WI-FI & RESOURCE FINDER -->
+    <!-- ========================================== -->
+    <div id="tab-maps" class="tab-content">
+      <h2 style="color: #ff9500; margin-top: 0;">📍 Free Wi-Fi & Resource Maps</h2>
+      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
+
+      <div class="maps-box">
+        <!-- Search Filter Menu -->
+        <div class="maps-filter-bar">
+          <button class="maps-filter-btn active" onclick="loadMapQuery('Free Public WiFi')">📶 Free Public Wi-Fi</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('Public Library with WiFi')">📚 Public Libraries</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('Fast Food Restaurants with WiFi')">🍔 Fast Food Wi-Fi</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('Coffee Shops with WiFi')">☕ Coffee Shops Wi-Fi</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('Food Banks')">🥫 Food Banks</button>
+        </div>
+
+        <!-- Embedded Map Display Container -->
+        <div class="map-frame-container">
+          <iframe id="googleMapIframe" src="https://www.google.com/maps?q=Free+Public+WiFi&output=embed" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -379,7 +458,7 @@
     const installAppBtn = document.getElementById('installAppBtn');
     const dismissBannerBtn = document.getElementById('dismissBannerBtn');
 
-    // Navigation Switcher
+    // Navigation Switcher (Level 1, Level 2, Maps)
     function switchTab(tabName) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -387,10 +466,30 @@
       if (tabName === 'level1') {
         document.querySelectorAll('.tab-btn')[0].classList.add('active');
         document.getElementById('tab-level1').classList.add('active');
-      } else {
+      } else if (tabName === 'level2') {
         document.querySelectorAll('.tab-btn')[1].classList.add('active');
         document.getElementById('tab-level2').classList.add('active');
+      } else if (tabName === 'maps') {
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.getElementById('tab-maps').classList.add('active');
       }
+    }
+
+    // Google Maps Search Query Loader
+    function loadMapQuery(query) {
+      // Highlight active filter button
+      const buttons = document.querySelectorAll('.maps-filter-btn');
+      buttons.forEach(btn => {
+        if (btn.innerText.includes(query.replace('with WiFi', '').replace('Restaurants ', '').trim())) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      const encodedQuery = encodeURIComponent(query);
+      const iframe = document.getElementById('googleMapIframe');
+      iframe.src = `https://www.google.com/maps?q=${encodedQuery}&output=embed`;
     }
 
     // Level 1 Mode Switcher
@@ -417,7 +516,6 @@
         callControls.style.display = 'none';
         textControls.style.display = 'flex';
         
-        // Auto-join room socket channel if entering web chat mode directly
         const currentRoom = roomIdInput.value.trim();
         if (currentRoom) {
           socket.emit('join-room', currentRoom);
