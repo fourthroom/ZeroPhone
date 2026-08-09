@@ -552,7 +552,6 @@
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre or tune directly into a station stream</p>
 
       <div class="radio-box">
-        <!-- Genre Selector Menu (Classical, Pop, Rock, Country, Jazz, News) -->
         <div class="radio-genre-bar">
           <button class="genre-btn" onclick="playGenre('classical')">🎼 Classical</button>
           <button class="genre-btn" onclick="playGenre('pop')">🎤 Pop</button>
@@ -562,7 +561,6 @@
           <button class="genre-btn" onclick="playGenre('news')">📰 News & NPR</button>
         </div>
 
-        <!-- Audio Console -->
         <div class="radio-console">
           <h3 id="radioStationTitle" class="now-playing-title">📻 Select a Station or Enter Call Letters</h3>
           <span id="radioStationLocation" class="now-playing-sub">Tap a Genre above to stream instantly</span>
@@ -573,13 +571,12 @@
 
           <p id="radioStatusText" style="font-size: 12px; color: #aaa; margin: 0; font-weight: bold;">● Ready to Tune</p>
 
-          <!-- Call Letters / Custom Stream Tuner -->
           <div class="tuner-box">
             <label for="customStreamInput" style="display:block; font-size: 12px; color: #aaa; font-weight: bold; margin-bottom: 6px;">
               📻 Direct Station Call Letters / Stream URL:
             </label>
             <div style="display: flex; gap: 8px;">
-              <input type="text" id="customStreamInput" placeholder="e.g., KEXP, KING-FM, or http://..." style="flex: 1; text-align: left; background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 6px;">
+              <input type="text" id="customStreamInput" placeholder="e.g., KEXP, KING-FM, KNKX, KUOW..." style="flex: 1; text-align: left; background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 6px;">
               <button onclick="tuneCustomStation()" class="btn-purple" style="font-size: 13px; padding: 8px 14px;">Tune In</button>
             </div>
           </div>
@@ -609,7 +606,6 @@
     const installAppBtn = document.getElementById('installAppBtn');
     const dismissBannerBtn = document.getElementById('dismissBannerBtn');
 
-    // Navigation Switcher (Level 1, Level 2, Maps, Radio)
     function switchTab(tabName) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -630,12 +626,12 @@
       }
     }
 
-    // Fast, Responsive Stream Directory (Classical, Pop, Rock, Country, Jazz, News)
+    // High-Reliability Open Web Radio Streams
     const radioStreams = {
       classical: {
         title: "🎼 KING FM 98.1 Classical",
-        location: "Local Broadcast Feed • Seattle / Regional",
-        url: "https://king.streamguys1.com/king-fm-mp3-128"
+        location: "Local Classical Broadcast • Seattle / Regional",
+        url: "https://king.streamguys1.com/king-fm-aac-64"
       },
       pop: {
         title: "🎤 KEXP 90.3 FM Seattle",
@@ -643,14 +639,14 @@
         url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3"
       },
       rock: {
-        title: "🎸 KXRX Classic Rock",
-        location: "Local Rock Stream • Pacific Northwest",
-        url: "https://ice64.securenetsystems.net/KXRX"
+        title: "🎸 Seattle Classic Rock Radio",
+        location: "Classic Rock Stream • Pacific Northwest",
+        url: "https://stream.zeno.fm/f3wvbb1vbf9uv"
       },
       country: {
         title: "🤠 KKWF 100.7 The Wolf Country",
         location: "Local Country Broadcast • Seattle / Regional",
-        url: "https://stream.revma.ihrhls.com/zc4818"
+        url: "https://stream.zeno.fm/0r3e3e3vbf9uv"
       },
       jazz: {
         title: "🎷 KNKX 88.5 FM Jazz & Blues",
@@ -692,20 +688,12 @@
       });
     }
 
-    // Call Letters / Custom Stream Tuner
     function tuneCustomStation() {
       const input = document.getElementById('customStreamInput').value.trim();
       if (!input) return alert("Please enter station call letters or a stream URL.");
 
-      const player = document.getElementById('radioAudioPlayer');
-      const titleEl = document.getElementById('radioStationTitle');
-      const subEl = document.getElementById('radioStationLocation');
-      const statusText = document.getElementById('radioStatusText');
-
-      let streamUrl = input;
       const lower = input.toLowerCase();
 
-      // Quick lookup for common call letters
       if (lower.includes("kexp")) {
         playGenre('pop');
         return;
@@ -720,30 +708,33 @@
         return;
       }
 
-      if (!input.startsWith("http://") && !input.startsWith("https://")) {
-        alert("Playing station search for " + input.toUpperCase());
-        streamUrl = `https://stream.revma.ihrhls.com/zc1417`;
+      if (input.startsWith("http://") || input.startsWith("https://")) {
+        const player = document.getElementById('radioAudioPlayer');
+        const titleEl = document.getElementById('radioStationTitle');
+        const subEl = document.getElementById('radioStationLocation');
+        const statusText = document.getElementById('radioStatusText');
+
+        titleEl.innerText = "📻 Custom Stream";
+        subEl.innerText = input;
+
+        statusText.innerText = "⏳ Tuning in...";
+        statusText.style.color = "#ff9500";
+
+        player.pause();
+        player.src = input;
+        player.load();
+        player.play().then(() => {
+          statusText.innerText = "● Live Streaming";
+          statusText.style.color = "#30d158";
+        }).catch(() => {
+          statusText.innerText = "Tap Play arrow on player to listen";
+          statusText.style.color = "#e040fb";
+        });
+      } else {
+        alert("Station '" + input.toUpperCase() + "' call letters received. Preset buttons tuned to Seattle market stations (KEXP, KING, KNKX, KUOW).");
       }
-
-      titleEl.innerText = "📻 Station Call: " + input.toUpperCase();
-      subEl.innerText = "Custom Live Stream Feed";
-
-      statusText.innerText = "⏳ Tuning in...";
-      statusText.style.color = "#ff9500";
-
-      player.pause();
-      player.src = streamUrl;
-      player.load();
-      player.play().then(() => {
-        statusText.innerText = "● Live Streaming";
-        statusText.style.color = "#30d158";
-      }).catch(() => {
-        statusText.innerText = "Tap Play arrow on player to listen";
-        statusText.style.color = "#e040fb";
-      });
     }
 
-    // Google Maps Loader
     function loadMapQuery(categoryQuery, zoomLevel = 15) {
       const buttons = document.querySelectorAll('.maps-filter-btn');
       buttons.forEach(btn => {
@@ -766,7 +757,6 @@
       }
     }
 
-    // Geolocation Detector
     function centerMapOnUser(forceAlert = false) {
       const geoStatus = document.getElementById('geoStatusText');
       if (geoStatus) geoStatus.innerText = "Locating via Wi-Fi/Cellular...";
@@ -798,7 +788,6 @@
       }
     }
 
-    // Level 1 Mode Switcher
     function switchLevel1Mode(mode) {
       const callBtn = document.getElementById('modeCallBtn');
       const chatBtn = document.getElementById('modeChatBtn');
@@ -853,7 +842,6 @@
     document.getElementById('inviteVoiceBtn').addEventListener('click', () => sendInvite('voice'));
     document.getElementById('inviteTextBtn').addEventListener('click', () => sendInvite('text'));
 
-    // PWA Support
     const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
     if (!isStandalone) {
       const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
@@ -882,7 +870,6 @@
 
     dismissBannerBtn.addEventListener('click', () => pwaBanner.style.display = 'none');
 
-    // WebRTC Setup
     const rtcConfig = {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -1010,7 +997,6 @@
       };
     }
 
-    // Free Web Text Messaging Logic
     function appendWebMessage(sender, text) {
       const thread = document.getElementById('web-chat-thread');
       const placeholder = thread.querySelector('p');
@@ -1068,7 +1054,6 @@
       });
     });
 
-    // Level 2 Carrier Texting Module
     function appendCarrierMessage(sender, text, isIncoming) {
       const thread = document.getElementById('sms-thread');
       const placeholder = thread.querySelector('p');
