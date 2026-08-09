@@ -31,8 +31,8 @@
     }
 
     .tab-btn {
-      padding: 12px 20px;
-      font-size: 15px;
+      padding: 10px 18px;
+      font-size: 14px;
       font-weight: bold;
       border: none;
       border-top-left-radius: 10px;
@@ -47,7 +47,6 @@
       opacity: 1.0;
     }
 
-    /* Green Level 1 Tab */
     .tab-level1 {
       background: #1b4d2e;
       border-top: 3px solid #30d158;
@@ -57,7 +56,6 @@
       color: #000;
     }
 
-    /* Blue Level 2 Tab */
     .tab-level2 {
       background: #0a3663;
       border-top: 3px solid #0a84ff;
@@ -68,16 +66,16 @@
     }
 
     .sub-tagline {
-      font-size: 13px;
+      font-size: 12px;
       display: block;
       font-weight: normal;
       margin-top: 2px;
     }
 
-    /* Tab Content Areas */
+    /* Layout Containers */
     .container {
-      padding: 20px;
-      max-width: 600px;
+      padding: 15px;
+      max-width: 1000px;
       margin: 0 auto;
       text-align: center;
     }
@@ -96,60 +94,92 @@
       background: #1c1c1e;
       border: 1px solid #333;
       border-radius: 12px;
-      padding: 14px 18px;
-      margin: 0 auto 20px auto;
+      padding: 12px 16px;
+      margin: 0 auto 15px auto;
       text-align: left;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
-    #pwaBanner h4 { margin: 0 0 6px 0; color: #0a84ff; font-size: 16px; }
-    #pwaBanner p { margin: 0 0 10px 0; font-size: 14px; color: #ccc; line-height: 1.4; }
+    #pwaBanner h4 { margin: 0 0 4px 0; color: #0a84ff; font-size: 15px; }
+    #pwaBanner p { margin: 0 0 8px 0; font-size: 13px; color: #ccc; line-height: 1.4; }
     .banner-btns { display: flex; gap: 10px; align-items: center; }
-    .install-btn { background: #30d158; color: #000; font-weight: bold; padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; }
-    .close-btn { background: transparent; color: #8e8e93; border: none; font-size: 14px; cursor: pointer; text-decoration: underline; }
+    .install-btn { background: #30d158; color: #000; font-weight: bold; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
+    .close-btn { background: transparent; color: #8e8e93; border: none; font-size: 13px; cursor: pointer; text-decoration: underline; }
 
-    /* Controls & Inputs */
-    .controls { 
-      margin-bottom: 20px; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 12px; 
-      align-items: center; 
-    }
-    .input-group {
+    /* Compact Controls Bar */
+    .controls-bar { 
       display: flex;
+      flex-direction: column;
       gap: 10px;
-      width: 100%;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
       justify-content: center;
       flex-wrap: wrap;
+      align-items: center;
     }
-    input, button, select, textarea { padding: 12px 16px; font-size: 15px; border-radius: 8px; border: none; }
-    input { background: #2c2c2e; color: #fff; border: 1px solid #444; width: 220px; text-align: center; }
-    
+
+    input, button, textarea { 
+      padding: 8px 12px; 
+      font-size: 14px; 
+      border-radius: 6px; 
+      border: none; 
+    }
+
+    input { 
+      background: #2c2c2e; 
+      color: #fff; 
+      border: 1px solid #444; 
+      width: 170px; 
+      text-align: center; 
+    }
+
     .btn-green { background: #30d158; color: #000; cursor: pointer; font-weight: bold; }
     .btn-green:hover { background: #28b84c; }
+    
     .btn-blue { background: #0a84ff; color: white; cursor: pointer; font-weight: bold; }
     .btn-blue:hover { background: #0066cc; }
 
-    .call-mode-box {
-      background: #1c1c1e;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 20px;
+    .btn-red { background: #ff3b30; color: white; cursor: pointer; font-weight: bold; }
+    .btn-red:hover { background: #d70015; }
+
+    /* Larger Video Grid Area */
+    .video-grid { 
+      display: flex; 
+      justify-content: center; 
+      gap: 20px; 
+      flex-wrap: wrap; 
+      margin-top: 10px; 
     }
 
-    .video-grid { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
-    video { width: 100%; max-width: 260px; height: 180px; background: #000; border-radius: 12px; border: 2px solid #333; object-fit: cover; }
-    
-    #status { font-weight: bold; color: #30d158; margin: 15px 0; }
+    .video-card {
+      flex: 1;
+      min-width: 320px;
+      max-width: 480px;
+    }
 
-    /* Level 2 Carrier SMS Box */
+    video { 
+      width: 100%; 
+      height: 320px; 
+      background: #000; 
+      border-radius: 12px; 
+      border: 2px solid #333; 
+      object-fit: cover; 
+    }
+
+    #status { font-weight: bold; color: #30d158; margin: 8px 0; }
+
+    /* Level 2 Carrier Box */
     .carrier-box {
       background: #1c1c1e;
       border: 1px solid #0a84ff;
       border-radius: 12px;
       padding: 20px;
-      margin-top: 10px;
+      max-width: 500px;
+      margin: 10px auto 0 auto;
     }
   </style>
 </head>
@@ -183,41 +213,39 @@
     <!-- TAB 1: LEVEL 1 - WEBPHONE (COMPLETELY FREE) -->
     <!-- ========================================== -->
     <div id="tab-level1" class="tab-content active">
-      <h2>ZeroPhone WebPhone</h2>
-      <p style="color: #aaa; font-size: 14px; margin-top: -10px;">Free WebRTC Video & Audio Calls</p>
-
-      <div class="controls">
-        <div class="input-group">
+      <div class="controls-bar">
+        <!-- Caller Info Inputs -->
+        <div class="button-row">
           <input type="text" id="callerName" placeholder="Your Name (e.g. Eric Scott)">
           <input type="text" id="roomId" placeholder="Enter Room ID" value="familyroom">
         </div>
 
-        <div class="call-mode-box" style="width: 100%; box-sizing: border-box;">
-          <h4 style="margin: 0 0 10px 0; color: #30d158;">1. Select Call Type</h4>
-          <div class="input-group">
-            <button id="joinVideoBtn" class="btn-green">📹 Start Video Call</button>
-            <button id="joinVoiceBtn" class="btn-green" style="background: #e5c158; color: #000;">🎙️ Start Voice-Only Call</button>
-          </div>
+        <!-- 1. INVITE BUTTONS FIRST -->
+        <div class="button-row">
+          <span style="font-size: 13px; color: #aaa; margin-right: 4px;">1. Send Invite:</span>
+          <button id="inviteVideoBtn" class="btn-blue">💬 Video Invite</button>
+          <button id="inviteVoiceBtn" class="btn-blue" style="background: #00a8ff;">💬 Voice Invite</button>
         </div>
 
-        <div class="call-mode-box" style="width: 100%; box-sizing: border-box;">
-          <h4 style="margin: 0 0 10px 0; color: #30d158;">2. Invite Someone</h4>
-          <div class="input-group">
-            <button id="inviteVideoBtn" class="btn-blue">💬 Send Video Invite</button>
-            <button id="inviteVoiceBtn" class="btn-blue" style="background: #00a8ff;">💬 Send Voice Invite</button>
-          </div>
+        <!-- 2. START CALL BUTTONS SECOND -->
+        <div class="button-row">
+          <span style="font-size: 13px; color: #aaa; margin-right: 4px;">2. Start Call:</span>
+          <button id="joinVideoBtn" class="btn-green">📹 Video Call</button>
+          <button id="joinVoiceBtn" class="btn-green" style="background: #e5c158; color: #000;">🎙️ Voice Call</button>
+          <button id="hangUpBtn" class="btn-red" style="display:none;">🔴 Hang Up</button>
         </div>
       </div>
 
       <div id="status">Disconnected</div>
 
+      <!-- Expanded Video Grid -->
       <div class="video-grid" id="videoContainer">
-        <div>
-          <h3>Local Stream (You)</h3>
+        <div class="video-card">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px;">Local Stream (You)</h3>
           <video id="localVideo" autoplay playsinline muted></video>
         </div>
-        <div>
-          <h3>Remote Stream (Peer)</h3>
+        <div class="video-card">
+          <h3 style="margin: 0 0 8px 0; font-size: 16px;">Remote Stream (Peer)</h3>
           <video id="remoteVideo" autoplay playsinline></video>
         </div>
       </div>
@@ -227,8 +255,8 @@
     <!-- TAB 2: LEVEL 2 - "CELLPHONE" (CARRIER BACKEND) -->
     <!-- ========================================== -->
     <div id="tab-level2" class="tab-content">
-      <h2 style="color: #0a84ff;">ZeroPhone "CellPhone"</h2>
-      <p style="color: #aaa; font-size: 14px; margin-top: -10px;">Direct Carrier SMS & Phone Ringing</p>
+      <h2 style="color: #0a84ff; margin-top: 0;">ZeroPhone "CellPhone"</h2>
+      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Direct Carrier SMS & Phone Ringing</p>
 
       <div class="carrier-box">
         <h3>Direct Carrier SMS Console</h3>
@@ -262,6 +290,7 @@
     const roomIdInput = document.getElementById('roomId');
     const callerNameInput = document.getElementById('callerName');
     const statusDiv = document.getElementById('status');
+    const hangUpBtn = document.getElementById('hangUpBtn');
     const pwaBanner = document.getElementById('pwaBanner');
     const pwaInstructions = document.getElementById('pwaInstructions');
     const installAppBtn = document.getElementById('installAppBtn');
@@ -281,21 +310,18 @@
       }
     }
 
-    // Auto-check URL parameters (?room=name & ?mode=voice)
     const urlParams = new URLSearchParams(window.location.search);
     const roomParam = urlParams.get('room');
     const modeParam = urlParams.get('mode');
 
     if (roomParam) roomIdInput.value = roomParam;
 
-    // Structured SMS Invitation Handlers ("Knock, Knock!")
     function sendInvite(mode) {
       const name = callerNameInput.value.trim() || 'Someone';
       const currentRoom = roomIdInput.value.trim() || 'familyroom';
       const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}&mode=${mode}`;
       
       const typeText = (mode === 'voice') ? 'speak to you by voice' : 'have a video call with you';
-      
       const message = `Knock, Knock!\n\n${name} would like to ${typeText}. Press here to speak: ${inviteUrl}`;
       
       window.location.href = `sms:?&body=${encodeURIComponent(message)}`;
@@ -333,7 +359,7 @@
 
     dismissBannerBtn.addEventListener('click', () => pwaBanner.style.display = 'none');
 
-    // WebRTC PeerConnection Setup
+    // WebRTC Call Controls
     const rtcConfig = {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -363,8 +389,6 @@
           audio: true 
         });
         document.getElementById('localVideo').srcObject = localStream;
-        
-        // Hide video display if voice-only call
         document.getElementById('videoContainer').style.display = isAudioOnly ? 'none' : 'flex';
       } catch (err) {
         console.error("Device access denied:", err);
@@ -373,7 +397,31 @@
 
       socket.emit('join-room', roomId);
       statusDiv.innerText = `Joined room: ${roomId} (${isAudioOnly ? 'Voice-Only' : 'Video'}). Waiting for peer...`;
+      
+      // Show Hang Up button when call starts
+      hangUpBtn.style.display = 'inline-block';
     }
+
+    function hangUpCall() {
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+      }
+
+      if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+      }
+
+      document.getElementById('localVideo').srcObject = null;
+      document.getElementById('remoteVideo').srcObject = null;
+
+      statusDiv.innerText = "Call ended.";
+      statusDiv.style.color = "#ff3b30";
+      hangUpBtn.style.display = 'none';
+    }
+
+    hangUpBtn.addEventListener('click', hangUpCall);
 
     document.getElementById('joinVideoBtn').addEventListener('click', () => startCall(false));
     document.getElementById('joinVoiceBtn').addEventListener('click', () => startCall(true));
@@ -401,6 +449,7 @@
 
     socket.on('answer', async ({ answer }) => {
       statusDiv.innerText = "Live Connected!";
+      statusDiv.style.color = "#30d158";
       await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
     });
 
@@ -438,7 +487,7 @@
       };
     }
 
-    // Level 2 Carrier Texting Backend Module
+    // Level 2 SMS Module
     function appendMessage(sender, text, isIncoming) {
       const thread = document.getElementById('sms-thread');
       const placeholder = thread.querySelector('p');
