@@ -23,7 +23,7 @@
       padding: 0; 
     }
 
-    /* Top Centered Header with New App Icon */
+    /* Top Centered Header with App Icon */
     .top-header {
       display: flex;
       flex-direction: column;
@@ -158,7 +158,7 @@
       text-align: center; 
     }
 
-    /* Dark Pink & Light Pink Call Buttons */
+    /* Call Buttons */
     .btn-dark-pink { background: #d81b60; color: #fff; cursor: pointer; font-weight: bold; }
     .btn-dark-pink:hover { background: #c2185b; }
     
@@ -177,7 +177,6 @@
     .btn-green { background: #30d158; color: #000; cursor: pointer; font-weight: bold; }
     .btn-green:hover { background: #28b84c; }
 
-    /* Two-line Stacked Invite Label & Button */
     .stacked-label {
       font-size: 13px;
       color: #aaa;
@@ -192,7 +191,6 @@
       text-align: center;
     }
 
-    /* Mode Switcher Buttons */
     .mode-switcher-container {
       display: flex;
       flex-direction: column;
@@ -234,7 +232,6 @@
 
     #status { font-weight: bold; color: #30d158; margin-bottom: 4px; }
 
-    /* Expanded Video Grid */
     .video-grid { 
       display: flex; 
       justify-content: center; 
@@ -246,7 +243,6 @@
     .video-card { flex: 1; min-width: 340px; max-width: 520px; }
     video { width: 100%; height: 380px; background: #000; border-radius: 12px; border: 2px solid #333; object-fit: cover; }
 
-    /* Web Text Chat Area */
     .web-chat-box {
       background: #1c1c1e;
       border: 1px solid #af52de;
@@ -267,7 +263,6 @@
       margin-bottom: 12px;
     }
 
-    /* Maps Tab Styling */
     .maps-box {
       background: #1c1c1e;
       border: 1px solid #ff9500;
@@ -317,7 +312,6 @@
       border: none;
     }
 
-    /* Radio Box Styling */
     .radio-box {
       background: #1c1c1e;
       border: 1px solid #e040fb;
@@ -392,7 +386,6 @@
       text-align: left;
     }
 
-    /* Level 2 Carrier Box */
     .carrier-box {
       background: #1c1c1e;
       border: 1px solid #0a84ff;
@@ -405,7 +398,7 @@
 </head>
 <body>
 
-  <!-- Top Centered Header with New Icon -->
+  <!-- Top Centered Header with Icon -->
   <div class="top-header">
     <div class="brand-container">
       <img src="icon.png" alt="ZeroPhone Logo" class="app-header-logo" onerror="this.style.display='none'">
@@ -683,6 +676,7 @@
       }
     }
 
+    // Direct, CORS-Friendly HTTPS Radio Streams
     const radioStreams = {
       classical: {
         title: "🎼 Classical KING FM 98.1",
@@ -696,13 +690,13 @@
       },
       rock: {
         title: "🎸 Seattle Classic Rock",
-        location: "Classic Rock Feed • Pacific Northwest",
-        url: "https://stream.zeno.fm/f3wvbb1vbf9uv"
+        location: "Classic Rock Stream • Pacific Northwest",
+        url: "https://stream.radiojar.com/4v817347vbef0"
       },
       country: {
-        title: "🤠 KKWF 100.7 Country",
-        location: "Local Country Broadcast • Regional",
-        url: "https://stream.zeno.fm/0r3e3e3vbf9uv"
+        title: "🤠 Country Legends & Hits",
+        location: "Country Live Stream • West Coast",
+        url: "https://stream.radiojar.com/8smy1513y18uv"
       },
       jazz: {
         title: "🎷 KNKX 88.5 FM Jazz & Blues",
@@ -735,13 +729,19 @@
       player.pause();
       player.src = station.url;
       player.load();
-      player.play().then(() => {
-        statusText.innerText = "● Live Streaming";
-        statusText.style.color = "#30d158";
-      }).catch(err => {
-        statusText.innerText = "Tap Play arrow on player to start stream";
-        statusText.style.color = "#e040fb";
-      });
+
+      // Play with fallback error notification
+      const playPromise = player.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          statusText.innerText = "● Live Streaming";
+          statusText.style.color = "#30d158";
+        }).catch(err => {
+          console.error("Playback error:", err);
+          statusText.innerText = "Tap Play arrow on player to start stream";
+          statusText.style.color = "#e040fb";
+        });
+      }
     }
 
     function tuneCustomStation() {
