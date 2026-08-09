@@ -20,53 +20,55 @@
       padding: 0; 
     }
 
-    /* Tab Bar Navigation */
-    .tab-bar {
+    /* Top Navigation Bar with Branding & Level Tabs */
+    .top-header {
       display: flex;
+      align-items: center;
+      justify-content: space-between;
       background: #1c1c1e;
       border-bottom: 2px solid #333;
-      padding-top: 10px;
-      padding-left: 10px;
+      padding: 8px 15px 0 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .app-brand-title {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: #fff;
+      margin: 0;
+      padding-bottom: 8px;
+    }
+
+    .tab-bar {
+      display: flex;
       gap: 5px;
     }
 
     .tab-btn {
-      padding: 10px 18px;
-      font-size: 14px;
+      padding: 8px 16px;
+      font-size: 13px;
       font-weight: bold;
       border: none;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
       cursor: pointer;
       color: #fff;
       opacity: 0.6;
       transition: opacity 0.2s, background 0.2s;
     }
 
-    .tab-btn.active {
-      opacity: 1.0;
-    }
+    .tab-btn.active { opacity: 1.0; }
 
-    .tab-level1 {
-      background: #1b4d2e;
-      border-top: 3px solid #30d158;
-    }
-    .tab-level1.active {
-      background: #30d158;
-      color: #000;
-    }
+    .tab-level1 { background: #1b4d2e; border-top: 3px solid #30d158; }
+    .tab-level1.active { background: #30d158; color: #000; }
 
-    .tab-level2 {
-      background: #0a3663;
-      border-top: 3px solid #0a84ff;
-    }
-    .tab-level2.active {
-      background: #0a84ff;
-      color: #fff;
-    }
+    .tab-level2 { background: #0a3663; border-top: 3px solid #0a84ff; }
+    .tab-level2.active { background: #0a84ff; color: #fff; }
 
     .sub-tagline {
-      font-size: 12px;
+      font-size: 11px;
       display: block;
       font-weight: normal;
       margin-top: 2px;
@@ -80,13 +82,8 @@
       text-align: center;
     }
 
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
     /* PWA Banner */
     #pwaBanner {
@@ -105,7 +102,7 @@
     .install-btn { background: #30d158; color: #000; font-weight: bold; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
     .close-btn { background: transparent; color: #8e8e93; border: none; font-size: 13px; cursor: pointer; text-decoration: underline; }
 
-    /* Compact Controls Bar */
+    /* Controls Bar */
     .controls-bar { 
       display: flex;
       flex-direction: column;
@@ -143,10 +140,39 @@
     .btn-blue { background: #0a84ff; color: white; cursor: pointer; font-weight: bold; }
     .btn-blue:hover { background: #0066cc; }
 
+    .btn-purple { background: #af52de; color: white; cursor: pointer; font-weight: bold; }
+    .btn-purple:hover { background: #9d38d0; }
+
     .btn-red { background: #ff3b30; color: white; cursor: pointer; font-weight: bold; }
     .btn-red:hover { background: #d70015; }
 
-    /* Larger Video Grid Area */
+    /* Level 1 Mode Switcher Buttons */
+    .mode-switcher {
+      display: inline-flex;
+      background: #2c2c2e;
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 15px;
+      border: 1px solid #444;
+    }
+
+    .mode-btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: bold;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: #aaa;
+      cursor: pointer;
+    }
+
+    .mode-btn.active {
+      background: #30d158;
+      color: #000;
+    }
+
+    /* Video Grid */
     .video-grid { 
       display: flex; 
       justify-content: center; 
@@ -155,22 +181,31 @@
       margin-top: 10px; 
     }
 
-    .video-card {
-      flex: 1;
-      min-width: 320px;
-      max-width: 480px;
-    }
-
-    video { 
-      width: 100%; 
-      height: 320px; 
-      background: #000; 
-      border-radius: 12px; 
-      border: 2px solid #333; 
-      object-fit: cover; 
-    }
+    .video-card { flex: 1; min-width: 320px; max-width: 480px; }
+    video { width: 100%; height: 320px; background: #000; border-radius: 12px; border: 2px solid #333; object-fit: cover; }
 
     #status { font-weight: bold; color: #30d158; margin: 8px 0; }
+
+    /* Web Text Chat Area */
+    .web-chat-box {
+      background: #1c1c1e;
+      border: 1px solid #af52de;
+      border-radius: 12px;
+      padding: 15px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    #web-chat-thread {
+      height: 220px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px;
+      overflow-y: auto;
+      background: #121212;
+      text-align: left;
+      margin-bottom: 12px;
+    }
 
     /* Level 2 Carrier Box */
     .carrier-box {
@@ -185,16 +220,20 @@
 </head>
 <body>
 
-  <!-- Top Tab Navigation Bar -->
-  <div class="tab-bar">
-    <button class="tab-btn tab-level1 active" onclick="switchTab('level1')">
-      Level 1 - WebPhone
-      <span class="sub-tagline">Completely Free</span>
-    </button>
-    <button class="tab-btn tab-level2" onclick="switchTab('level2')">
-      Level 2 - "CellPhone"
-      <span class="sub-tagline">Carrier Text & Calling</span>
-    </button>
+  <!-- Top Navigation Header -->
+  <div class="top-header">
+    <h1 class="app-brand-title">ZeroPhone</h1>
+
+    <div class="tab-bar">
+      <button class="tab-btn tab-level1 active" onclick="switchTab('level1')">
+        Level 1 - WebPhone
+        <span class="sub-tagline">Completely Free</span>
+      </button>
+      <button class="tab-btn tab-level2" onclick="switchTab('level2')">
+        Level 2 - "CellPhone"
+        <span class="sub-tagline">Carrier Text & Calling</span>
+      </button>
+    </div>
   </div>
 
   <div class="container">
@@ -214,21 +253,27 @@
     <!-- ========================================== -->
     <div id="tab-level1" class="tab-content active">
       <div class="controls-bar">
-        <!-- Caller Info Inputs -->
+        <!-- Caller Inputs -->
         <div class="button-row">
           <input type="text" id="callerName" placeholder="Your Name (e.g. Eric Scott)">
           <input type="text" id="roomId" placeholder="Enter Room ID" value="familyroom">
         </div>
 
-        <!-- 1. INVITE BUTTONS FIRST -->
+        <!-- Mode Selector Switcher -->
+        <div class="mode-switcher">
+          <button id="modeCallBtn" class="mode-btn active" onclick="switchLevel1Mode('call')">📹 Call Mode</button>
+          <button id="modeChatBtn" class="mode-btn" onclick="switchLevel1Mode('chat')">💬 Free Web Text</button>
+        </div>
+
+        <!-- Send Invite Controls -->
         <div class="button-row">
           <span style="font-size: 13px; color: #aaa; margin-right: 4px;">1. Send Invite:</span>
           <button id="inviteVideoBtn" class="btn-blue">💬 Video Invite</button>
           <button id="inviteVoiceBtn" class="btn-blue" style="background: #00a8ff;">💬 Voice Invite</button>
         </div>
 
-        <!-- 2. START CALL BUTTONS SECOND -->
-        <div class="button-row">
+        <!-- Start Call Controls -->
+        <div id="callActionRow" class="button-row">
           <span style="font-size: 13px; color: #aaa; margin-right: 4px;">2. Start Call:</span>
           <button id="joinVideoBtn" class="btn-green">📹 Video Call</button>
           <button id="joinVoiceBtn" class="btn-green" style="background: #e5c158; color: #000;">🎙️ Voice Call</button>
@@ -238,8 +283,8 @@
 
       <div id="status">Disconnected</div>
 
-      <!-- Expanded Video Grid -->
-      <div class="video-grid" id="videoContainer">
+      <!-- VIEW A: Video Stream Grid -->
+      <div id="videoStreamView" class="video-grid">
         <div class="video-card">
           <h3 style="margin: 0 0 8px 0; font-size: 16px;">Local Stream (You)</h3>
           <video id="localVideo" autoplay playsinline muted></video>
@@ -247,6 +292,20 @@
         <div class="video-card">
           <h3 style="margin: 0 0 8px 0; font-size: 16px;">Remote Stream (Peer)</h3>
           <video id="remoteVideo" autoplay playsinline></video>
+        </div>
+      </div>
+
+      <!-- VIEW B: Free Web Texting Thread -->
+      <div id="webChatView" class="web-chat-box" style="display:none;">
+        <h3 style="margin-top: 0; color: #af52de;">💬 Room Web Texting</h3>
+        
+        <div id="web-chat-thread">
+          <p style="color: #666; font-style: italic; margin: 0;">Web text messages in this room will appear here...</p>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="webChatInput" placeholder="Type a free web message..." style="flex: 1; text-align: left;">
+          <button id="sendWebChatBtn" class="btn-purple">Send</button>
         </div>
       </div>
     </div>
@@ -296,7 +355,7 @@
     const installAppBtn = document.getElementById('installAppBtn');
     const dismissBannerBtn = document.getElementById('dismissBannerBtn');
 
-    // Tab Switcher Logic
+    // Navigation Switcher
     function switchTab(tabName) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -307,6 +366,26 @@
       } else {
         document.querySelectorAll('.tab-btn')[1].classList.add('active');
         document.getElementById('tab-level2').classList.add('active');
+      }
+    }
+
+    // Level 1 Mode Switcher
+    function switchLevel1Mode(mode) {
+      const callBtn = document.getElementById('modeCallBtn');
+      const chatBtn = document.getElementById('modeChatBtn');
+      const videoView = document.getElementById('videoStreamView');
+      const chatView = document.getElementById('webChatView');
+
+      if (mode === 'call') {
+        callBtn.classList.add('active');
+        chatBtn.classList.remove('active');
+        videoView.style.display = 'flex';
+        chatView.style.display = 'none';
+      } else {
+        chatBtn.classList.add('active');
+        callBtn.classList.remove('active');
+        chatView.style.display = 'block';
+        videoView.style.display = 'none';
       }
     }
 
@@ -359,7 +438,7 @@
 
     dismissBannerBtn.addEventListener('click', () => pwaBanner.style.display = 'none');
 
-    // WebRTC Call Controls
+    // WebRTC Setup
     const rtcConfig = {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -389,7 +468,7 @@
           audio: true 
         });
         document.getElementById('localVideo').srcObject = localStream;
-        document.getElementById('videoContainer').style.display = isAudioOnly ? 'none' : 'flex';
+        document.getElementById('videoStreamView').style.display = isAudioOnly ? 'none' : 'flex';
       } catch (err) {
         console.error("Device access denied:", err);
         return alert("Unable to access microphone/camera.");
@@ -397,8 +476,6 @@
 
       socket.emit('join-room', roomId);
       statusDiv.innerText = `Joined room: ${roomId} (${isAudioOnly ? 'Voice-Only' : 'Video'}). Waiting for peer...`;
-      
-      // Show Hang Up button when call starts
       hangUpBtn.style.display = 'inline-block';
     }
 
@@ -487,8 +564,53 @@
       };
     }
 
-    // Level 2 SMS Module
-    function appendMessage(sender, text, isIncoming) {
+    // Free Web Text Messaging
+    function appendWebMessage(sender, text) {
+      const thread = document.getElementById('web-chat-thread');
+      const placeholder = thread.querySelector('p');
+      if (placeholder && placeholder.style.fontStyle === 'italic') {
+        thread.innerHTML = '';
+      }
+
+      const msgBox = document.createElement('div');
+      msgBox.style.marginBottom = '8px';
+      msgBox.style.padding = '8px 12px';
+      msgBox.style.borderRadius = '6px';
+      msgBox.style.backgroundColor = '#2c2c2e';
+      msgBox.style.color = '#fff';
+      msgBox.style.wordBreak = 'break-word';
+
+      msgBox.innerHTML = '<strong style="color:#af52de;">' + sender + ':</strong> ' + text;
+      thread.appendChild(msgBox);
+      thread.scrollTop = thread.scrollHeight;
+    }
+
+    document.getElementById('sendWebChatBtn').addEventListener('click', function() {
+      const input = document.getElementById('webChatInput');
+      const msg = input.value.trim();
+      const sender = callerNameInput.value.trim() || 'Guest';
+      const roomId = roomIdInput.value.trim();
+
+      if (msg && roomId) {
+        socket.emit('send-web-chat', { roomId: roomId, message: msg, sender: sender });
+        input.value = '';
+      }
+    });
+
+    socket.on('receive-web-chat', ({ message, sender }) => {
+      appendWebMessage(sender, message);
+    });
+
+    socket.on('load-chat-history', (history) => {
+      const thread = document.getElementById('web-chat-thread');
+      thread.innerHTML = '';
+      history.forEach(item => {
+        appendWebMessage(item.sender, item.message);
+      });
+    });
+
+    // Level 2 Carrier Texting Module
+    function appendCarrierMessage(sender, text, isIncoming) {
       const thread = document.getElementById('sms-thread');
       const placeholder = thread.querySelector('p');
       if (placeholder && placeholder.style.fontStyle === 'italic') {
@@ -544,7 +666,7 @@
         if (data.success) {
           statusEl.style.color = '#30d158';
           statusEl.innerText = 'Message sent successfully!';
-          appendMessage('You', message, false);
+          appendCarrierMessage('You', message, false);
           messageInput.value = '';
         } else {
           statusEl.style.color = '#ff453a';
