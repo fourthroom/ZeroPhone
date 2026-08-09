@@ -312,12 +312,13 @@
       border: none;
     }
 
+    /* Radio Layout Styling */
     .radio-box {
       background: #1c1c1e;
       border: 1px solid #e040fb;
       border-radius: 12px;
       padding: 20px;
-      max-width: 650px;
+      max-width: 950px;
       margin: 0 auto;
     }
 
@@ -347,7 +348,74 @@
       border-color: #e040fb;
     }
 
+    /* Two-Column Radio Split Layout */
+    .radio-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .station-bank-container {
+      flex: 1;
+      min-width: 280px;
+      background: #121212;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .station-bank-header {
+      font-size: 13px;
+      font-weight: bold;
+      color: #e040fb;
+      margin: 0 0 10px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .station-bank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .station-bank-item {
+      background: #2c2c2e;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .station-bank-item:hover, .station-bank-item.active {
+      background: #4a0072;
+      border-color: #e040fb;
+    }
+
+    .station-item-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: #fff;
+      margin: 0 0 2px 0;
+      display: block;
+    }
+
+    .station-item-sub {
+      font-size: 11px;
+      color: #aaa;
+      margin: 0;
+    }
+
     .radio-console {
+      flex: 1.5;
+      min-width: 320px;
       background: #121212;
       border: 1px solid #333;
       border-radius: 12px;
@@ -544,12 +612,13 @@
       </div>
     </div>
 
-    <!-- TAB 4: RADIO (POWERED BY RADIO-BROWSER API) -->
+    <!-- TAB 4: RADIO (SPLIT LAYOUT WITH LEFT STATION BANK) -->
     <div id="tab-radio" class="tab-content">
       <h2 style="color: #e040fb; margin-top: 0;">📻 Local Live Internet Radio</h2>
-      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Powered by Open Radio-Browser Engine</p>
+      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre to populate the Left Station Bank</p>
 
       <div class="radio-box">
+        <!-- Top Genre Selector Bar -->
         <div class="radio-genre-bar">
           <button class="genre-btn" onclick="fetchRadioBrowserGenre('classical', 'Classical')">🎼 Classical</button>
           <button class="genre-btn" onclick="fetchRadioBrowserGenre('pop', 'Pop / Indie')">🎤 Pop</button>
@@ -559,27 +628,42 @@
           <button class="genre-btn" onclick="fetchRadioBrowserGenre('news', 'News / NPR')">📰 News & NPR</button>
         </div>
 
-        <div class="radio-console">
-          <h3 id="radioStationTitle" class="now-playing-title">📻 Select a Genre or Enter Station Name</h3>
-          <span id="radioStationLocation" class="now-playing-sub">Queries live open streams matching your selection</span>
-
-          <audio id="radioAudioPlayer" controls preload="none">
-            Your browser does not support the audio element.
-          </audio>
-
-          <p id="radioStatusText" style="font-size: 12px; color: #aaa; margin: 0; font-weight: bold;">● Ready to Tune</p>
-
-          <div class="tuner-box">
-            <label for="customStreamInput" style="display:block; font-size: 12px; color: #aaa; font-weight: bold; margin-bottom: 6px;">
-              📻 Search Station Name / Call Letters:
-            </label>
-            <div style="display: flex; gap: 8px;">
-              <input type="text" id="customStreamInput" placeholder="e.g., KEXP, KING, KNKX, KUOW..." style="flex: 1; text-align: left; background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 6px;">
-              <button onclick="searchRadioBrowserCustom()" class="btn-purple" style="font-size: 13px; padding: 8px 14px;">Tune In</button>
+        <!-- Split Layout: Left Station Bank + Right Player Console -->
+        <div class="radio-layout">
+          
+          <!-- LEFT COLUMN: Dynamic Station Selector Bank -->
+          <div class="station-bank-container">
+            <h4 class="station-bank-header">📻 Station Bank</h4>
+            <div id="stationBankList" class="station-bank-list">
+              <p style="color: #666; font-size: 12px; font-style: italic; margin: 0;">Select a genre above to load stations into this bank...</p>
             </div>
           </div>
 
+          <!-- RIGHT COLUMN: Active Player Console -->
+          <div class="radio-console">
+            <h3 id="radioStationTitle" class="now-playing-title">📻 Select a Station</h3>
+            <span id="radioStationLocation" class="now-playing-sub">Choose a station from the Bank on the left</span>
+
+            <audio id="radioAudioPlayer" controls preload="none">
+              Your browser does not support the audio element.
+            </audio>
+
+            <p id="radioStatusText" style="font-size: 12px; color: #aaa; margin: 0; font-weight: bold;">● Ready to Tune</p>
+
+            <div class="tuner-box">
+              <label for="customStreamInput" style="display:block; font-size: 12px; color: #aaa; font-weight: bold; margin-bottom: 6px;">
+                📻 Search Station Name / Call Letters:
+              </label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="customStreamInput" placeholder="e.g., KEXP, KING, KNKX, KUOW..." style="flex: 1; text-align: left; background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 6px;">
+                <button onclick="searchRadioBrowserCustom()" class="btn-purple" style="font-size: 13px; padding: 8px 14px;">Tune In</button>
+              </div>
+            </div>
+
+          </div>
+
         </div>
+
       </div>
     </div>
 
@@ -661,7 +745,7 @@
             if (geoStatus) geoStatus.innerText = "📍 Location Locked!";
 
             const iframe = document.getElementById('googleMapIframe');
-            iframe.src = `https://www.google.com/maps?q=free+wifi&ll=${currentCoords.lat},${currentCoords.lng}&z=15&output=embed`;
+            iframe.src = `https://www.google.com/maps?q=free+wifi&ll=${currentCoords.lat},${currentCoords.lng}&z=${15}&output=embed`;
 
             if (forceAlert) alert("Map centered on your current location!");
           },
@@ -677,101 +761,139 @@
     }
 
     // ===================================================
-    // OPTION C: RADIO-BROWSER OPEN API ENGINE
+    // RADIO ENGINE WITH LEFT-HAND STATION SELECTOR BANK
     // ===================================================
     const RADIO_API_BASE = "https://de1.api.radio-browser.info/json/stations/search";
 
-    // Direct local streams fallback list
+    // Direct Local Fallbacks
     const localFallbacks = {
-      pop: { name: "KEXP 90.3 FM Seattle", url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3", loc: "Seattle, WA" },
-      classical: { name: "KING FM 98.1 Classical", url: "https://king.streamguys1.com/king-fm-aac-64", loc: "Seattle, WA" },
-      jazz: { name: "KNKX 88.5 FM Jazz", url: "https://knkx-aac-128.streamguys1.com/knkx-128", loc: "Seattle / Tacoma, WA" },
-      news: { name: "KUOW 94.9 FM NPR News", url: "https://kuow.streamguys1.com/kuow1-hi", loc: "Seattle, WA" },
-      rock: { name: "Seattle Rock Live", url: "https://stream.radiojar.com/4v817347vbef0", loc: "Pacific NW" },
-      country: { name: "Country Hits Live", url: "https://stream.radiojar.com/8smy1513y18uv", loc: "West Coast" }
+      pop: [
+        { name: "KEXP 90.3 FM Seattle", url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3", loc: "Seattle, WA" },
+        { name: "Indie Pop Radio", url: "https://stream.radiojar.com/4v817347vbef0", loc: "West Coast" }
+      ],
+      classical: [
+        { name: "KING FM 98.1 Classical", url: "https://king.streamguys1.com/king-fm-aac-64", loc: "Seattle, WA" },
+        { name: "Classical WQXR", url: "https://stream.wqxr.org/wqxr", loc: "National Feed" }
+      ],
+      jazz: [
+        { name: "KNKX 88.5 FM Jazz", url: "https://knkx-aac-128.streamguys1.com/knkx-128", loc: "Seattle / Tacoma, WA" },
+        { name: "Jazz.FM91", url: "https://jazzfm91.streamguys1.com/live", loc: "Jazz Stream" }
+      ],
+      news: [
+        { name: "KUOW 94.9 FM NPR News", url: "https://kuow.streamguys1.com/kuow1-hi", loc: "Seattle, WA" },
+        { name: "NPR Program Stream", url: "https://npr-ice.streamguys1.com/live.mp3", loc: "National Feed" }
+      ],
+      rock: [
+        { name: "Seattle Classic Rock", url: "https://stream.radiojar.com/4v817347vbef0", loc: "Pacific NW" }
+      ],
+      country: [
+        { name: "Country Hits Live", url: "https://stream.radiojar.com/8smy1513y18uv", loc: "West Coast" }
+      ]
     };
 
     async function fetchRadioBrowserGenre(tag, labelName) {
       document.querySelectorAll('.genre-btn').forEach(btn => btn.classList.remove('active'));
       if (event && event.target) event.target.classList.add('active');
 
-      const titleEl = document.getElementById('radioStationTitle');
-      const subEl = document.getElementById('radioStationLocation');
+      const bankList = document.getElementById('stationBankList');
       const statusText = document.getElementById('radioStatusText');
-      const player = document.getElementById('radioAudioPlayer');
 
-      statusText.innerText = "⏳ Querying Radio-Browser for HTTPS stream...";
+      statusText.innerText = "⏳ Loading station bank...";
       statusText.style.color = "#ff9500";
+      bankList.innerHTML = '<p style="color:#aaa; font-size:12px; font-style:italic;">Fetching streams...</p>';
 
       try {
-        const response = await fetch(`${RADIO_API_BASE}?tag=${tag}&countrycode=US&limit=10&is_https=true&order=votes&reverse=true`);
+        const response = await fetch(`${RADIO_API_BASE}?tag=${tag}&countrycode=US&limit=15&is_https=true&order=votes&reverse=true`);
         const stations = await response.json();
 
-        let selected = stations.find(s => s.url_resolved && s.url_resolved.startsWith('https://'));
+        const httpsStations = stations.filter(s => s.url_resolved && s.url_resolved.startsWith('https://'));
 
-        if (selected) {
-          titleEl.innerText = `📻 ${selected.name}`;
-          subEl.innerText = `${selected.state || 'Live Stream'} • ${selected.codec || 'MP3'} ${selected.bitrate ? selected.bitrate + 'kbps' : ''}`;
-          playRadioStream(selected.url_resolved);
+        if (httpsStations.length > 0) {
+          renderStationBank(httpsStations);
+          selectStationItem(httpsStations[0]);
         } else if (localFallbacks[tag]) {
-          const fb = localFallbacks[tag];
-          titleEl.innerText = `📻 ${fb.name}`;
-          subEl.innerText = `${fb.loc} • Direct Feed`;
-          playRadioStream(fb.url);
+          renderStationBank(localFallbacks[tag]);
+          selectStationItem(localFallbacks[tag][0]);
         } else {
-          statusText.innerText = "No HTTPS stream found for this genre";
-          statusText.style.color = "#ff3b30";
+          bankList.innerHTML = '<p style="color:#ff3b30; font-size:12px;">No HTTPS stations found.</p>';
         }
       } catch (err) {
         if (localFallbacks[tag]) {
-          const fb = localFallbacks[tag];
-          titleEl.innerText = `📻 ${fb.name}`;
-          subEl.innerText = `${fb.loc} • Direct Local Stream`;
-          playRadioStream(fb.url);
+          renderStationBank(localFallbacks[tag]);
+          selectStationItem(localFallbacks[tag][0]);
         } else {
-          statusText.innerText = "Network query failed";
-          statusText.style.color = "#ff3b30";
+          bankList.innerHTML = '<p style="color:#ff3b30; font-size:12px;">Failed to load station bank.</p>';
         }
       }
+    }
+
+    function renderStationBank(stations) {
+      const bankList = document.getElementById('stationBankList');
+      bankList.innerHTML = '';
+
+      stations.forEach((st, index) => {
+        const item = document.createElement('div');
+        item.className = `station-bank-item ${index === 0 ? 'active' : ''}`;
+        
+        const nameText = st.name || 'Radio Stream';
+        const subText = `${st.state || st.loc || 'Live Stream'} • ${st.codec || 'MP3'}`;
+
+        item.innerHTML = `
+          <span class="station-item-name">📻 ${nameText}</span>
+          <span class="station-item-sub">${subText}</span>
+        `;
+
+        item.onclick = () => {
+          document.querySelectorAll('.station-bank-item').forEach(el => el.classList.remove('active'));
+          item.classList.add('active');
+          selectStationItem(st);
+        };
+
+        bankList.appendChild(item);
+      });
+    }
+
+    function selectStationItem(st) {
+      const titleEl = document.getElementById('radioStationTitle');
+      const subEl = document.getElementById('radioStationLocation');
+
+      const nameText = st.name || 'Radio Stream';
+      const streamUrl = st.url_resolved || st.url;
+      const subText = `${st.state || st.loc || 'Live Stream'} • ${st.codec || 'AAC/MP3'} ${st.bitrate ? st.bitrate + 'kbps' : ''}`;
+
+      titleEl.innerText = `📻 ${nameText}`;
+      subEl.innerText = subText;
+
+      playRadioStream(streamUrl);
     }
 
     async function searchRadioBrowserCustom() {
       const input = document.getElementById('customStreamInput').value.trim();
       if (!input) return alert("Please enter a station name or call letters.");
 
-      const titleEl = document.getElementById('radioStationTitle');
-      const subEl = document.getElementById('radioStationLocation');
+      const bankList = document.getElementById('stationBankList');
       const statusText = document.getElementById('radioStatusText');
 
-      const lower = input.toLowerCase();
-      if (localFallbacks[lower]) {
-        const fb = localFallbacks[lower];
-        titleEl.innerText = `📻 ${fb.name}`;
-        subEl.innerText = `${fb.loc} • Direct Stream`;
-        playRadioStream(fb.url);
-        return;
-      }
-
-      statusText.innerText = "⏳ Searching Radio-Browser database...";
+      statusText.innerText = "⏳ Searching station database...";
       statusText.style.color = "#ff9500";
+      bankList.innerHTML = '<p style="color:#aaa; font-size:12px; font-style:italic;">Searching...</p>';
 
       try {
-        const response = await fetch(`${RADIO_API_BASE}?name=${encodeURIComponent(input)}&limit=5&is_https=true`);
+        const response = await fetch(`${RADIO_API_BASE}?name=${encodeURIComponent(input)}&limit=10&is_https=true`);
         const stations = await response.json();
 
-        let selected = stations.find(s => s.url_resolved && s.url_resolved.startsWith('https://'));
+        const httpsStations = stations.filter(s => s.url_resolved && s.url_resolved.startsWith('https://'));
 
-        if (selected) {
-          titleEl.innerText = `📻 ${selected.name}`;
-          subEl.innerText = `${selected.country || 'Global'} • ${selected.codec || 'Stream'}`;
-          playRadioStream(selected.url_resolved);
+        if (httpsStations.length > 0) {
+          renderStationBank(httpsStations);
+          selectStationItem(httpsStations[0]);
         } else {
-          statusText.innerText = "No HTTPS station found. Try KEXP, KING, KNKX, or KUOW";
+          bankList.innerHTML = '<p style="color:#ff9500; font-size:12px;">No matching HTTPS station found.</p>';
+          statusText.innerText = "No HTTPS station found.";
           statusText.style.color = "#ff9500";
         }
       } catch (err) {
-        statusText.innerText = "Station search error";
-        statusText.style.color = "#ff3b30";
+        bankList.innerHTML = '<p style="color:#ff3b30; font-size:12px;">Search error.</p>';
       }
     }
 
