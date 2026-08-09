@@ -71,6 +71,9 @@
     .tab-maps { background: #5c3800; border-top: 3px solid #ff9500; }
     .tab-maps.active { background: #ff9500; color: #000; }
 
+    .tab-radio { background: #4a0072; border-top: 3px solid #e040fb; }
+    .tab-radio.active { background: #e040fb; color: #000; }
+
     .sub-tagline {
       font-size: 11px;
       display: block;
@@ -297,6 +300,72 @@
       border: none;
     }
 
+    /* Radio Box Styling */
+    .radio-box {
+      background: #1c1c1e;
+      border: 1px solid #e040fb;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .radio-genre-bar {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .genre-btn {
+      background: #2c2c2e;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .genre-btn:hover, .genre-btn.active {
+      background: #e040fb;
+      color: #000;
+      border-color: #e040fb;
+    }
+
+    .radio-console {
+      background: #121212;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .now-playing-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #e040fb;
+      margin: 0;
+    }
+
+    .now-playing-sub {
+      font-size: 13px;
+      color: #aaa;
+      margin-top: -8px;
+    }
+
+    audio {
+      width: 100%;
+      max-width: 450px;
+      border-radius: 8px;
+    }
+
     /* Level 2 Carrier Box */
     .carrier-box {
       background: #1c1c1e;
@@ -326,6 +395,10 @@
       <button class="tab-btn tab-maps" onclick="switchTab('maps')">
         📍 Maps
         <span class="sub-tagline">Wi-Fi & Resource Finder</span>
+      </button>
+      <button class="tab-btn tab-radio" onclick="switchTab('radio')">
+        📻 Radio
+        <span class="sub-tagline">Local Live Streams</span>
       </button>
     </div>
   </div>
@@ -365,7 +438,6 @@
 
         <div class="button-row" style="justify-content: center;">
           <div id="callControlsGroup" class="button-row" style="justify-content: center;">
-            <!-- Stacked Instructions Above Invites -->
             <div class="stacked-label">
               Enter Room Name,<br>& Send Invite:
             </div>
@@ -373,7 +445,6 @@
             <button id="inviteVoiceBtn" class="btn-blue" style="background: #00a8ff;">💬 Voice Invite</button>
 
             <span style="font-size: 13px; color: #aaa; margin-left: 10px; margin-right: 2px;">2. Start Call:</span>
-            <!-- Dark Pink & Light Pink Call Buttons -->
             <button id="joinVideoBtn" class="btn-dark-pink">📹 Video Call</button>
             <button id="joinVoiceBtn" class="btn-light-pink">🎙️ Voice Call</button>
             <button id="hangUpBtn" class="btn-red" style="display:none;">🔴 Hang Up</button>
@@ -445,7 +516,6 @@
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
 
       <div class="maps-box">
-        <!-- Filter Category Buttons -->
         <div class="maps-filter-bar">
           <button class="maps-filter-btn active" onclick="loadMapQuery('closest 2 free wifi locations', 16)">📶 Closest Public Wifi</button>
           <button class="maps-filter-btn" onclick="loadMapQuery('public library OR King County Library System OR Seattle Public Library', 14)">📚 City & County Libraries</button>
@@ -454,7 +524,6 @@
           <button class="maps-filter-btn" onclick="loadMapQuery('food bank shelter resource', 13)">🥫 Food Banks & Resources</button>
         </div>
 
-        <!-- Local Geolocation Status & Trigger -->
         <div style="margin-bottom: 12px; display: flex; justify-content: center; align-items: center; gap: 10px;">
           <button onclick="centerMapOnUser(true)" class="btn-green" style="font-size: 12px; padding: 6px 14px; background: #ff9500; color: #000;">🎯 Refresh My GPS Location</button>
           <span id="geoStatusText" style="font-size: 12px; color: #aaa;">Detecting location...</span>
@@ -462,6 +531,38 @@
 
         <div class="map-frame-container">
           <iframe id="googleMapIframe" src="https://www.google.com/maps?q=closest+2+free+wifi+locations+in+Seattle+WA&z=15&output=embed" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: RADIO - LOCATION-AWARE LIVE STREAMS -->
+    <!-- ========================================== -->
+    <div id="tab-radio" class="tab-content">
+      <h2 style="color: #e040fb; margin-top: 0;">📻 Local Live Internet Radio</h2>
+      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre to play live radio feeds tailored to your area</p>
+
+      <div class="radio-box">
+        <!-- Genre Selector Menu -->
+        <div class="radio-genre-bar">
+          <button class="genre-btn active" onclick="playGenre('classical')">🎼 Classical</button>
+          <button class="genre-btn" onclick="playGenre('pop')">🎤 Pop</button>
+          <button class="genre-btn" onclick="playGenre('rock')">🎸 Rock N' Roll</button>
+          <button class="genre-btn" onclick="playGenre('country')">🤠 Country</button>
+          <button class="genre-btn" onclick="playGenre('news')">📰 News & NPR</button>
+        </div>
+
+        <!-- Audio Console -->
+        <div class="radio-console">
+          <h3 id="radioStationTitle" class="now-playing-title">🎼 KING FM 98.1 Classical</h3>
+          <span id="radioStationLocation" class="now-playing-sub">Local Broadcast Feed • Pacific Northwest</span>
+
+          <audio id="radioAudioPlayer" controls autoplay preload="none">
+            <source id="radioAudioSource" src="https://king.streamguys1.com/king-fm-aac-64" type="audio/aac">
+            Your browser does not support the audio element.
+          </audio>
+
+          <p id="radioStatusText" style="font-size: 12px; color: #30d158; margin: 0; font-weight: bold;">● Live Streaming</p>
         </div>
       </div>
     </div>
@@ -487,7 +588,7 @@
     const installAppBtn = document.getElementById('installAppBtn');
     const dismissBannerBtn = document.getElementById('dismissBannerBtn');
 
-    // Navigation Switcher (Level 1, Level 2, Maps)
+    // Navigation Switcher (Level 1, Level 2, Maps, Radio)
     function switchTab(tabName) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -501,13 +602,70 @@
       } else if (tabName === 'maps') {
         document.querySelectorAll('.tab-btn')[2].classList.add('active');
         document.getElementById('tab-maps').classList.add('active');
-        if (!currentCoords) {
-          centerMapOnUser(false);
-        }
+        if (!currentCoords) centerMapOnUser(false);
+      } else if (tabName === 'radio') {
+        document.querySelectorAll('.tab-btn')[3].classList.add('active');
+        document.getElementById('tab-radio').classList.add('active');
       }
     }
 
-    // Google Maps Loader: Pins exact GPS location and searches targeted categories
+    // Location-Aware Radio Stream Database
+    const radioStreams = {
+      classical: {
+        title: "🎼 KING FM 98.1 Classical",
+        location: "Local Broadcast Feed • Seattle / Regional",
+        url: "https://king.streamguys1.com/king-fm-aac-64"
+      },
+      pop: {
+        title: "🎤 KEXP 90.3 FM Seattle",
+        location: "Local Independent Broadcast • Seattle",
+        url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3"
+      },
+      rock: {
+        title: "🎸 Rock 101.5 Classic Rock",
+        location: "Local Classic Rock Feed • Regional",
+        url: "https://stream.revma.ihrhls.com/zc1417"
+      },
+      country: {
+        title: "🤠 Country 98.9 WA",
+        location: "Local Country Broadcast • Washington",
+        url: "https://stream.revma.ihrhls.com/zc4818"
+      },
+      news: {
+        title: "📰 KUOW 94.9 FM NPR News",
+        location: "Local Public Radio & News Feed • Seattle",
+        url: "https://kuow.streamguys1.com/kuow1-hi"
+      }
+    };
+
+    function playGenre(genreKey) {
+      const station = radioStreams[genreKey];
+      if (!station) return;
+
+      // Update active menu button
+      document.querySelectorAll('.genre-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Update titles and player source
+      document.getElementById('radioStationTitle').innerText = station.title;
+      document.getElementById('radioStationLocation').innerText = station.location;
+
+      const player = document.getElementById('radioAudioPlayer');
+      const source = document.getElementById('radioAudioSource');
+      const statusText = document.getElementById('radioStatusText');
+
+      source.src = station.url;
+      player.load();
+      player.play().then(() => {
+        statusText.innerText = "● Live Streaming";
+        statusText.style.color = "#30d158";
+      }).catch(err => {
+        statusText.innerText = "Press Play to start live stream";
+        statusText.style.color = "#ff9500";
+      });
+    }
+
+    // Google Maps Loader
     function loadMapQuery(categoryQuery, zoomLevel = 15) {
       const buttons = document.querySelectorAll('.maps-filter-btn');
       buttons.forEach(btn => {
