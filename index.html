@@ -23,7 +23,7 @@
       padding: 0; 
     }
 
-    /* Top Centered Header */
+    /* Top Centered Header with 5 Distinct Tabs */
     .top-header {
       display: flex;
       flex-direction: column;
@@ -65,7 +65,7 @@
     }
 
     .tab-btn {
-      padding: 8px 18px;
+      padding: 8px 16px;
       font-size: 13px;
       font-weight: bold;
       border: none;
@@ -79,8 +79,12 @@
 
     .tab-btn.active { opacity: 1.0; }
 
-    .tab-level1 { background: #1b4d2e; border-top: 3px solid #30d158; }
-    .tab-level1.active { background: #30d158; color: #000; }
+    /* Tab Colors */
+    .tab-level1-phone { background: #1b4d2e; border-top: 3px solid #30d158; }
+    .tab-level1-phone.active { background: #30d158; color: #000; }
+
+    .tab-level1-text { background: #267340; border-top: 3px solid #63e685; }
+    .tab-level1-text.active { background: #63e685; color: #000; }
 
     .tab-level2 { background: #0a3663; border-top: 3px solid #0a84ff; }
     .tab-level2.active { background: #0a84ff; color: #fff; }
@@ -126,109 +130,59 @@
     .install-btn { background: #30d158; color: #000; font-weight: bold; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; }
     .close-btn { background: transparent; color: #8e8e93; border: none; font-size: 13px; cursor: pointer; text-decoration: underline; }
 
-    /* Controls Bar */
-    .controls-bar { 
+    /* STREAMLINED 3-STACK WEBPHONE FORM */
+    .webphone-stack {
       display: flex;
       flex-direction: column;
       gap: 12px;
+      max-width: 420px;
+      margin: 15px auto;
       align-items: center;
-      margin-bottom: 15px;
     }
 
-    .button-row {
+    .webphone-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 16px;
+      font-size: 16px;
+      border-radius: 10px;
+      background: #2c2c2e;
+      color: #fff;
+      border: 1px solid #444;
+      text-align: center;
+    }
+
+    .button-row-lateral {
       display: flex;
-      gap: 8px;
+      gap: 10px;
+      width: 100%;
       justify-content: center;
-      flex-wrap: wrap;
-      align-items: center;
     }
 
-    input, button, textarea { 
-      padding: 8px 12px; 
-      font-size: 14px; 
-      border-radius: 6px; 
-      border: none; 
-    }
-
-    input { 
-      background: #2c2c2e; 
-      color: #fff; 
-      border: 1px solid #444; 
-      width: 170px; 
-      text-align: center; 
+    .btn-lateral {
+      flex: 1;
+      padding: 12px 10px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
     }
 
     /* Buttons */
-    .btn-dark-pink { background: #d81b60; color: #fff; cursor: pointer; font-weight: bold; }
-    .btn-dark-pink:hover { background: #c2185b; }
-    
-    .btn-light-pink { background: #f48fb1; color: #000; cursor: pointer; font-weight: bold; }
-    .btn-light-pink:hover { background: #f06292; }
-
-    .btn-blue { background: #0a84ff; color: white; cursor: pointer; font-weight: bold; }
+    .btn-blue { background: #0a84ff; color: white; }
     .btn-blue:hover { background: #0066cc; }
+
+    .btn-red-start { background: #ff3b30; color: white; }
+    .btn-red-start:hover { background: #d70015; }
+
+    .btn-pink-start { background: #f48fb1; color: #000; }
+    .btn-pink-start:hover { background: #f06292; }
 
     .btn-purple { background: #af52de; color: white; cursor: pointer; font-weight: bold; }
     .btn-purple:hover { background: #9d38d0; }
 
-    .btn-red { background: #ff3b30; color: white; cursor: pointer; font-weight: bold; }
-    .btn-red:hover { background: #d70015; }
-
-    .btn-green { background: #30d158; color: #000; cursor: pointer; font-weight: bold; }
-    .btn-green:hover { background: #28b84c; }
-
-    .stacked-label {
-      font-size: 13px;
-      color: #aaa;
-      text-align: center;
-      line-height: 1.25;
-      margin-right: 4px;
-    }
-
-    .btn-two-line {
-      line-height: 1.3;
-      padding: 8px 16px;
-      text-align: center;
-    }
-
-    .mode-switcher-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .mode-label {
-      font-size: 12px;
-      color: #aaa;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .mode-switcher {
-      display: inline-flex;
-      background: #2c2c2e;
-      border-radius: 8px;
-      padding: 4px;
-      border: 1px solid #444;
-    }
-
-    .mode-btn {
-      padding: 6px 14px;
-      font-size: 13px;
-      font-weight: bold;
-      border-radius: 6px;
-      border: none;
-      background: transparent;
-      color: #aaa;
-      cursor: pointer;
-    }
-
-    .mode-btn.active {
-      background: #30d158;
-      color: #000;
-    }
+    .btn-red-end { background: #ff3b30; color: white; cursor: pointer; font-weight: bold; }
 
     #status { font-weight: bold; color: #30d158; margin-bottom: 4px; }
 
@@ -243,7 +197,7 @@
     .video-card { flex: 1; min-width: 340px; max-width: 520px; }
     video { width: 100%; height: 380px; background: #000; border-radius: 12px; border: 2px solid #333; object-fit: cover; }
 
-    /* SINGLE BUTTON SENIOR INVITE MODE */
+    /* SENIOR INVITE SINGLE BUTTON */
     #responderAccessBox {
       display: none;
       background: #1c1c1e;
@@ -276,7 +230,7 @@
 
     .web-chat-box {
       background: #1c1c1e;
-      border: 1px solid #af52de;
+      border: 1px solid #63e685;
       border-radius: 12px;
       padding: 15px;
       max-width: 550px;
@@ -495,7 +449,7 @@
 </head>
 <body>
 
-  <!-- Top Centered Header with Icon -->
+  <!-- Top Centered Header with 5 Distinct Tabs -->
   <div id="mainHeader" class="top-header">
     <div class="brand-container">
       <img src="icon.png" alt="ZeroPhone Logo" class="app-header-logo" onerror="this.style.display='none'">
@@ -503,8 +457,12 @@
     </div>
 
     <div class="tab-bar">
-      <button class="tab-btn tab-level1 active" onclick="switchTab('level1')">
+      <button class="tab-btn tab-level1-phone active" onclick="switchTab('level1-phone')">
         Level 1 - WebPhone
+        <span class="sub-tagline">Completely Free</span>
+      </button>
+      <button class="tab-btn tab-level1-text" onclick="switchTab('level1-text')">
+        Level 1 - WebText
         <span class="sub-tagline">Completely Free</span>
       </button>
       <button class="tab-btn tab-level2" onclick="switchTab('level2')">
@@ -534,7 +492,7 @@
       </div>
     </div>
 
-    <!-- RESPONDER SINGLE-BUTTON INVITE VIEW (FOR YOUR PARENTS) -->
+    <!-- RESPONDER SINGLE-BUTTON INVITE VIEW (FOR SENIOR RESPONDERS) -->
     <div id="responderAccessBox">
       <h2 style="font-size:24px; margin-top:0; color:#30d158;">You have been invited to a Call!</h2>
       <p style="color:#aaa; font-size:15px; margin-bottom:25px;">Tap the big green button below to enter directly:</p>
@@ -542,43 +500,26 @@
     </div>
 
     <!-- TAB 1: LEVEL 1 - WEBPHONE -->
-    <div id="tab-level1" class="tab-content active">
+    <div id="tab-level1-phone" class="tab-content active">
       <div id="status">Connected to Server! Enter Room Name</div>
 
-      <div id="controlsBar" class="controls-bar">
-        <div class="button-row" style="margin-top: 6px;">
-          <input type="text" id="callerName" placeholder="Your Name">
-          <input type="text" id="roomId" placeholder="Room Name">
+      <!-- STREAMLINED 3-STACK INTERFACE -->
+      <div id="webphoneStack" class="webphone-stack">
+        <input type="text" id="callerName" class="webphone-input" placeholder="Enter Your Name">
+        <input type="text" id="roomId" class="webphone-input" placeholder="Enter Room Name">
+
+        <div class="button-row-lateral">
+          <button id="inviteVideoBtn" class="btn-lateral btn-blue">💬 Video Invite</button>
+          <button id="inviteVoiceBtn" class="btn-lateral btn-blue" style="background: #00a8ff;">💬 Voice Invite</button>
         </div>
 
-        <div class="mode-switcher-container">
-          <span class="mode-label">Select a Mode</span>
-          <div class="mode-switcher">
-            <button id="modeCallBtn" class="mode-btn active" onclick="switchLevel1Mode('call')">📹 Call Mode</button>
-            <button id="modeChatBtn" class="mode-btn" onclick="switchLevel1Mode('chat')">💬 Free Web Text</button>
-          </div>
-        </div>
-
-        <div class="button-row" style="justify-content: center;">
-          <div id="callControlsGroup" class="button-row" style="justify-content: center;">
-            <div class="stacked-label">
-              Enter Room Name,<br>& Send Invite:
-            </div>
-            <button id="inviteVideoBtn" class="btn-blue">💬 Video Invite</button>
-            <button id="inviteVoiceBtn" class="btn-blue" style="background: #00a8ff;">💬 Voice Invite</button>
-
-            <span style="font-size: 13px; color: #aaa; margin-left: 10px; margin-right: 2px;">2. Start Call:</span>
-            <button id="joinVideoBtn" class="btn-dark-pink">📹 Video Call</button>
-            <button id="joinVoiceBtn" class="btn-light-pink">🎙️ Voice Call</button>
-          </div>
-
-          <div id="textControlsGroup" class="button-row" style="display:none; justify-content: center;">
-            <button id="inviteTextBtn" class="btn-purple btn-two-line">💬 Enter Room Name<br>& Send Texting Invite</button>
-          </div>
+        <div class="button-row-lateral">
+          <button id="joinVideoBtn" class="btn-lateral btn-red-start">📹 Start Video Call</button>
+          <button id="joinVoiceBtn" class="btn-lateral btn-pink-start">🎙️ Start Voice Call</button>
         </div>
       </div>
 
-      <!-- FOCUS CALL VIEW: Clean Video Stream + Single End Call Button -->
+      <!-- FOCUS CALL VIEW: Clean Video Stream Grid -->
       <div id="videoStreamView" class="video-grid">
         <div class="video-card">
           <h3 style="margin: 0 0 8px 0; font-size: 16px;">Local Stream (You)</h3>
@@ -591,22 +532,33 @@
       </div>
 
       <div style="margin-top: 15px; text-align: center;">
-        <button id="hangUpBtn" class="btn-red" style="display:none; font-size:18px; padding:12px 28px; font-weight:bold; border-radius:10px;">🔴 End Video Call</button>
+        <button id="hangUpBtn" class="btn-red-end" style="display:none; font-size:18px; padding:12px 28px; font-weight:bold; border-radius:10px;">🔴 End Video Call</button>
       </div>
+    </div>
 
-      <div id="webChatView" class="web-chat-box" style="display:none;">
-        <h3 style="margin-top: 0; color: #af52de;">💬 Room Web Texting</h3>
-        <div id="web-chat-thread">
-          <p style="color: #666; font-style: italic; margin: 0;">Web text messages in this room will appear here...</p>
+    <!-- TAB 2: LEVEL 1 - WEBTEXT (SEPARATED DEDICATED TAB) -->
+    <div id="tab-level1-text" class="tab-content">
+      <h2 style="color: #63e685; margin-top: 0;">Level 1 - WebText</h2>
+      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Completely Free Online Web Texting</p>
+
+      <div class="web-chat-box">
+        <div style="display: flex; gap: 8px; margin-bottom: 12px; justify-content: center;">
+          <input type="text" id="webTextRoomId" placeholder="Room Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px; width: 150px; text-align: center;">
+          <button id="inviteTextBtn" class="btn-purple" style="font-size: 13px;">💬 Send Texting Invite</button>
         </div>
+
+        <div id="web-chat-thread">
+          <p style="color: #666; font-style: italic; margin: 0;">Enter a Room Name above to begin web text chat...</p>
+        </div>
+
         <div style="display: flex; gap: 8px;">
-          <input type="text" id="webChatInput" placeholder="Type a free web message..." style="flex: 1; text-align: left;">
+          <input type="text" id="webChatInput" placeholder="Type a free web message..." style="flex: 1; text-align: left; background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px;">
           <button id="sendWebChatBtn" class="btn-purple">Send</button>
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: LEVEL 2 - CELLPHONE -->
+    <!-- TAB 3: LEVEL 2 - CELLPHONE -->
     <div id="tab-level2" class="tab-content">
       <h2 style="color: #0a84ff; margin-top: 0;">ZeroPhone "CellPhone"</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Direct Carrier SMS & Phone Ringing</p>
@@ -617,17 +569,17 @@
           <p style="color: #666; font-style: italic; margin: 0;">Carrier messages will appear here...</p>
         </div>
         <label for="sms-to" style="display:block; text-align:left; margin-bottom: 4px; font-weight: bold; font-size: 13px;">Recipient Phone Number:</label>
-        <input type="tel" id="sms-to" placeholder="+12065550199" style="width: 100%; padding: 10px; margin-bottom: 12px; box-sizing: border-box;">
+        <input type="tel" id="sms-to" placeholder="+12065550199" style="width: 100%; padding: 10px; margin-bottom: 12px; box-sizing: border-box; background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; text-align: center;">
         
         <label for="sms-body" style="display:block; text-align:left; margin-bottom: 4px; font-weight: bold; font-size: 13px;">Message:</label>
         <textarea id="sms-body" placeholder="Type your SMS message here..." style="width: 100%; height: 70px; padding: 10px; margin-bottom: 12px; box-sizing: border-box; background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 8px;"></textarea>
         
-        <button type="button" id="sms-send-btn" class="btn-blue" style="width: 100%;">Send Carrier Text</button>
+        <button type="button" id="sms-send-btn" class="btn-blue" style="width: 100%; font-weight: bold; padding: 10px; border-radius: 6px; border: none; cursor: pointer;">Send Carrier Text</button>
         <p id="sms-status" style="margin-top: 12px; font-weight: bold; font-size: 14px;"></p>
       </div>
     </div>
 
-    <!-- TAB 3: MAPS -->
+    <!-- TAB 4: MAPS -->
     <div id="tab-maps" class="tab-content">
       <h2 style="color: #ff9500; margin-top: 0;">📍 Free Wi-Fi & Resource Maps</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
@@ -642,7 +594,7 @@
         </div>
 
         <div style="margin-bottom: 12px; display: flex; justify-content: center; align-items: center; gap: 10px;">
-          <button onclick="centerMapOnUser(true)" class="btn-green" style="font-size: 12px; padding: 6px 14px; background: #ff9500; color: #000;">🎯 Refresh My GPS Location</button>
+          <button onclick="centerMapOnUser(true)" class="btn-lateral" style="font-size: 12px; padding: 6px 14px; background: #ff9500; color: #000; flex: none;">🎯 Refresh My GPS Location</button>
           <span id="geoStatusText" style="font-size: 12px; color: #aaa;">Detecting location...</span>
         </div>
 
@@ -652,7 +604,7 @@
       </div>
     </div>
 
-    <!-- TAB 4: RADIO -->
+    <!-- TAB 5: RADIO -->
     <div id="tab-radio" class="tab-content">
       <h2 style="color: #e040fb; margin-top: 0;">📻 Local Live Internet Radio</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre to populate the Left Station Bank</p>
@@ -727,18 +679,19 @@
     const roomParam = urlParams.get('room');
     const modeParam = urlParams.get('mode');
 
-    if (roomParam) roomIdInput.value = roomParam;
+    if (roomParam) {
+      roomIdInput.value = roomParam;
+      document.getElementById('webTextRoomId').value = roomParam;
+    }
 
     // Check if Responder Direct Invite Link
     window.addEventListener('DOMContentLoaded', () => {
       if (roomParam) {
-        // Hide standard interface elements for invited guests
         document.getElementById('mainHeader').style.display = 'none';
-        document.getElementById('controlsBar').style.display = 'none';
+        document.getElementById('webphoneStack').style.display = 'none';
         document.getElementById('videoStreamView').style.display = 'none';
         document.getElementById('status').style.display = 'none';
         
-        // Show giant single Enter Video button
         document.getElementById('responderAccessBox').style.display = 'block';
       }
     });
@@ -750,7 +703,7 @@
       if (modeParam === 'voice') {
         startCall(true);
       } else if (modeParam === 'text') {
-        switchLevel1Mode('chat');
+        switchTab('level1-text');
       } else {
         startCall(false);
       }
@@ -760,18 +713,23 @@
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-      if (tabName === 'level1') {
+      if (tabName === 'level1-phone') {
         document.querySelectorAll('.tab-btn')[0].classList.add('active');
-        document.getElementById('tab-level1').classList.add('active');
-      } else if (tabName === 'level2') {
+        document.getElementById('tab-level1-phone').classList.add('active');
+      } else if (tabName === 'level1-text') {
         document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-level1-text').classList.add('active');
+        const r = roomIdInput.value.trim();
+        if (r) socket.emit('join-room', r);
+      } else if (tabName === 'level2') {
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
         document.getElementById('tab-level2').classList.add('active');
       } else if (tabName === 'maps') {
-        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.querySelectorAll('.tab-btn')[3].classList.add('active');
         document.getElementById('tab-maps').classList.add('active');
         if (!currentCoords) centerMapOnUser(false);
       } else if (tabName === 'radio') {
-        document.querySelectorAll('.tab-btn')[3].classList.add('active');
+        document.querySelectorAll('.tab-btn')[4].classList.add('active');
         document.getElementById('tab-radio').classList.add('active');
       }
     }
@@ -982,36 +940,6 @@
       }
     }
 
-    function switchLevel1Mode(mode) {
-      const callBtn = document.getElementById('modeCallBtn');
-      const chatBtn = document.getElementById('modeChatBtn');
-      const videoView = document.getElementById('videoStreamView');
-      const chatView = document.getElementById('webChatView');
-      const callControls = document.getElementById('callControlsGroup');
-      const textControls = document.getElementById('textControlsGroup');
-
-      if (mode === 'call') {
-        callBtn.classList.add('active');
-        chatBtn.classList.remove('active');
-        videoView.style.display = 'flex';
-        chatView.style.display = 'none';
-        callControls.style.display = 'flex';
-        textControls.style.display = 'none';
-      } else {
-        chatBtn.classList.add('active');
-        callBtn.classList.remove('active');
-        chatView.style.display = 'block';
-        videoView.style.display = 'none';
-        callControls.style.display = 'none';
-        textControls.style.display = 'flex';
-        
-        const currentRoom = roomIdInput.value.trim();
-        if (currentRoom) {
-          socket.emit('join-room', currentRoom);
-        }
-      }
-    }
-
     function sendInvite(mode) {
       const name = callerNameInput.value.trim() || 'Someone';
       const currentRoom = roomIdInput.value.trim() || 'room1';
@@ -1028,7 +956,12 @@
 
     document.getElementById('inviteVideoBtn').addEventListener('click', () => sendInvite('video'));
     document.getElementById('inviteVoiceBtn').addEventListener('click', () => sendInvite('voice'));
-    document.getElementById('inviteTextBtn').addEventListener('click', () => sendInvite('text'));
+
+    document.getElementById('inviteTextBtn').addEventListener('click', () => {
+      const room = document.getElementById('webTextRoomId').value.trim() || 'room1';
+      roomIdInput.value = room;
+      sendInvite('text');
+    });
 
     const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
     if (!isStandalone) {
@@ -1082,8 +1015,8 @@
         document.getElementById('localVideo').srcObject = localStream;
         document.getElementById('videoStreamView').style.display = isAudioOnly ? 'none' : 'flex';
 
-        // Hide controls bar during call for clean focus view
-        document.getElementById('controlsBar').style.display = 'none';
+        // Hide form during call for focus view
+        document.getElementById('webphoneStack').style.display = 'none';
       } catch (err) {
         console.error("Device access denied:", err);
         return alert("Unable to access microphone/camera.");
@@ -1112,9 +1045,9 @@
       statusDiv.style.color = "#ff3b30";
       hangUpBtn.style.display = 'none';
 
-      // Restore standard layout and controls
+      // Restore form
       document.getElementById('mainHeader').style.display = 'flex';
-      document.getElementById('controlsBar').style.display = 'flex';
+      document.getElementById('webphoneStack').style.display = 'flex';
     }
 
     hangUpBtn.addEventListener('click', hangUpCall);
@@ -1198,7 +1131,7 @@
       msgBox.style.color = '#fff';
       msgBox.style.wordBreak = 'break-word';
 
-      msgBox.innerHTML = '<strong style="color:#af52de;">' + sender + ':</strong> ' + text;
+      msgBox.innerHTML = '<strong style="color:#63e685;">' + sender + ':</strong> ' + text;
       thread.appendChild(msgBox);
       thread.scrollTop = thread.scrollHeight;
     }
@@ -1207,7 +1140,7 @@
       const input = document.getElementById('webChatInput');
       const msg = input.value.trim();
       const sender = callerNameInput.value.trim() || 'You';
-      const roomId = roomIdInput.value.trim() || 'room1';
+      const roomId = document.getElementById('webTextRoomId').value.trim() || roomIdInput.value.trim() || 'room1';
 
       if (msg) {
         socket.emit('join-room', roomId);
