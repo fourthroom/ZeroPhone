@@ -428,20 +428,21 @@
       <div class="maps-box">
         <!-- Filter Category Buttons -->
         <div class="maps-filter-bar">
-          <button class="maps-filter-btn active" onclick="loadMapQuery('public library OR fast food OR coffee shop free wifi', 13)">📶 All Free Public Wi-Fi</button>
+          <button class="maps-filter-btn active" onclick="loadMapQuery('public library OR fast food OR coffee shop free wifi', 14)">📶 All Free Public Wi-Fi</button>
           <button class="maps-filter-btn" onclick="loadMapQuery('city county public library', 13)">📚 City & County Libraries</button>
           <button class="maps-filter-btn" onclick="loadMapQuery('fast food restaurants with free wifi', 13)">🍔 Fast Food Wi-Fi</button>
           <button class="maps-filter-btn" onclick="loadMapQuery('coffee shop with free wifi', 14)">☕ Coffee Shops Wi-Fi</button>
-          <button class="maps-filter-btn" onclick="loadMapQuery('community food bank shelter', 12)">罐 Food Banks & Resources</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('community food bank shelter', 12)">🥫 Food Banks & Resources</button>
         </div>
 
-        <!-- Local Geolocation Trigger Button -->
-        <div style="margin-bottom: 12px;">
-          <button onclick="centerMapOnUser()" class="btn-green" style="font-size: 12px; padding: 6px 14px; background: #ff9500; color: #000;">🎯 Zoom To My Current Location</button>
+        <!-- Local Geolocation Status & Trigger -->
+        <div style="margin-bottom: 12px; display: flex; justify-content: center; align-items: center; gap: 10px;">
+          <button onclick="centerMapOnUser(true)" class="btn-green" style="font-size: 12px; padding: 6px 14px; background: #ff9500; color: #000;">🎯 Refresh My GPS Location</button>
+          <span id="geoStatusText" style="font-size: 12px; color: #aaa;">Detecting location...</span>
         </div>
 
         <div class="map-frame-container">
-          <iframe id="googleMapIframe" src="https://www.google.com/maps?q=public+library+OR+fast+food+OR+coffee+shop+free+wifi+near+me&z=13&output=embed" allowfullscreen></iframe>
+          <iframe id="googleMapIframe" src="https://www.google.com/maps?q=public+library+OR+fast+food+OR+coffee+shop+free+wifi+in+Seattle+WA&z=13&output=embed" allowfullscreen></iframe>
         </div>
       </div>
     </div>
@@ -456,7 +457,7 @@
     let peerConnection;
     let deferredPrompt;
     let isAudioOnly = false;
-    let userLocationQuery = "";
+    let currentCoords = null; // Stores exact latitude,longitude
 
     const roomIdInput = document.getElementById('roomId');
     const callerNameInput = document.getElementById('callerName');
@@ -481,14 +482,18 @@
       } else if (tabName === 'maps') {
         document.querySelectorAll('.tab-btn')[2].classList.add('active');
         document.getElementById('tab-maps').classList.add('active');
+        // Auto-detect physical location as soon as Maps tab opens
+        if (!currentCoords) {
+          centerMapOnUser(false);
+        }
       }
     }
 
-    // Enhanced Google Maps Search Query Loader with Auto-Zoom
-    function loadMapQuery(query, zoomLevel = 13) {
+    // Google Maps Loader: Uses exact GPS coordinates when available
+    function loadMapQuery(categoryQuery, zoomLevel = 14) {
       const buttons = document.querySelectorAll('.maps-filter-btn');
       buttons.forEach(btn => {
-        const keyword = query.split(' ')[0].toLowerCase();
+        const keyword = categoryQuery.split(' ')[0].toLowerCase();
         if (btn.innerText.toLowerCase().includes(keyword) || (keyword === 'public' && btn.innerText.includes('All Free'))) {
           btn.classList.add('active');
         } else {
@@ -496,24 +501,49 @@
         }
       });
 
-      let fullQuery = userLocationQuery ? `${query} near ${userLocationQuery}` : `${query} near me`;
-      const encodedQuery = encodeURIComponent(fullQuery);
       const iframe = document.getElementById('googleMapIframe');
-      iframe.src = `https://www.google.com/maps?q=${encodedQuery}&z=${zoomLevel}&output=embed`;
+
+      if (currentCoords) {
+        // Query directly centered on precise device GPS coordinates
+        const encodedQuery = encodeURIComponent(`${categoryQuery} near ${currentCoords.lat},${currentCoords.lng}`);
+        iframe.src = `https://www.google.com/maps?q=${encodedQuery}&ll=${currentCoords.lat},${currentCoords.lng}&z=${zoomLevel}&output=embed`;
+      } else {
+        // Default local Seattle fallback if GPS permission is pending
+        const encodedQuery = encodeURIComponent(`${categoryQuery} in Seattle WA`);
+        iframe.src = `https://www.google.com/maps?q=${encodedQuery}&z=${zoomLevel}&output=embed`;
+      }
     }
 
-    // Native GPS Geolocation Center & Zoom
-    function centerMapOnUser() {
+    // Native GPS / Cellular / Wi-Fi Geolocation Location Detector
+    function centerMapOnUser(forceAlert = false) {
+      const geoStatus = document.getElementById('geoStatusText');
+      if (geoStatus) geoStatus.innerText = "Locating via Wi-Fi/Cellular...";
+
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          userLocationQuery = `${lat},${lng}`;
-          const iframe = document.getElementById('googleMapIframe');
-          iframe.src = `https://www.google.com/maps?q=public+library+OR+fast+food+OR+coffee+shop+free+wifi&ll=${lat},${lng}&z=14&output=embed`;
-        }, (err) => {
-          alert("Unable to retrieve GPS position. Maps will use general network location.");
-        });
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            currentCoords = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            if (geoStatus) geoStatus.innerText = "📍 Location Locked!";
+
+            // Reload map with locked GPS location
+            const iframe = document.getElementById('googleMapIframe');
+            const encodedQuery = encodeURIComponent(`public library OR fast food OR coffee shop free wifi near ${currentCoords.lat},${currentCoords.lng}`);
+            iframe.src = `https://www.google.com/maps?q=${encodedQuery}&ll=${currentCoords.lat},${currentCoords.lng}&z=14&output=embed`;
+
+            if (forceAlert) alert("Map centered on your current location!");
+          },
+          (err) => {
+            if (geoStatus) geoStatus.innerText = "Using Seattle Area Default";
+            if (forceAlert) alert("Please allow location access in your browser prompt to pinpoint exact position.");
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      } else {
+        if (geoStatus) geoStatus.innerText = "Geolocation unavailable";
       }
     }
 
