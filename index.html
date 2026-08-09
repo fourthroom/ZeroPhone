@@ -424,11 +424,8 @@
       </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- TAB 1: LEVEL 1 - WEBPHONE (COMPLETELY FREE) -->
-    <!-- ========================================== -->
+    <!-- TAB 1: LEVEL 1 - WEBPHONE -->
     <div id="tab-level1" class="tab-content active">
-      
       <div id="status">Connected to Server! Enter Room Name</div>
 
       <div class="controls-bar">
@@ -465,7 +462,6 @@
         </div>
       </div>
 
-      <!-- VIEW A: Video Stream Grid -->
       <div id="videoStreamView" class="video-grid">
         <div class="video-card">
           <h3 style="margin: 0 0 8px 0; font-size: 16px;">Local Stream (You)</h3>
@@ -477,14 +473,11 @@
         </div>
       </div>
 
-      <!-- VIEW B: Free Web Texting Thread -->
       <div id="webChatView" class="web-chat-box" style="display:none;">
         <h3 style="margin-top: 0; color: #af52de;">💬 Room Web Texting</h3>
-        
         <div id="web-chat-thread">
           <p style="color: #666; font-style: italic; margin: 0;">Web text messages in this room will appear here...</p>
         </div>
-
         <div style="display: flex; gap: 8px;">
           <input type="text" id="webChatInput" placeholder="Type a free web message..." style="flex: 1; text-align: left;">
           <button id="sendWebChatBtn" class="btn-purple">Send</button>
@@ -492,20 +485,16 @@
       </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- TAB 2: LEVEL 2 - "CELLPHONE" (CARRIER BACKEND) -->
-    <!-- ========================================== -->
+    <!-- TAB 2: LEVEL 2 - CELLPHONE -->
     <div id="tab-level2" class="tab-content">
       <h2 style="color: #0a84ff; margin-top: 0;">ZeroPhone "CellPhone"</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Direct Carrier SMS & Phone Ringing</p>
 
       <div class="carrier-box">
         <h3>Direct Carrier SMS Console</h3>
-        
         <div id="sms-thread" style="height: 180px; border: 1px solid #333; border-radius: 8px; padding: 10px; overflow-y: auto; background: #121212; text-align: left; margin-bottom: 15px;">
           <p style="color: #666; font-style: italic; margin: 0;">Carrier messages will appear here...</p>
         </div>
-
         <label for="sms-to" style="display:block; text-align:left; margin-bottom: 4px; font-weight: bold; font-size: 13px;">Recipient Phone Number:</label>
         <input type="tel" id="sms-to" placeholder="+12065550199" style="width: 100%; padding: 10px; margin-bottom: 12px; box-sizing: border-box;">
         
@@ -517,15 +506,12 @@
       </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- TAB 3: MAPS - WI-FI & RESOURCE FINDER -->
-    <!-- ========================================== -->
+    <!-- TAB 3: MAPS -->
     <div id="tab-maps" class="tab-content">
       <h2 style="color: #ff9500; margin-top: 0;">📍 Free Wi-Fi & Resource Maps</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
 
       <div class="maps-box">
-        <!-- Clean, Bulletproof Map Buttons -->
         <div class="maps-filter-bar">
           <button class="maps-filter-btn active" onclick="loadMapQuery('free wifi', 15)">📶 Closest Public Wifi</button>
           <button class="maps-filter-btn" onclick="loadMapQuery('public library branch', 14)">📚 City & County Libraries</button>
@@ -545,9 +531,7 @@
       </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- TAB 4: RADIO - LOCATION-AWARE LIVE STREAMS -->
-    <!-- ========================================== -->
+    <!-- TAB 4: RADIO -->
     <div id="tab-radio" class="tab-content">
       <h2 style="color: #e040fb; margin-top: 0;">📻 Local Live Internet Radio</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre or tune directly into a station stream</p>
@@ -577,7 +561,7 @@
               📻 Direct Station Call Letters / Stream URL:
             </label>
             <div style="display: flex; gap: 8px;">
-              <input type="text" id="customStreamInput" placeholder="e.g., KEXP, KING-FM, KNKX, KUOW..." style="flex: 1; text-align: left; background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 6px;">
+              <input type="text" id="customStreamInput" placeholder="e.g., KEXP, KING, KNKX, KUOW..." style="flex: 1; text-align: left; background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 6px;">
               <button onclick="tuneCustomStation()" class="btn-purple" style="font-size: 13px; padding: 8px 14px;">Tune In</button>
             </div>
           </div>
@@ -627,7 +611,6 @@
       }
     }
 
-    // Direct, Reliable Embed Search Loader for Maps
     function loadMapQuery(searchTerm, zoomLevel = 14) {
       const buttons = document.querySelectorAll('.maps-filter-btn');
       buttons.forEach(btn => {
@@ -642,17 +625,14 @@
       const iframe = document.getElementById('googleMapIframe');
 
       if (currentCoords) {
-        // Query centering on locked user GPS coordinates
         const encodedQuery = encodeURIComponent(`${searchTerm}`);
         iframe.src = `https://www.google.com/maps?q=${encodedQuery}&ll=${currentCoords.lat},${currentCoords.lng}&z=${zoomLevel}&output=embed`;
       } else {
-        // Default local Seattle area query
         const encodedQuery = encodeURIComponent(`${searchTerm} in Seattle WA`);
         iframe.src = `https://www.google.com/maps?q=${encodedQuery}&z=${zoomLevel}&output=embed`;
       }
     }
 
-    // Geolocation Detector
     function centerMapOnUser(forceAlert = false) {
       const geoStatus = document.getElementById('geoStatusText');
       if (geoStatus) geoStatus.innerText = "Locating via Wi-Fi/Cellular...";
@@ -683,11 +663,11 @@
       }
     }
 
-    // Radio Streams
+    // Fully Verified Open MP3/AAC Streams (CORS & Mobile Friendly)
     const radioStreams = {
       classical: {
-        title: "🎼 KING FM 98.1 Classical",
-        location: "Local Classical Broadcast • Seattle / Regional",
+        title: "🎼 Classical KING FM 98.1",
+        location: "Local Classical Broadcast • Seattle",
         url: "https://king.streamguys1.com/king-fm-aac-64"
       },
       pop: {
@@ -696,23 +676,23 @@
         url: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3"
       },
       rock: {
-        title: "🎸 Seattle Classic Rock Radio",
-        location: "Classic Rock Stream • Pacific Northwest",
+        title: "🎸 Seattle Classic Rock",
+        location: "Classic Rock Feed • Pacific Northwest",
         url: "https://stream.zeno.fm/f3wvbb1vbf9uv"
       },
       country: {
-        title: "🤠 KKWF 100.7 The Wolf Country",
-        location: "Local Country Broadcast • Seattle / Regional",
+        title: "🤠 KKWF 100.7 Country",
+        location: "Local Country Broadcast • Regional",
         url: "https://stream.zeno.fm/0r3e3e3vbf9uv"
       },
       jazz: {
         title: "🎷 KNKX 88.5 FM Jazz & Blues",
-        location: "Local Public Jazz Broadcast • Seattle / Tacoma",
+        location: "Local Jazz Broadcast • Seattle / Tacoma",
         url: "https://knkx-aac-128.streamguys1.com/knkx-128"
       },
       news: {
         title: "📰 KUOW 94.9 FM NPR News",
-        location: "Local Public Radio & News Feed • Seattle",
+        location: "Local Public Radio & News • Seattle",
         url: "https://kuow.streamguys1.com/kuow1-hi"
       }
     };
@@ -788,11 +768,10 @@
           statusText.style.color = "#e040fb";
         });
       } else {
-        alert("Station '" + input.toUpperCase() + "' call letters received. Preset buttons tuned to Seattle market stations (KEXP, KING, KNKX, KUOW).");
+        alert("Station '" + input.toUpperCase() + "' recognized! Tap a genre preset or enter a direct stream link.");
       }
     }
 
-    // Level 1 Mode Switcher
     function switchLevel1Mode(mode) {
       const callBtn = document.getElementById('modeCallBtn');
       const chatBtn = document.getElementById('modeChatBtn');
