@@ -227,7 +227,7 @@
     .btn-square-invite:hover { background: #0066cc; }
     .btn-square-invite:active { transform: scale(0.95); }
 
-    /* OLD-FASHIONED TOGGLE SWITCH CONTROL */
+    /* OLD-FASHIONED VERTICAL TOGGLE SWITCH CONTROL */
     .vintage-toggle-panel {
       display: flex;
       flex-direction: column;
@@ -389,7 +389,7 @@
       border: 1px solid #63e685;
       border-radius: 12px;
       padding: 15px;
-      max-width: 600px;
+      max-width: 620px;
       margin: 0 auto;
     }
 
@@ -694,7 +694,7 @@
                 </button>
               </div>
 
-              <!-- VINTAGE TOGGLE SWITCH PANEL -->
+              <!-- VINTAGE TOGGLE SWITCH PANEL (VERTICAL) -->
               <div class="vintage-toggle-panel">
                 <div class="toggle-label-group">
                   <span id="textLightPhone" class="indicator-light active-red"></span>
@@ -744,21 +744,21 @@
 
       <div class="web-chat-box">
         <div style="display: flex; gap: 12px; margin-bottom: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
-          <input type="text" id="webTextSenderName" placeholder="Your Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px; width: 120px; text-align: center;">
-          <input type="text" id="webTextRoomId" placeholder="Room Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px; width: 120px; text-align: center;">
+          <input type="text" id="webTextSenderName" placeholder="Your Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 10px 12px; width: 120px; text-align: center;">
+          <input type="text" id="webTextRoomId" placeholder="Room Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 10px 12px; width: 120px; text-align: center;">
           
-          <button id="inviteTextBtn" class="btn-purple" style="font-size: 13px; padding: 10px 16px;">💬 Send Invite</button>
+          <button id="inviteTextBtn" class="btn-purple" style="font-size: 14px; padding: 12px 18px; border-radius: 8px;">💬 Send Invite</button>
 
-          <!-- WEBTEXT VINTAGE TOGGLE SWITCH -->
-          <div class="vintage-toggle-panel" style="flex-direction: row; padding: 4px 8px; gap: 8px;">
+          <!-- WEBTEXT VERTICAL VINTAGE TOGGLE SWITCH (RIGHT OF SEND INVITE) -->
+          <div class="vintage-toggle-panel">
             <div class="toggle-label-group">
               <span id="textLightText" class="indicator-light active-red"></span>
               <span>Text</span>
             </div>
 
-            <label class="switch-container" style="width: 44px; height: 22px;">
+            <label class="switch-container">
               <input type="checkbox" id="textInviteToggle" onchange="toggleInviteMode('text')">
-              <span class="slider-track" style="border-radius: 12px;"></span>
+              <span class="slider-track"></span>
             </label>
 
             <div class="toggle-label-group">
