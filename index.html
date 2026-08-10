@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZeroPhone</title>
   
-  <!-- PWA App Icons -->
+  <!-- Browser Tab Favicon & PWA Icons -->
   <link rel="icon" type="image/png" href="icon.png">
+  <link rel="shortcut icon" type="image/png" href="icon.png">
   <link rel="apple-touch-icon" href="icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -55,6 +56,9 @@
       letter-spacing: -0.5px;
       color: #fff;
       margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .tab-bar {
@@ -484,8 +488,10 @@
   <!-- Top Centered Header -->
   <div id="mainHeader" class="top-header">
     <div class="brand-container">
-      <img src="icon.png" alt="ZeroPhone Logo" class="app-header-logo" onerror="this.style.display='none'">
-      <h1 class="app-brand-title">ZeroPhone</h1>
+      <h1 class="app-brand-title">
+        <img src="icon.png" alt="Cabin Icon" class="app-header-logo" onerror="this.style.display='none'">
+        ZeroPhone
+      </h1>
     </div>
 
     <div class="tab-bar">
@@ -541,7 +547,6 @@
               <input type="text" id="roomId" class="webphone-input" placeholder="Enter Room Name">
             </div>
 
-            <!-- UPDATED STEP 3 WORDING -->
             <div class="step3-divider">
               Step 3: Send Invitation via Text ➔<br>THEN Return, & Start Call Below<br>⬇
             </div>
