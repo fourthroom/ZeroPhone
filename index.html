@@ -649,7 +649,7 @@
       </div>
     </div>
 
-    <!-- TAB 5: RADIO (OPTION B CLEAN STATION CONSOLE) -->
+    <!-- TAB 5: RADIO -->
     <div id="tab-radio" class="tab-content">
       <h2 style="color: #e040fb; margin-top: 0;">📻 Local Live Internet Radio</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre to populate the Left Station Bank</p>
@@ -811,9 +811,10 @@
       }
     }
 
+    // IPAD & MOBILE OPTIMIZED GEOLOCATION (FAST WI-FI LOCK)
     function centerMapOnUser(forcePrompt = false) {
       const geoStatus = document.getElementById('geoStatusText');
-      if (geoStatus) geoStatus.innerText = "⏳ Requesting GPS location...";
+      if (geoStatus) geoStatus.innerText = "⏳ Finding location...";
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -827,17 +828,21 @@
           },
           (err) => {
             if (geoStatus) {
-              geoStatus.innerText = "⚠️ Tap 'Refresh My GPS Location' to enable local search";
+              geoStatus.innerText = "⚠️ Location paused - Tap Refresh to try again";
               geoStatus.style.color = "#ff9500";
             }
             if (forcePrompt) {
-              alert("Please allow location access in your browser prompt or tap 'Refresh My GPS Location'.");
+              alert("Location timed out or was blocked.\n\nTap 'Refresh My GPS Location' or allow location access in your browser settings.");
             }
           },
-          { enableHighAccuracy: true, timeout: 8000 }
+          { 
+            enableHighAccuracy: false, // Fast Wi-Fi / IP lock (ideal for iPads & laptops)
+            timeout: 6000,              // Short 6s timeout prevents screen freezing
+            maximumAge: 300000          // Use recent location if cached within 5 mins
+          }
         );
       } else {
-        if (geoStatus) geoStatus.innerText = "Geolocation not supported by browser";
+        if (geoStatus) geoStatus.innerText = "Geolocation not supported";
       }
     }
 
