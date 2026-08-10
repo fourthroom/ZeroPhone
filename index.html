@@ -442,7 +442,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
     }
 
     .now-playing-title {
@@ -455,7 +455,34 @@
     .now-playing-sub {
       font-size: 13px;
       color: #aaa;
-      margin-top: -8px;
+      margin-top: -6px;
+    }
+
+    /* AUTOMATIC LIVE TRACK MARQUEE BAR */
+    .radio-marquee-container {
+      width: 100%;
+      max-width: 480px;
+      background: #000;
+      border: 1px solid #e040fb;
+      border-radius: 8px;
+      padding: 6px 12px;
+      overflow: hidden;
+      box-shadow: inset 0 0 8px rgba(224, 64, 251, 0.2);
+      box-sizing: border-box;
+    }
+
+    .radio-marquee-text {
+      font-size: 13px;
+      font-weight: bold;
+      color: #63e685;
+      white-space: nowrap;
+      display: inline-block;
+      animation: marquee 12s linear infinite;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
     }
 
     audio {
@@ -465,7 +492,7 @@
     }
 
     .tuner-box {
-      margin-top: 15px;
+      margin-top: 10px;
       padding-top: 15px;
       border-top: 1px solid #333;
       width: 100%;
@@ -624,7 +651,7 @@
       </div>
     </div>
 
-    <!-- TAB 4: MAPS (UPDATED PROACTIVE GEOLOCATION) -->
+    <!-- TAB 4: MAPS -->
     <div id="tab-maps" class="tab-content">
       <h2 style="color: #ff9500; margin-top: 0;">📍 Free Wi-Fi & Resource Maps</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
@@ -649,7 +676,7 @@
       </div>
     </div>
 
-    <!-- TAB 5: RADIO -->
+    <!-- TAB 5: RADIO (WITH OPTION 2 AUTOMATIC SCROLLING TRACK MARQUEE) -->
     <div id="tab-radio" class="tab-content">
       <h2 style="color: #e040fb; margin-top: 0;">📻 Local Live Internet Radio</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre to populate the Left Station Bank</p>
@@ -675,6 +702,11 @@
           <div class="radio-console">
             <h3 id="radioStationTitle" class="now-playing-title">📻 Select a Station</h3>
             <span id="radioStationLocation" class="now-playing-sub">Choose a station from the Bank on the left</span>
+
+            <!-- AUTOMATIC TRACK MARQUEE DISPLAY -->
+            <div class="radio-marquee-container">
+              <span id="radioTrackMarqueeText" class="radio-marquee-text">🎵 Select a station to view live track info...</span>
+            </div>
 
             <audio id="radioAudioPlayer" controls preload="none">
               Your browser does not support the audio element.
@@ -794,7 +826,7 @@
       } else if (tabName === 'maps') {
         document.querySelectorAll('.tab-btn')[3].classList.add('active');
         document.getElementById('tab-maps').classList.add('active');
-        centerMapOnUser(false); // Proactively request/refresh GPS on tab switch
+        centerMapOnUser(false);
       } else if (tabName === 'radio') {
         document.querySelectorAll('.tab-btn')[4].classList.add('active');
         document.getElementById('tab-radio').classList.add('active');
@@ -915,6 +947,15 @@
     function selectStationItem(st) {
       document.getElementById('radioStationTitle').innerText = `📻 ${st.name}`;
       document.getElementById('radioStationLocation').innerText = `${st.state || 'Live'} • ${st.codec || 'Stream'}`;
+      
+      // Update Live Track Marquee text
+      const trackMarquee = document.getElementById('radioTrackMarqueeText');
+      if (st.tags) {
+        trackMarquee.innerText = `🎵 Now Playing: Live ${st.name} Broadcast (${st.tags}) — Live Stream`;
+      } else {
+        trackMarquee.innerText = `🎵 Now Playing: Live ${st.name} Broadcast — Live Audio Feed`;
+      }
+
       playRadioStream(st.url_resolved || st.url);
     }
 
