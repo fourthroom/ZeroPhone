@@ -481,9 +481,50 @@
       max-width: 500px;
       margin: 30px auto;
     }
+
+    /* MODAL POPUP FOR LOCATION TROUBLESHOOTING */
+    .location-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .location-modal-content {
+      background: #1c1c1e;
+      border: 2px solid #ff9500;
+      border-radius: 16px;
+      padding: 25px;
+      max-width: 420px;
+      width: 85%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+    }
   </style>
 </head>
 <body>
+
+  <!-- LOCATION TROUBLESHOOTING MODAL -->
+  <div id="locationModal" class="location-modal-overlay">
+    <div class="location-modal-content">
+      <h3 style="color: #ff9500; margin-top: 0; font-size: 20px;">📍 Enable Location Access</h3>
+      <p style="color: #ccc; font-size: 14px; text-align: left; line-height: 1.5;">
+        To center maps on your current location, allow location access in your device settings:
+      </p>
+      <div style="background: #121212; border: 1px solid #333; border-radius: 8px; padding: 12px; text-align: left; font-size: 12px; color: #aaa; margin-bottom: 20px;">
+        <strong>iPhone / iPad:</strong><br>
+        1. Open <b>Settings</b> → <b>Privacy & Security</b><br>
+        2. Tap <b>Location Services</b> → <b>Safari / Chrome</b><br>
+        3. Select <b>While Using the App</b><br><br>
+        <strong>Desktop Chrome / Safari:</strong><br>
+        Tap the <b>Lock / Sliders icon</b> next to <i>fourthroom.org</i> in your address bar → set Location to <b>Allow</b>.
+      </div>
+      <button onclick="closeLocationModal()" style="background: #ff9500; color: #000; border: none; padding: 10px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">Got It</button>
+    </div>
+  </div>
 
   <!-- Top Centered Header -->
   <div id="mainHeader" class="top-header">
@@ -624,30 +665,19 @@
       </div>
     </div>
 
-    <!-- TAB 4: MAPS (FORM WRAPPED FOR RELIABLE IPAD LOCATION SEARCH) -->
+    <!-- TAB 4: MAPS (STREAMLINED FOR GPS AUTOMATION) -->
     <div id="tab-maps" class="tab-content">
       <h2 style="color: #ff9500; margin-top: 0;">📍 Free Wi-Fi & Resource Maps</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
 
       <div class="maps-box">
-        <!-- FORM CONTAINER FOR KEYBOARD AND CLICK EVENT HARMONY -->
-        <form id="mapSearchForm" action="javascript:void(0);" style="margin-bottom: 14px; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap;">
-          <label for="userMapLocationInput" style="font-size: 13px; font-weight: bold; color: #ff9500;">
-            📍 Location:
-          </label>
-          
-          <input type="text" id="userMapLocationInput" placeholder="City, Zip, or Address" value="Seattle, WA" style="background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 13px; width: 200px; text-align: center;">
-          
-          <button type="submit" id="btnSearchLoc" style="font-size: 12px; padding: 8px 14px; background: #ff9500; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-            📍 Search Location
+        <div style="margin-bottom: 14px; display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <button id="btnUseGps" onclick="centerMapOnUser(true)" style="font-size: 13px; padding: 10px 20px; background: #30d158; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+            🎯 Refresh GPS Location
           </button>
 
-          <button type="button" id="btnUseGps" onclick="centerMapOnUser(true)" style="font-size: 12px; padding: 8px 14px; background: #30d158; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
-            🎯 Use GPS
-          </button>
-
-          <span id="geoStatusText" style="font-size: 12px; color: #aaa; width: 100%;">Enter a location and tap Search, or tap Use GPS</span>
-        </form>
+          <span id="geoStatusText" style="font-size: 12px; color: #aaa;">Detecting location...</span>
+        </div>
 
         <div class="maps-filter-bar">
           <button class="maps-filter-btn" onclick="loadMapQuery('free wifi', 15)">📶 Closest Public Wifi</button>
@@ -808,55 +838,28 @@
       } else if (tabName === 'maps') {
         document.querySelectorAll('.tab-btn')[3].classList.add('active');
         document.getElementById('tab-maps').classList.add('active');
+        if (!currentCoords) centerMapOnUser(false);
       } else if (tabName === 'radio') {
         document.querySelectorAll('.tab-btn')[4].classList.add('active');
         document.getElementById('tab-radio').classList.add('active');
       }
     }
 
-    // SEARCH LOCATION PIN (EXPLICIT FORM + CLICK ENGINE)
-    function searchLocationPin() {
-      currentCoords = null; // Clear GPS lock so typed location takes total precedence
-      const inputEl = document.getElementById('userMapLocationInput');
-      const customLoc = inputEl ? inputEl.value.trim() : "Seattle, WA";
-      const geoStatus = document.getElementById('geoStatusText');
-      const iframe = document.getElementById('googleMapIframe');
-
-      if (!customLoc) {
-        return alert("Please enter a city, zip code, or address.");
-      }
-
-      if (geoStatus) {
-        geoStatus.innerText = `📍 Pin centered on: ${customLoc}`;
-        geoStatus.style.color = "#ff9500";
-      }
-
-      iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(customLoc)}&z=14&output=embed`;
-    }
-
-    // BIND FORM SUBMIT & ENTER KEY FOR LOCATION SEARCH
-    document.getElementById('mapSearchForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      searchLocationPin();
-    });
-
     // MAP QUERY ENGINE FOR RESOURCE FILTER BUTTONS
     function loadMapQuery(resourceTerm, zoomLevel = 14) {
       const iframe = document.getElementById('googleMapIframe');
-      const inputEl = document.getElementById('userMapLocationInput');
-      const customLoc = inputEl ? inputEl.value.trim() : "Seattle, WA";
 
       if (currentCoords) {
         iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm)}&ll=${currentCoords.lat},${currentCoords.lng}&z=${zoomLevel}&output=embed`;
       } else {
-        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm + ' near ' + customLoc)}&z=${zoomLevel}&output=embed`;
+        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm + ' in Seattle WA')}&z=${zoomLevel}&output=embed`;
       }
     }
 
-    // GPS FALLBACK BUTTON
-    function centerMapOnUser(forcePrompt) {
+    // GPS ENGINE & CONDITIONAL HELPER MODAL
+    function centerMapOnUser(showTroubleshootingModal) {
       const geoStatus = document.getElementById('geoStatusText');
-      if (geoStatus) geoStatus.innerText = "⏳ Requesting GPS coordinates...";
+      if (geoStatus) geoStatus.innerText = "⏳ Requesting GPS location...";
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -871,14 +874,20 @@
           (err) => {
             currentCoords = null;
             if (geoStatus) {
-              geoStatus.innerText = "📍 Using typed location in text box above";
+              geoStatus.innerText = "⚠️ Location paused - Check device permissions";
               geoStatus.style.color = "#ff9500";
             }
-            searchLocationPin();
+            if (showTroubleshootingModal) {
+              document.getElementById('locationModal').style.display = 'flex';
+            }
           },
           { enableHighAccuracy: false, timeout: 6000, maximumAge: 300000 }
         );
       }
+    }
+
+    function closeLocationModal() {
+      document.getElementById('locationModal').style.display = 'none';
     }
 
     // Radio Engine
