@@ -523,7 +523,6 @@
 
     <!-- TAB 1: LEVEL 1 - WEBPHONE -->
     <div id="tab-level1-phone" class="tab-content active">
-      <!-- TWEAK 1: OPENING STATUS CHANGED TO "Connected to Server" -->
       <div id="status">Connected to Server</div>
 
       <!-- MAIN FORM -->
@@ -580,24 +579,24 @@
       </div>
 
       <div style="margin-top: 15px; text-align: center;">
-        <!-- TWEAK 2: END CALL BUTTON DYNAMIC TEXT -->
         <button id="hangUpBtn" class="btn-red-end" style="display:none; font-size:18px; padding:12px 28px; font-weight:bold; border-radius:10px;">🔴 End Call</button>
       </div>
     </div>
 
-    <!-- TAB 2: LEVEL 1 - WEBTEXT -->
+    <!-- TAB 2: LEVEL 1 - WEBTEXT (UPDATED WITH YOUR NAME FIELD) -->
     <div id="tab-level1-text" class="tab-content">
       <h2 style="color: #63e685; margin-top: 0;">Level 1 - WebText</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Completely Free Multi-User Web Texting</p>
 
       <div class="web-chat-box">
-        <div style="display: flex; gap: 8px; margin-bottom: 12px; justify-content: center;">
-          <input type="text" id="webTextRoomId" placeholder="Room Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px; width: 150px; text-align: center;">
+        <div style="display: flex; gap: 8px; margin-bottom: 12px; justify-content: center; flex-wrap: wrap;">
+          <input type="text" id="webTextSenderName" placeholder="Your Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px; width: 130px; text-align: center;">
+          <input type="text" id="webTextRoomId" placeholder="Room Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px; width: 130px; text-align: center;">
           <button id="inviteTextBtn" class="btn-purple" style="font-size: 13px;">💬 Send Texting Invite</button>
         </div>
 
         <div id="web-chat-thread">
-          <p style="color: #666; font-style: italic; margin: 0;">Enter a Room Name above to begin multi-user web text chat...</p>
+          <p style="color: #666; font-style: italic; margin: 0;">Enter your Name and Room Name above to begin web chat...</p>
         </div>
 
         <div style="display: flex; gap: 8px;">
@@ -706,10 +705,19 @@
 
     const roomIdInput = document.getElementById('roomId');
     const callerNameInput = document.getElementById('callerName');
+    const webTextSenderNameInput = document.getElementById('webTextSenderName');
     const statusDiv = document.getElementById('status');
     const hangUpBtn = document.getElementById('hangUpBtn');
 
     const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+    // Sync Name Inputs
+    callerNameInput.addEventListener('input', (e) => {
+      webTextSenderNameInput.value = e.target.value;
+    });
+    webTextSenderNameInput.addEventListener('input', (e) => {
+      callerNameInput.value = e.target.value;
+    });
 
     // URL Parameter handling
     const urlParams = new URLSearchParams(window.location.search);
@@ -721,7 +729,6 @@
       document.getElementById('webTextRoomId').value = roomParam;
     }
 
-    // TWEAK 3: VOICE INVITE LANDING BUTTON TEXT
     window.addEventListener('DOMContentLoaded', () => {
       if (roomParam) {
         document.getElementById('mainHeader').style.display = 'none';
@@ -773,7 +780,7 @@
       } else if (tabName === 'level1-text') {
         document.querySelectorAll('.tab-btn')[1].classList.add('active');
         document.getElementById('tab-level1-text').classList.add('active');
-        const r = roomIdInput.value.trim();
+        const r = document.getElementById('webTextRoomId').value.trim() || roomIdInput.value.trim();
         if (r) socket.emit('join-room', r);
       } else if (tabName === 'level2') {
         document.querySelectorAll('.tab-btn')[2].classList.add('active');
@@ -806,7 +813,7 @@
           (position) => {
             currentCoords = { lat: position.coords.latitude, lng: position.coords.longitude };
             if (geoStatus) geoStatus.innerText = "📍 Location Locked!";
-            document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=free+wifi&ll=${currentCoords.lat},${currentCoords.lng}&z=${zoomLevel||15}&output=embed`;
+            document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=free+wifi&ll=${currentCoords.lat},${currentCoords.lng}&z=15&output=embed`;
             if (forceAlert) alert("Map centered on your current location!");
           },
           () => { if (geoStatus) geoStatus.innerText = "Using Seattle Default"; },
@@ -815,7 +822,7 @@
       }
     }
 
-    // TWEAK 4: RADIO DATABASE SEARCH ENGINE
+    // Radio Engine
     const RADIO_API_BASE = "https://de1.api.radio-browser.info/json/stations/search";
 
     async function fetchRadioBrowserGenre(tag, labelName) {
@@ -908,8 +915,8 @@
     }
 
     function sendInvite(mode) {
-      const name = callerNameInput.value.trim() || 'Someone';
-      const currentRoom = roomIdInput.value.trim() || 'room1';
+      const name = callerNameInput.value.trim() || webTextSenderNameInput.value.trim() || 'Someone';
+      const currentRoom = roomIdInput.value.trim() || document.getElementById('webTextRoomId').value.trim() || 'room1';
       const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}&mode=${mode}`;
       
       let typeText = 'have a video call with you';
@@ -951,7 +958,6 @@
       socket.emit('join-room', roomId);
       statusDiv.innerText = `Joined room: ${roomId}. Waiting for peers...`;
       
-      // TWEAK 2: UPDATE END CALL BUTTON TEXT DYNAMICALLY
       hangUpBtn.innerText = isAudioOnly ? "🔴 End Voice Call" : "🔴 End Video Call";
       hangUpBtn.style.display = 'inline-block';
     }
@@ -1084,7 +1090,7 @@
     function sendWebChatMessage() {
       const input = document.getElementById('webChatInput');
       const msg = input.value.trim();
-      const sender = callerNameInput.value.trim() || 'You';
+      const sender = webTextSenderNameInput.value.trim() || callerNameInput.value.trim() || 'Anonymous';
       const roomId = document.getElementById('webTextRoomId').value.trim() || 'room1';
 
       if (msg) {
@@ -1101,7 +1107,7 @@
     });
 
     socket.on('receive-web-chat', ({ message, sender }) => {
-      const currentUser = callerNameInput.value.trim() || 'You';
+      const currentUser = webTextSenderNameInput.value.trim() || callerNameInput.value.trim() || 'Anonymous';
       if (sender !== currentUser) appendWebMessage(sender, message);
     });
 
