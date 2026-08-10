@@ -624,13 +624,13 @@
       </div>
     </div>
 
-    <!-- TAB 4: MAPS (REFINED WITH LOCATION SEARCH BUTTON & RED PIN ENFORCEMENT) -->
+    <!-- TAB 4: MAPS (CLEAN RESOURCE QUERY ANCHORING) -->
     <div id="tab-maps" class="tab-content">
       <h2 style="color: #ff9500; margin-top: 0;">📍 Free Wi-Fi & Resource Maps</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
 
       <div class="maps-box">
-        <!-- LOCATION INPUT + ENTER SEARCH BUTTON -->
+        <!-- LOCATION INPUT + SEARCH BUTTON -->
         <div style="margin-bottom: 14px; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap;">
           <label for="userMapLocationInput" style="font-size: 13px; font-weight: bold; color: #ff9500;">
             📍 Location:
@@ -642,7 +642,7 @@
             📍 Search Location
           </button>
 
-          <button onclick="centerMapOnUser(true)" style="font-size: 12px; padding: 8px 12px; background: #30d158; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+          <button onclick="centerMapOnUser(true)" style="font-size: 12px; padding: 8px 14px; background: #30d158; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
             🎯 Use GPS
           </button>
 
@@ -651,9 +651,9 @@
 
         <div class="maps-filter-bar">
           <button class="maps-filter-btn" onclick="loadMapQuery('free wifi', 15)">📶 Closest Public Wifi</button>
-          <button class="maps-filter-btn" onclick="loadMapQuery('public library branch', 14)">📚 City & County Libraries</button>
-          <button class="maps-filter-btn" onclick="loadMapQuery('McDonalds or Jack in the Box or Wendys', 14)">🍔 Fast Food Wi-Fi</button>
-          <button class="maps-filter-btn" onclick="loadMapQuery('coffee shop free wifi', 15)">☕ Coffee Shops Wi-Fi</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('public library', 14)">📚 City & County Libraries</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('fast food wifi', 14)">🍔 Fast Food Wi-Fi</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('coffee shop wifi', 15)">☕ Coffee Shops Wi-Fi</button>
           <button class="maps-filter-btn" onclick="loadMapQuery('food bank shelter', 13)">🥫 Food Banks & Resources</button>
         </div>
 
@@ -814,16 +814,12 @@
       }
     }
 
-    // SEARCH LOCATION AND PLACE RED PIN MARKER
+    // SEARCH LOCATION PIN
     function searchLocationPin() {
-      currentCoords = null; // Reset GPS so typed location takes priority
-      const customLoc = document.getElementById('userMapLocationInput').value.trim();
+      currentCoords = null;
+      const customLoc = document.getElementById('userMapLocationInput').value.trim() || "Seattle, WA";
       const geoStatus = document.getElementById('geoStatusText');
       const iframe = document.getElementById('googleMapIframe');
-
-      if (!customLoc) {
-        return alert("Please enter a city, zip code, or address.");
-      }
 
       if (geoStatus) {
         geoStatus.innerText = `📍 Pin centered on: ${customLoc}`;
@@ -836,14 +832,12 @@
     // MAP QUERY ENGINE FOR RESOURCE FILTER BUTTONS
     function loadMapQuery(resourceTerm, zoomLevel = 14) {
       const iframe = document.getElementById('googleMapIframe');
-      const customLoc = document.getElementById('userMapLocationInput').value.trim();
+      const customLoc = document.getElementById('userMapLocationInput').value.trim() || "Seattle, WA";
 
       if (currentCoords) {
         iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm)}&ll=${currentCoords.lat},${currentCoords.lng}&z=${zoomLevel}&output=embed`;
-      } else if (customLoc) {
-        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm + ' near ' + customLoc)}&z=${zoomLevel}&output=embed`;
       } else {
-        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm + ' near Seattle WA')}&z=${zoomLevel}&output=embed`;
+        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm + ' near ' + customLoc)}&z=${zoomLevel}&output=embed`;
       }
     }
 
