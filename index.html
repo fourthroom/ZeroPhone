@@ -158,10 +158,11 @@
       text-align: left;
     }
 
+    /* STEP 3 IN MATCHING GREEN WITH DOWN ARROW */
     .step3-divider {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: bold;
-      color: #ff9500;
+      color: #30d158;
       margin: 10px 0 5px 0;
       text-align: center;
       line-height: 1.4;
@@ -246,16 +247,29 @@
 
     #status { font-weight: bold; color: #30d158; margin-bottom: 4px; }
 
+    /* DYNAMIC 4-WAY MULTI-PEER GRID */
     .video-grid { 
       display: flex; 
       justify-content: center; 
-      gap: 20px; 
+      gap: 15px; 
       flex-wrap: wrap; 
-      margin-top: 10px; 
+      margin-top: 15px; 
     }
 
-    .video-card { flex: 1; min-width: 340px; max-width: 520px; }
-    video { width: 100%; height: 380px; background: #000; border-radius: 12px; border: 2px solid #333; object-fit: cover; }
+    .video-card { 
+      flex: 1 1 42%; 
+      min-width: 280px; 
+      max-width: 480px; 
+    }
+
+    video { 
+      width: 100%; 
+      height: 280px; 
+      background: #000; 
+      border-radius: 12px; 
+      border: 2px solid #333; 
+      object-fit: cover; 
+    }
 
     /* SENIOR INVITE SINGLE BUTTON */
     #responderAccessBox {
@@ -456,7 +470,6 @@
       text-align: left;
     }
 
-    /* DUMMY UNDER CONSTRUCTION BOX FOR LEVEL 2 */
     .under-construction-box {
       background: #1c1c1e;
       border: 2px dashed #ff3b30;
@@ -529,8 +542,9 @@
               <input type="text" id="roomId" class="webphone-input" placeholder="Enter Room Name">
             </div>
 
+            <!-- STEP 3 IN MATCHING GREEN WITH DOWN ARROW -->
             <div class="step3-divider">
-              Step 3: Send Invitation via Text ➔<br>OR Start Call Below
+              Step 3: Send Invitation via Text ➔<br>OR Start Call Below<br>⬇
             </div>
           </div>
 
@@ -558,15 +572,11 @@
         </div>
       </div>
 
-      <!-- FOCUS CALL VIEW: Clean Video Stream Grid -->
-      <div id="videoStreamView" class="video-grid">
+      <!-- DYNAMIC MULTI-PEER MESH VIDEO GRID -->
+      <div id="videoStreamView" class="video-grid" style="display:none;">
         <div class="video-card">
-          <h3 style="margin: 0 0 8px 0; font-size: 16px;">Local Stream (You)</h3>
+          <h3 style="margin: 0 0 8px 0; font-size: 14px;">Local Stream (You)</h3>
           <video id="localVideo" autoplay playsinline muted></video>
-        </div>
-        <div class="video-card">
-          <h3 style="margin: 0 0 8px 0; font-size: 16px;">Remote Stream (Peer)</h3>
-          <video id="remoteVideo" autoplay playsinline></video>
         </div>
       </div>
 
@@ -597,7 +607,7 @@
       </div>
     </div>
 
-    <!-- TAB 3: LEVEL 2 - CELLPHONE (TEMPORARY DUMMY TAB) -->
+    <!-- TAB 3: LEVEL 2 - CELLPHONE -->
     <div id="tab-level2" class="tab-content">
       <div class="under-construction-box">
         <h1 style="color: #ff3b30; font-size: 32px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase;">
@@ -690,7 +700,7 @@
     
     const socket = io(SIGNALING_SERVER);
     let localStream;
-    let peerConnection;
+    let peerConnections = {}; // Map of socketId -> RTCPeerConnection for Multi-Peer Mesh
     let isAudioOnly = false;
     let currentCoords = null;
 
@@ -698,6 +708,8 @@
     const callerNameInput = document.getElementById('callerName');
     const statusDiv = document.getElementById('status');
     const hangUpBtn = document.getElementById('hangUpBtn');
+
+    const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
     // URL Parameter handling
     const urlParams = new URLSearchParams(window.location.search);
@@ -868,12 +880,11 @@
       sendInvite('text');
     });
 
-    const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-
     socket.on('connect', () => {
       statusDiv.innerText = "Connected to Server! Enter Room Name";
     });
 
+    // START MULTI-PARTY MESH CALL
     async function startCall(audioOnly) {
       isAudioOnly = audioOnly;
       const roomId = roomIdInput.value.trim();
@@ -889,16 +900,25 @@
       }
 
       socket.emit('join-room', roomId);
-      statusDiv.innerText = `Joined room: ${roomId}. Waiting for peer...`;
+      statusDiv.innerText = `Joined room: ${roomId}. Waiting for peers...`;
       hangUpBtn.style.display = 'inline-block';
     }
 
     function hangUpCall() {
       if (localStream) localStream.getTracks().forEach(track => track.stop());
-      if (peerConnection) peerConnection.close();
+      
+      Object.keys(peerConnections).forEach(id => {
+        if (peerConnections[id]) peerConnections[id].close();
+      });
+      peerConnections = {};
 
-      document.getElementById('localVideo').srcObject = null;
-      document.getElementById('remoteVideo').srcObject = null;
+      const grid = document.getElementById('videoStreamView');
+      grid.innerHTML = `
+        <div class="video-card">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px;">Local Stream (You)</h3>
+          <video id="localVideo" autoplay playsinline muted></video>
+        </div>
+      `;
 
       statusDiv.innerText = "Call ended.";
       statusDiv.style.color = "#ff3b30";
@@ -912,46 +932,85 @@
     document.getElementById('joinVideoBtn').addEventListener('click', () => startCall(false));
     document.getElementById('joinVoiceBtn').addEventListener('click', () => startCall(true));
 
-    socket.on('user-joined', async () => {
-      statusDiv.innerText = "Peer joined! Connecting media...";
-      createPeerConnection();
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-      socket.emit('offer', { offer, roomId: roomIdInput.value });
+    // MULTI-PEER MESH SIGNALING HANDLERS
+    socket.on('user-joined', async ({ socketId }) => {
+      statusDiv.innerText = "Peer joining... Connecting media!";
+      const pc = createPeerConnection(socketId);
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      socket.emit('offer', { offer, targetId: socketId });
     });
 
-    socket.on('offer', async ({ offer }) => {
+    socket.on('offer', async ({ offer, senderId }) => {
       statusDiv.innerText = "Connecting media stream...";
-      createPeerConnection();
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-      const answer = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(answer);
-      socket.emit('answer', { answer, roomId: roomIdInput.value });
+      const pc = createPeerConnection(senderId);
+
+      await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      socket.emit('answer', { answer, targetId: senderId });
     });
 
-    socket.on('answer', async ({ answer }) => {
+    socket.on('answer', async ({ answer, senderId }) => {
       statusDiv.innerText = "Live Connected!";
       statusDiv.style.color = "#30d158";
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+      if (peerConnections[senderId]) {
+        await peerConnections[senderId].setRemoteDescription(new RTCSessionDescription(answer));
+      }
     });
 
-    socket.on('ice-candidate', async ({ candidate }) => {
-      if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+    socket.on('ice-candidate', async ({ candidate, senderId }) => {
+      if (peerConnections[senderId]) {
+        await peerConnections[senderId].addIceCandidate(new RTCIceCandidate(candidate));
+      }
     });
 
-    function createPeerConnection() {
-      if (peerConnection) return;
-      peerConnection = new RTCPeerConnection(rtcConfig);
-      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+    socket.on('user-disconnected', ({ socketId }) => {
+      if (peerConnections[socketId]) {
+        peerConnections[socketId].close();
+        delete peerConnections[socketId];
+      }
+      const remoteCard = document.getElementById(`card-${socketId}`);
+      if (remoteCard) remoteCard.remove();
+      
+      const count = Object.keys(peerConnections).length;
+      statusDiv.innerText = count > 0 ? `Connected with ${count} peer(s)` : "Waiting for peers...";
+    });
 
-      peerConnection.ontrack = (event) => {
-        document.getElementById('remoteVideo').srcObject = event.streams[0];
+    function createPeerConnection(targetSocketId) {
+      if (peerConnections[targetSocketId]) return peerConnections[targetSocketId];
+
+      const pc = new RTCPeerConnection(rtcConfig);
+      peerConnections[targetSocketId] = pc;
+
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      pc.ontrack = (event) => {
+        let remoteCard = document.getElementById(`card-${targetSocketId}`);
+        if (!remoteCard) {
+          remoteCard = document.createElement('div');
+          remoteCard.className = 'video-card';
+          remoteCard.id = `card-${targetSocketId}`;
+          remoteCard.innerHTML = `
+            <h3 style="margin: 0 0 8px 0; font-size: 14px;">Peer Stream</h3>
+            <video id="video-${targetSocketId}" autoplay playsinline></video>
+          `;
+          document.getElementById('videoStreamView').appendChild(remoteCard);
+        }
+        const videoEl = document.getElementById(`video-${targetSocketId}`);
+        videoEl.srcObject = event.streams[0];
         statusDiv.innerText = "Live Connected!";
       };
 
-      peerConnection.onicecandidate = (event) => {
-        if (event.candidate) socket.emit('ice-candidate', { candidate: event.candidate, roomId: roomIdInput.value });
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit('ice-candidate', { candidate: event.candidate, targetId: targetSocketId });
+        }
       };
+
+      return pc;
     }
 
     function appendWebMessage(sender, text) {
