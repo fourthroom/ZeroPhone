@@ -120,7 +120,7 @@
       display: flex;
       justify-content: center;
       gap: 20px;
-      max-width: 680px;
+      max-width: 720px;
       margin: 15px auto;
       align-items: flex-start;
       background: #1c1c1e;
@@ -171,9 +171,9 @@
       line-height: 1.4;
     }
 
-    /* RIGHT SIDE SMALL SQUARE BUTTONS */
+    /* RIGHT SIDE SMALL SQUARE BUTTONS + VINTAGE TOGGLE PANEL */
     .webphone-invites-right {
-      flex: 1;
+      flex: 1.4;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -193,9 +193,21 @@
       margin-bottom: 2px;
     }
 
+    .invites-and-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .buttons-column {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .btn-square-invite {
       width: 75px;
-      height: 75px;
+      height: 70px;
       border-radius: 12px;
       border: none;
       background: #0a84ff;
@@ -212,12 +224,84 @@
       transition: transform 0.1s;
     }
 
-    .btn-square-invite:hover {
-      background: #0066cc;
+    .btn-square-invite:hover { background: #0066cc; }
+    .btn-square-invite:active { transform: scale(0.95); }
+
+    /* OLD-FASHIONED TOGGLE SWITCH CONTROL */
+    .vintage-toggle-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #1c1c1e;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 8px 6px;
+      gap: 6px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
     }
 
-    .btn-square-invite:active {
-      transform: scale(0.95);
+    .toggle-label-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: bold;
+      color: #aaa;
+    }
+
+    .indicator-light {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #333;
+      border: 1px solid #555;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .indicator-light.active-red {
+      background: #ff3b30;
+      box-shadow: 0 0 8px #ff3b30, 0 0 12px #ff3b30;
+    }
+
+    /* VERTICAL TOGGLE SWITCH STYLING */
+    .switch-container {
+      position: relative;
+      width: 24px;
+      height: 50px;
+    }
+
+    .switch-container input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider-track {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #2c2c2e;
+      border: 2px solid #555;
+      border-radius: 12px;
+      transition: .2s;
+    }
+
+    .slider-track:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 18px;
+      left: 1px;
+      top: 2px;
+      background-color: #aaa;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+      transition: .2s;
+    }
+
+    input:checked + .slider-track:before {
+      transform: translateY(22px);
+      background-color: #ff3b30;
     }
 
     /* CENTERED CALL BUTTONS */
@@ -305,7 +389,7 @@
       border: 1px solid #63e685;
       border-radius: 12px;
       padding: 15px;
-      max-width: 550px;
+      max-width: 600px;
       margin: 0 auto;
     }
 
@@ -589,23 +673,46 @@
             </div>
 
             <div class="step3-divider">
-              Step 3: Send Invitation via Text ➔<br>THEN Return, & Start Call Below<br>⬇
+              Step 3: Send Invitation via Text/Email ➔<br>THEN Return, & Start Call Below<br>⬇
             </div>
           </div>
 
-          <!-- RIGHT SIDE: SMALL SQUARE INVITE BUTTONS -->
+          <!-- RIGHT SIDE: SMALL SQUARE INVITE BUTTONS & VINTAGE TOGGLE SWITCH -->
           <div class="webphone-invites-right">
-            <span class="invite-header-text">Send Text to Notify Other Party</span>
+            <span class="invite-header-text">Send Text or E-mail to Notify Other Party</span>
             
-            <button id="inviteVideoBtn" class="btn-square-invite">
-              <span style="font-size: 20px;">📹</span>
-              <span>Video Invite</span>
-            </button>
+            <div class="invites-and-toggle-row">
+              <div class="buttons-column">
+                <button id="inviteVideoBtn" class="btn-square-invite">
+                  <span style="font-size: 18px;">📹</span>
+                  <span>Video Invite</span>
+                </button>
 
-            <button id="inviteVoiceBtn" class="btn-square-invite" style="background: #00a8ff;">
-              <span style="font-size: 20px;">🎙️</span>
-              <span>Voice Invite</span>
-            </button>
+                <button id="inviteVoiceBtn" class="btn-square-invite" style="background: #00a8ff;">
+                  <span style="font-size: 18px;">🎙️</span>
+                  <span>Voice Invite</span>
+                </button>
+              </div>
+
+              <!-- VINTAGE TOGGLE SWITCH PANEL -->
+              <div class="vintage-toggle-panel">
+                <div class="toggle-label-group">
+                  <span id="textLightPhone" class="indicator-light active-red"></span>
+                  <span>Text</span>
+                </div>
+
+                <label class="switch-container">
+                  <input type="checkbox" id="phoneInviteToggle" onchange="toggleInviteMode('phone')">
+                  <span class="slider-track"></span>
+                </label>
+
+                <div class="toggle-label-group">
+                  <span id="emailLightPhone" class="indicator-light"></span>
+                  <span>E-mail</span>
+                </div>
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -636,10 +743,29 @@
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Completely Free Multi-User Web Texting</p>
 
       <div class="web-chat-box">
-        <div style="display: flex; gap: 8px; margin-bottom: 12px; justify-content: center; flex-wrap: wrap;">
-          <input type="text" id="webTextSenderName" placeholder="Your Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px; width: 130px; text-align: center;">
-          <input type="text" id="webTextRoomId" placeholder="Room Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px; width: 130px; text-align: center;">
-          <button id="inviteTextBtn" class="btn-purple" style="font-size: 13px;">💬 Send Texting Invite</button>
+        <div style="display: flex; gap: 12px; margin-bottom: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
+          <input type="text" id="webTextSenderName" placeholder="Your Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px; width: 120px; text-align: center;">
+          <input type="text" id="webTextRoomId" placeholder="Room Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px; width: 120px; text-align: center;">
+          
+          <button id="inviteTextBtn" class="btn-purple" style="font-size: 13px; padding: 10px 16px;">💬 Send Invite</button>
+
+          <!-- WEBTEXT VINTAGE TOGGLE SWITCH -->
+          <div class="vintage-toggle-panel" style="flex-direction: row; padding: 4px 8px; gap: 8px;">
+            <div class="toggle-label-group">
+              <span id="textLightText" class="indicator-light active-red"></span>
+              <span>Text</span>
+            </div>
+
+            <label class="switch-container" style="width: 44px; height: 22px;">
+              <input type="checkbox" id="textInviteToggle" onchange="toggleInviteMode('text')">
+              <span class="slider-track" style="border-radius: 12px;"></span>
+            </label>
+
+            <div class="toggle-label-group">
+              <span id="emailLightText" class="indicator-light"></span>
+              <span>E-mail</span>
+            </div>
+          </div>
         </div>
 
         <div id="web-chat-thread">
@@ -665,7 +791,7 @@
       </div>
     </div>
 
-    <!-- TAB 4: MAPS (STREAMLINED FOR GPS AUTOMATION) -->
+    <!-- TAB 4: MAPS -->
     <div id="tab-maps" class="tab-content">
       <h2 style="color: #ff9500; margin-top: 0;">📍 Free Wi-Fi & Resource Maps</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
@@ -768,6 +894,19 @@
     webTextSenderNameInput.addEventListener('input', (e) => {
       callerNameInput.value = e.target.value;
     });
+
+    // TOGGLE MODE LOGIC (SMS vs EMAIL)
+    function toggleInviteMode(type) {
+      if (type === 'phone') {
+        const isEmail = document.getElementById('phoneInviteToggle').checked;
+        document.getElementById('textLightPhone').className = isEmail ? 'indicator-light' : 'indicator-light active-red';
+        document.getElementById('emailLightPhone').className = isEmail ? 'indicator-light active-red' : 'indicator-light';
+      } else {
+        const isEmail = document.getElementById('textInviteToggle').checked;
+        document.getElementById('textLightText').className = isEmail ? 'indicator-light' : 'indicator-light active-red';
+        document.getElementById('emailLightText').className = isEmail ? 'indicator-light active-red' : 'indicator-light';
+      }
+    }
 
     // URL Parameter handling
     const urlParams = new URLSearchParams(window.location.search);
@@ -982,17 +1121,34 @@
       });
     }
 
+    // INVITATION DISPATCHER (SMS vs EMAIL DYNAMIC GENERATOR)
     function sendInvite(mode) {
       const name = callerNameInput.value.trim() || webTextSenderNameInput.value.trim() || 'Someone';
       const currentRoom = roomIdInput.value.trim() || document.getElementById('webTextRoomId').value.trim() || 'room1';
       const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}&mode=${mode}`;
       
-      let typeText = 'have a video call with you';
-      if (mode === 'voice') typeText = 'speak to you by voice';
-      if (mode === 'text') typeText = 'text with you online for free';
+      const isEmail = mode === 'text' ? document.getElementById('textInviteToggle').checked : document.getElementById('phoneInviteToggle').checked;
 
-      const message = `Knock, Knock!\n\n${name} would like to ${typeText}. Press here to join: ${inviteUrl}`;
-      window.location.href = `sms:?&body=${encodeURIComponent(message)}`;
+      let typeText = 'Video Call';
+      if (mode === 'voice') typeText = 'Voice Call';
+      if (mode === 'text') typeText = 'WebText Chat';
+
+      if (isEmail) {
+        // E-MAIL INVITATION FORMAT
+        const subject = `ZeroPhone Invitation from ${name}`;
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const emailBody = `Hello!\n\n${name} is hoping to ${typeText} with you @ ${timeStr}.\n\nPress here to join directly:\n${inviteUrl}\n\nSee You Soon,\n${name}`;
+        
+        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+      } else {
+        // SMS TEXT INVITATION FORMAT
+        let typeActionText = 'have a video call with you';
+        if (mode === 'voice') typeActionText = 'speak to you by voice';
+        if (mode === 'text') typeActionText = 'text with you online for free';
+
+        const smsMessage = `Knock, Knock!\n\n${name} would like to ${typeActionText}. Press here to join: ${inviteUrl}`;
+        window.location.href = `sms:?&body=${encodeURIComponent(smsMessage)}`;
+      }
     }
 
     document.getElementById('inviteVideoBtn').addEventListener('click', () => sendInvite('video'));
