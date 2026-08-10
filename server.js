@@ -1,99 +1,79 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const cors = require('cors');
 
 const app = express();
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Health Check
-app.get('/health', (req, res) => {
-  res.status(200).send('ZeroPhone signaling server is healthy');
-});
-
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
+    origin: "*",
+    methods: ["GET", "POST"]
   }
+});
+
+// ANONYMOUS IN-MEMORY USAGE STATS
+const usageStats = {
+  activeConnections: 0,
+  totalVideoCallsStarted: 0,
+  totalVoiceCallsStarted: 0,
+  totalWebTextsSent: 0,
+  totalRoomsJoined: 0
+};
+
+// Public Stats Endpoint (No personal data, only aggregate counts)
+app.get('/stats', (req, res) => {
+  res.json({
+    status: "online",
+    stats: usageStats,
+    timestamp: new Date().toISOString()
+  });
 });
 
 io.on('connection', (socket) => {
-  console.log(`[Connected] Socket ID: ${socket.id}`);
+  usageStats.activeConnections++;
+  console.log(`[Connect] Active sockets: ${usageStats.activeConnections}`);
 
+  // Room Joining
   socket.on('join-room', (roomId) => {
     socket.join(roomId);
-    socket.to(roomId).emit('user-joined', { peerId: socket.id });
+    usageStats.totalRoomsJoined++;
+    socket.to(roomId).emit('user-joined', { socketId: socket.id });
   });
 
-  socket.on('offer', ({ offer, roomId }) => {
-    socket.to(roomId).emit('offer', { offer, senderId: socket.id });
+  // Call Handshakes (Increments Video vs Voice counters)
+  socket.on('offer', (data) => {
+    if (data.isAudioOnly) {
+      usageStats.totalVoiceCallsStarted++;
+    } else {
+      usageStats.totalVideoCallsStarted++;
+    }
+    socket.to(data.targetId).emit('offer', { offer: data.offer, senderId: socket.id });
   });
 
-  socket.on('answer', ({ answer, roomId }) => {
-    socket.to(roomId).emit('answer', { answer, senderId: socket.id });
+  socket.on('answer', (data) => {
+    socket.to(data.targetId).emit('answer', { answer: data.answer, senderId: socket.id });
   });
 
-  socket.on('ice-candidate', ({ candidate, roomId }) => {
-    socket.to(roomId).emit('ice-candidate', { candidate, senderId: socket.id });
+  socket.on('ice-candidate', (data) => {
+    socket.to(data.targetId).emit('ice-candidate', { candidate: data.candidate, senderId: socket.id });
   });
 
+  // WebText Counter (Increments count only, ignores text content)
+  socket.on('send-web-chat', (data) => {
+    usageStats.totalWebTextsSent++;
+    socket.to(data.roomId).emit('receive-web-chat', { message: data.message, sender: data.sender });
+  });
+
+  // Disconnect Handling
   socket.on('disconnect', () => {
-    console.log(`[Disconnected] Socket ID: ${socket.id}`);
-    io.emit('user-left', { peerId: socket.id });
+    usageStats.activeConnections = Math.max(0, usageStats.activeConnections - 1);
+    console.log(`[Disconnect] Active sockets: ${usageStats.activeConnections}`);
+    io.emit('user-disconnected', { socketId: socket.id });
   });
 });
 
-// Webhook for incoming SMS replies from Twilio
-app.post('/api/incoming-sms', (req, res) => {
-  const fromNumber = req.body.From;
-  const bodyText = req.body.Body;
-
-  console.log(`Incoming SMS from ${fromNumber}: ${bodyText}`);
-
-  if (typeof io !== 'undefined') {
-    io.emit('sms-reply', { from: fromNumber, message: bodyText });
-  }
-
-  res.type('text/xml').send('<Response></Response>');
-});
-
-// Endpoint to handle sending SMS from web page
-app.post('/api/send-sms', async (req, res) => {
-  const { to, message } = req.body;
-
-  if (!to || !message) {
-    return res.status(400).json({ success: false, error: 'Missing phone number or message.' });
-  }
-
-  try {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
-
-    const client = require('twilio')(accountSid, authToken);
-
-    const result = await client.messages.create({
-      body: message,
-      from: twilioPhone,
-      to: to
-    });
-
-    console.log(`SMS sent successfully! SID: ${result.sid}`);
-    res.json({ success: true, sid: result.sid });
-  } catch (error) {
-    console.error('Twilio Error:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`ZeroPhone signaling server listening on port ${PORT}`);
+  console.log(`Signaling server running on port ${PORT}`);
 });
