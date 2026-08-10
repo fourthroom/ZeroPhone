@@ -624,24 +624,29 @@
       </div>
     </div>
 
-    <!-- TAB 4: MAPS (WITH LOCATION INPUT BOX) -->
+    <!-- TAB 4: MAPS (REFINED WITH LOCATION SEARCH BUTTON & RED PIN ENFORCEMENT) -->
     <div id="tab-maps" class="tab-content">
       <h2 style="color: #ff9500; margin-top: 0;">📍 Free Wi-Fi & Resource Maps</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
 
       <div class="maps-box">
-        <!-- LOCATION INPUT + GPS BAR -->
+        <!-- LOCATION INPUT + ENTER SEARCH BUTTON -->
         <div style="margin-bottom: 14px; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap;">
           <label for="userMapLocationInput" style="font-size: 13px; font-weight: bold; color: #ff9500;">
-            📍 Enter Current Location:
+            📍 Location:
           </label>
-          <input type="text" id="userMapLocationInput" placeholder="City, Zip Code, or Address" value="Seattle, WA" style="background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 13px; width: 220px; text-align: center;">
           
-          <button onclick="centerMapOnUser(true)" style="font-size: 12px; padding: 8px 12px; background: #ff9500; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+          <input type="text" id="userMapLocationInput" placeholder="City, Zip, or Address" value="Seattle, WA" onkeypress="if(event.key==='Enter') searchLocationPin();" style="background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 13px; width: 200px; text-align: center;">
+          
+          <button onclick="searchLocationPin()" style="font-size: 12px; padding: 8px 14px; background: #ff9500; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+            📍 Search Location
+          </button>
+
+          <button onclick="centerMapOnUser(true)" style="font-size: 12px; padding: 8px 12px; background: #30d158; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
             🎯 Use GPS
           </button>
 
-          <span id="geoStatusText" style="font-size: 12px; color: #aaa; width: 100%;">Enter a location above or tap Use GPS</span>
+          <span id="geoStatusText" style="font-size: 12px; color: #aaa; width: 100%;">Enter a location and tap Search, or tap Use GPS</span>
         </div>
 
         <div class="maps-filter-bar">
@@ -653,7 +658,7 @@
         </div>
 
         <div class="map-frame-container">
-          <iframe id="googleMapIframe" src="https://www.google.com/maps?q=free+wifi+in+Seattle+WA&z=14&output=embed" allowfullscreen></iframe>
+          <iframe id="googleMapIframe" src="https://www.google.com/maps?q=Seattle+WA&z=14&output=embed" allowfullscreen></iframe>
         </div>
       </div>
     </div>
@@ -809,17 +814,36 @@
       }
     }
 
-    // DYNAMIC MAP SEARCH USING EITHER USER LOCATION INPUT OR GPS COORDINATES
-    function loadMapQuery(searchTerm, zoomLevel = 14) {
+    // SEARCH LOCATION AND PLACE RED PIN MARKER
+    function searchLocationPin() {
+      currentCoords = null; // Reset GPS so typed location takes priority
+      const customLoc = document.getElementById('userMapLocationInput').value.trim();
+      const geoStatus = document.getElementById('geoStatusText');
+      const iframe = document.getElementById('googleMapIframe');
+
+      if (!customLoc) {
+        return alert("Please enter a city, zip code, or address.");
+      }
+
+      if (geoStatus) {
+        geoStatus.innerText = `📍 Pin centered on: ${customLoc}`;
+        geoStatus.style.color = "#ff9500";
+      }
+
+      iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(customLoc)}&z=14&output=embed`;
+    }
+
+    // MAP QUERY ENGINE FOR RESOURCE FILTER BUTTONS
+    function loadMapQuery(resourceTerm, zoomLevel = 14) {
       const iframe = document.getElementById('googleMapIframe');
       const customLoc = document.getElementById('userMapLocationInput').value.trim();
 
       if (currentCoords) {
-        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(searchTerm)}&ll=${currentCoords.lat},${currentCoords.lng}&z=${zoomLevel}&output=embed`;
+        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm)}&ll=${currentCoords.lat},${currentCoords.lng}&z=${zoomLevel}&output=embed`;
       } else if (customLoc) {
-        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(searchTerm)} in ${encodeURIComponent(customLoc)}&z=${zoomLevel}&output=embed`;
+        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm + ' near ' + customLoc)}&z=${zoomLevel}&output=embed`;
       } else {
-        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(searchTerm)} in Seattle WA&z=${zoomLevel}&output=embed`;
+        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm + ' near Seattle WA')}&z=${zoomLevel}&output=embed`;
       }
     }
 
@@ -836,7 +860,7 @@
               geoStatus.innerText = "📍 GPS Location Locked!";
               geoStatus.style.color = "#30d158";
             }
-            document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=free+wifi&ll=${currentCoords.lat},${currentCoords.lng}&z=15&output=embed`;
+            document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=${currentCoords.lat},${currentCoords.lng}&z=15&output=embed`;
           },
           (err) => {
             currentCoords = null;
@@ -844,7 +868,7 @@
               geoStatus.innerText = "📍 Using typed location in text box above";
               geoStatus.style.color = "#ff9500";
             }
-            loadMapQuery('free wifi', 14);
+            searchLocationPin();
           },
           { enableHighAccuracy: false, timeout: 6000, maximumAge: 300000 }
         );
@@ -987,7 +1011,7 @@
       socket.emit('join-room', roomId);
       statusDiv.innerText = `Joined room: ${roomId}. Waiting for peers...`;
       
-      hangUpBtn.innerText = isAudioOnly ? "🔴 End Voice Call" : "🔴 End Video Call";
+      hangUpBtn.innerText = isAudioOnly ? "🔴 End Voice Call" : "🔴 End Voice Call";
       hangUpBtn.style.display = 'inline-block';
     }
 
