@@ -158,7 +158,6 @@
       text-align: left;
     }
 
-    /* STEP 3 IN MATCHING GREEN WITH DOWN ARROW */
     .step3-divider {
       font-size: 14px;
       font-weight: bold;
@@ -247,7 +246,7 @@
 
     #status { font-weight: bold; color: #30d158; margin-bottom: 4px; }
 
-    /* DYNAMIC 4-WAY MULTI-PEER GRID */
+    /* DYNAMIC MULTI-PEER MESH GRID */
     .video-grid { 
       display: flex; 
       justify-content: center; 
@@ -517,16 +516,17 @@
 
     <!-- RESPONDER SINGLE-BUTTON INVITE VIEW -->
     <div id="responderAccessBox">
-      <h2 style="font-size:24px; margin-top:0; color:#30d158;">You have been invited to a Call!</h2>
+      <h2 id="inviteTitleText" style="font-size:24px; margin-top:0; color:#30d158;">You have been invited to a Call!</h2>
       <p style="color:#aaa; font-size:15px; margin-bottom:25px;">Tap the big green button below to enter directly:</p>
       <button id="megaEnterBtn" class="btn-mega-enter">📹 Enter Video</button>
     </div>
 
     <!-- TAB 1: LEVEL 1 - WEBPHONE -->
     <div id="tab-level1-phone" class="tab-content active">
-      <div id="status">Connected to Server! Enter Room Name</div>
+      <!-- TWEAK 1: OPENING STATUS CHANGED TO "Connected to Server" -->
+      <div id="status">Connected to Server</div>
 
-      <!-- RESTRUCTURED MAIN FORM -->
+      <!-- MAIN FORM -->
       <div id="webphoneMainSection">
         <div class="webphone-main-layout">
           
@@ -542,7 +542,6 @@
               <input type="text" id="roomId" class="webphone-input" placeholder="Enter Room Name">
             </div>
 
-            <!-- STEP 3 IN MATCHING GREEN WITH DOWN ARROW -->
             <div class="step3-divider">
               Step 3: Send Invitation via Text ➔<br>OR Start Call Below<br>⬇
             </div>
@@ -581,7 +580,8 @@
       </div>
 
       <div style="margin-top: 15px; text-align: center;">
-        <button id="hangUpBtn" class="btn-red-end" style="display:none; font-size:18px; padding:12px 28px; font-weight:bold; border-radius:10px;">🔴 End Video Call</button>
+        <!-- TWEAK 2: END CALL BUTTON DYNAMIC TEXT -->
+        <button id="hangUpBtn" class="btn-red-end" style="display:none; font-size:18px; padding:12px 28px; font-weight:bold; border-radius:10px;">🔴 End Call</button>
       </div>
     </div>
 
@@ -700,7 +700,7 @@
     
     const socket = io(SIGNALING_SERVER);
     let localStream;
-    let peerConnections = {}; // Map of socketId -> RTCPeerConnection for Multi-Peer Mesh
+    let peerConnections = {};
     let isAudioOnly = false;
     let currentCoords = null;
 
@@ -721,6 +721,7 @@
       document.getElementById('webTextRoomId').value = roomParam;
     }
 
+    // TWEAK 3: VOICE INVITE LANDING BUTTON TEXT
     window.addEventListener('DOMContentLoaded', () => {
       if (roomParam) {
         document.getElementById('mainHeader').style.display = 'none';
@@ -728,6 +729,23 @@
         document.getElementById('videoStreamView').style.display = 'none';
         document.getElementById('status').style.display = 'none';
         
+        const enterBtn = document.getElementById('megaEnterBtn');
+        const inviteTitle = document.getElementById('inviteTitleText');
+
+        if (modeParam === 'voice') {
+          inviteTitle.innerText = "You have been invited to a Voice Call!";
+          enterBtn.innerText = "🎙️ Start Voice Call";
+          enterBtn.style.background = "#00a8ff";
+        } else if (modeParam === 'text') {
+          inviteTitle.innerText = "You have been invited to WebText!";
+          enterBtn.innerText = "💬 Open WebText";
+          enterBtn.style.background = "#63e685";
+        } else {
+          inviteTitle.innerText = "You have been invited to a Video Call!";
+          enterBtn.innerText = "📹 Start Video Call";
+          enterBtn.style.background = "#30d158";
+        }
+
         document.getElementById('responderAccessBox').style.display = 'block';
       }
     });
@@ -788,7 +806,7 @@
           (position) => {
             currentCoords = { lat: position.coords.latitude, lng: position.coords.longitude };
             if (geoStatus) geoStatus.innerText = "📍 Location Locked!";
-            document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=free+wifi&ll=${currentCoords.lat},${currentCoords.lng}&z=15&output=embed`;
+            document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=free+wifi&ll=${currentCoords.lat},${currentCoords.lng}&z=${zoomLevel||15}&output=embed`;
             if (forceAlert) alert("Map centered on your current location!");
           },
           () => { if (geoStatus) geoStatus.innerText = "Using Seattle Default"; },
@@ -797,7 +815,7 @@
       }
     }
 
-    // Radio Engine
+    // TWEAK 4: RADIO DATABASE SEARCH ENGINE
     const RADIO_API_BASE = "https://de1.api.radio-browser.info/json/stations/search";
 
     async function fetchRadioBrowserGenre(tag, labelName) {
@@ -821,6 +839,37 @@
         }
       } catch (err) {
         bankList.innerHTML = '<p style="color:#ff3b30; font-size:12px;">Failed to load stations.</p>';
+      }
+    }
+
+    async function searchRadioBrowserCustom() {
+      const queryInput = document.getElementById('customStreamInput');
+      const query = queryInput.value.trim();
+      if (!query) return alert("Please enter a station name or call letters.");
+
+      const bankList = document.getElementById('stationBankList');
+      const statusText = document.getElementById('radioStatusText');
+
+      statusText.innerText = `⏳ Searching database for "${query}"...`;
+      statusText.style.color = "#ff9500";
+
+      try {
+        const response = await fetch(`${RADIO_API_BASE}?name=${encodeURIComponent(query)}&limit=15&is_https=true&order=votes&reverse=true`);
+        const stations = await response.json();
+        const httpsStations = stations.filter(s => s.url_resolved && s.url_resolved.startsWith('https://'));
+
+        if (httpsStations.length > 0) {
+          renderStationBank(httpsStations);
+          selectStationItem(httpsStations[0]);
+        } else {
+          alert("Station Not In Database");
+          statusText.innerText = "● Ready to Tune";
+          statusText.style.color = "#aaa";
+        }
+      } catch (err) {
+        alert("Station Not In Database");
+        statusText.innerText = "● Ready to Tune";
+        statusText.style.color = "#aaa";
       }
     }
 
@@ -881,7 +930,7 @@
     });
 
     socket.on('connect', () => {
-      statusDiv.innerText = "Connected to Server! Enter Room Name";
+      statusDiv.innerText = "Connected to Server";
     });
 
     // START MULTI-PARTY MESH CALL
@@ -901,6 +950,9 @@
 
       socket.emit('join-room', roomId);
       statusDiv.innerText = `Joined room: ${roomId}. Waiting for peers...`;
+      
+      // TWEAK 2: UPDATE END CALL BUTTON TEXT DYNAMICALLY
+      hangUpBtn.innerText = isAudioOnly ? "🔴 End Voice Call" : "🔴 End Video Call";
       hangUpBtn.style.display = 'inline-block';
     }
 
@@ -932,14 +984,13 @@
     document.getElementById('joinVideoBtn').addEventListener('click', () => startCall(false));
     document.getElementById('joinVoiceBtn').addEventListener('click', () => startCall(true));
 
-    // MULTI-PEER MESH SIGNALING HANDLERS
     socket.on('user-joined', async ({ socketId }) => {
       statusDiv.innerText = "Peer joining... Connecting media!";
       const pc = createPeerConnection(socketId);
 
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      socket.emit('offer', { offer, targetId: socketId });
+      socket.emit('offer', { offer, targetId: socketId, isAudioOnly: isAudioOnly });
     });
 
     socket.on('offer', async ({ offer, senderId }) => {
