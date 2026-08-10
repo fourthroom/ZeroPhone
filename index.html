@@ -624,23 +624,32 @@
       </div>
     </div>
 
-    <!-- TAB 4: MAPS -->
+    <!-- TAB 4: MAPS (WITH LOCATION INPUT BOX) -->
     <div id="tab-maps" class="tab-content">
       <h2 style="color: #ff9500; margin-top: 0;">📍 Free Wi-Fi & Resource Maps</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
 
       <div class="maps-box">
+        <!-- LOCATION INPUT + GPS BAR -->
+        <div style="margin-bottom: 14px; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <label for="userMapLocationInput" style="font-size: 13px; font-weight: bold; color: #ff9500;">
+            📍 Enter Current Location:
+          </label>
+          <input type="text" id="userMapLocationInput" placeholder="City, Zip Code, or Address" value="Seattle, WA" style="background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 13px; width: 220px; text-align: center;">
+          
+          <button onclick="centerMapOnUser(true)" style="font-size: 12px; padding: 8px 12px; background: #ff9500; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+            🎯 Use GPS
+          </button>
+
+          <span id="geoStatusText" style="font-size: 12px; color: #aaa; width: 100%;">Enter a location above or tap Use GPS</span>
+        </div>
+
         <div class="maps-filter-bar">
           <button class="maps-filter-btn" onclick="loadMapQuery('free wifi', 15)">📶 Closest Public Wifi</button>
           <button class="maps-filter-btn" onclick="loadMapQuery('public library branch', 14)">📚 City & County Libraries</button>
           <button class="maps-filter-btn" onclick="loadMapQuery('McDonalds or Jack in the Box or Wendys', 14)">🍔 Fast Food Wi-Fi</button>
           <button class="maps-filter-btn" onclick="loadMapQuery('coffee shop free wifi', 15)">☕ Coffee Shops Wi-Fi</button>
           <button class="maps-filter-btn" onclick="loadMapQuery('food bank shelter', 13)">🥫 Food Banks & Resources</button>
-        </div>
-
-        <div style="margin-bottom: 12px; display: flex; justify-content: center; align-items: center; gap: 10px;">
-          <button onclick="centerMapOnUser(true)" style="font-size: 12px; padding: 6px 14px; background: #ff9500; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">🎯 Refresh My GPS Location</button>
-          <span id="geoStatusText" style="font-size: 12px; color: #aaa;">Detecting location...</span>
         </div>
 
         <div class="map-frame-container">
@@ -794,55 +803,51 @@
       } else if (tabName === 'maps') {
         document.querySelectorAll('.tab-btn')[3].classList.add('active');
         document.getElementById('tab-maps').classList.add('active');
-        centerMapOnUser(false);
       } else if (tabName === 'radio') {
         document.querySelectorAll('.tab-btn')[4].classList.add('active');
         document.getElementById('tab-radio').classList.add('active');
       }
     }
 
+    // DYNAMIC MAP SEARCH USING EITHER USER LOCATION INPUT OR GPS COORDINATES
     function loadMapQuery(searchTerm, zoomLevel = 14) {
       const iframe = document.getElementById('googleMapIframe');
+      const customLoc = document.getElementById('userMapLocationInput').value.trim();
+
       if (currentCoords) {
         iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(searchTerm)}&ll=${currentCoords.lat},${currentCoords.lng}&z=${zoomLevel}&output=embed`;
+      } else if (customLoc) {
+        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(searchTerm)} in ${encodeURIComponent(customLoc)}&z=${zoomLevel}&output=embed`;
       } else {
         iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(searchTerm)} in Seattle WA&z=${zoomLevel}&output=embed`;
-        centerMapOnUser(true);
       }
     }
 
-    // IPAD & MOBILE OPTIMIZED GEOLOCATION (FAST WI-FI LOCK)
+    // GPS FALLBACK BUTTON
     function centerMapOnUser(forcePrompt = false) {
       const geoStatus = document.getElementById('geoStatusText');
-      if (geoStatus) geoStatus.innerText = "⏳ Finding location...";
+      if (geoStatus) geoStatus.innerText = "⏳ Requesting GPS coordinates...";
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             currentCoords = { lat: position.coords.latitude, lng: position.coords.longitude };
             if (geoStatus) {
-              geoStatus.innerText = "📍 Location Locked!";
+              geoStatus.innerText = "📍 GPS Location Locked!";
               geoStatus.style.color = "#30d158";
             }
             document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=free+wifi&ll=${currentCoords.lat},${currentCoords.lng}&z=15&output=embed`;
           },
           (err) => {
+            currentCoords = null;
             if (geoStatus) {
-              geoStatus.innerText = "⚠️ Location paused - Tap Refresh to try again";
+              geoStatus.innerText = "📍 Using typed location in text box above";
               geoStatus.style.color = "#ff9500";
             }
-            if (forcePrompt) {
-              alert("Location timed out or was blocked.\n\nTap 'Refresh My GPS Location' or allow location access in your browser settings.");
-            }
+            loadMapQuery('free wifi', 14);
           },
-          { 
-            enableHighAccuracy: false, // Fast Wi-Fi / IP lock (ideal for iPads & laptops)
-            timeout: 6000,              // Short 6s timeout prevents screen freezing
-            maximumAge: 300000          // Use recent location if cached within 5 mins
-          }
+          { enableHighAccuracy: false, timeout: 6000, maximumAge: 300000 }
         );
-      } else {
-        if (geoStatus) geoStatus.innerText = "Geolocation not supported";
       }
     }
 
