@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO PRIMARY META TAGS FOR GOOGLE SEARCH -->
+  <title>ZeroPhone — Encrypted Browser Video Calling, WebText & Local Resources</title>
+  <meta name="description" content="ZeroPhone is a completely free, privacy-first web utility featuring end-to-end AES-256-GCM encrypted video calling, voice calls, free WebText, local Wi-Fi maps, and live radio.">
+  <meta name="keywords" content="ZeroPhone, fourthroom.org, AES-256 encryption, free video call, browser calling, WebRTC, free web text, local radio streams, public wifi maps">
+  <meta name="author" content="FourthRoom">
+  <link rel="canonical" href="https://fourthroom.org/">
+
+  <!-- OPEN GRAPH / FACEBOOK / MESSENGER / TEXT PREVIEWS -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://fourthroom.org/">
+  <meta property="og:title" content="ZeroPhone — Encrypted Web Calling & WebText">
+  <meta property="og:description" content="Instant, private video and voice calling right from your browser powered by AES-256-GCM encryption. No downloads or accounts required.">
+  <meta property="og:image" content="https://fourthroom.org/icon.png">
+
+  <!-- TWITTER CARD META TAGS -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://fourthroom.org/">
+  <meta name="twitter:title" content="ZeroPhone — AES-256 Encrypted Web Calling & WebText">
+  <meta name="twitter:description" content="Completely free, end-to-end encrypted video and voice calls directly in your browser.">
+  <meta name="twitter:image" content="https://fourthroom.org/icon.png">
+
+  <!-- BROWSER TAB FAVICON & PWA ICONS -->
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="shortcut icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ZeroPhone">
+  <meta name="theme-color" content="#121212">
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    body { 
+      font-family: system-ui, -apple-system, sans-serif; 
+      background: #121212; 
+      color: #fff; 
+      margin: 0; 
+      padding: 0; 
+    }
+
+    /* Top Centered Header */
+    .top-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #1c1c1e;
+      border-bottom: 2px solid #333;
+      padding: 12px 15px 0 15px;
+      gap: 12px;
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-header-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+
+    .app-brand-title {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: #fff;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-bar {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: bold;
+      border: none;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+      opacity: 0.6;
+      transition: opacity 0.2s, background 0.2s;
+    }
+
+    .tab-btn.active { opacity: 1.0; }
+
+    .tab-level1-phone { background: #1b4d2e; border-top: 3px solid #30d158; }
+    .tab-level1-phone.active { background: #30d158; color: #000; }
+
+    .tab-level1-text { background: #267340; border-top: 3px solid #63e685; }
+    .tab-level1-text.active { background: #63e685; color: #000; }
+
+    .tab-level2 { background: #0a3663; border-top: 3px solid #0a84ff; }
+    .tab-level2.active { background: #0a84ff; color: #fff; }
+
+    .tab-maps { background: #5c3800; border-top: 3px solid #ff9500; }
+    .tab-maps.active { background: #ff9500; color: #000; }
+
+    .tab-radio { background: #4a0072; border-top: 3px solid #e040fb; }
+    .tab-radio.active { background: #e040fb; color: #000; }
+
+    .sub-tagline {
+      font-size: 11px;
+      display: block;
+      font-weight: normal;
+      margin-top: 2px;
+    }
+
+    .container {
+      padding: 15px;
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* RESTRUCTURED STEP-BY-STEP WEBPHONE LAYOUT */
+    .webphone-main-layout {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      max-width: 720px;
+      margin: 15px auto;
+      align-items: flex-start;
+      background: #1c1c1e;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .webphone-steps-left {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-label {
+      font-weight: bold;
+      font-size: 14px;
+      color: #30d158;
+      white-space: nowrap;
+      min-width: 55px;
+      text-align: right;
+    }
+
+    .webphone-input {
+      flex: 1;
+      padding: 10px 14px;
+      font-size: 15px;
+      border-radius: 8px;
+      background: #2c2c2e;
+      color: #fff;
+      border: 1px solid #444;
+      text-align: left;
+    }
+
+    .step3-divider {
+      font-size: 14px;
+      font-weight: bold;
+      color: #30d158;
+      margin: 10px 0 5px 0;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* RIGHT SIDE SMALL SQUARE BUTTONS + VINTAGE TOGGLE PANEL */
+    .webphone-invites-right {
+      flex: 1.4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      background: #121212;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .invite-header-text {
+      font-size: 11px;
+      font-weight: bold;
+      color: #aaa;
+      text-align: center;
+      line-height: 1.25;
+      margin-bottom: 2px;
+    }
+
+    .invites-and-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .buttons-column {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-square-invite {
+      width: 75px;
+      height: 70px;
+      border-radius: 12px;
+      border: none;
+      background: #0a84ff;
+      color: #fff;
+      font-weight: bold;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: transform 0.1s;
+    }
+
+    .btn-square-invite:hover { background: #0066cc; }
+    .btn-square-invite:active { transform: scale(0.95); }
+
+    /* OLD-FASHIONED VERTICAL TOGGLE SWITCH CONTROL */
+    .vintage-toggle-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #1c1c1e;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 8px 6px;
+      gap: 6px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
+    }
+
+    .toggle-label-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: bold;
+      color: #aaa;
+    }
+
+    .indicator-light {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #333;
+      border: 1px solid #555;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .indicator-light.active-red {
+      background: #ff3b30;
+      box-shadow: 0 0 8px #ff3b30, 0 0 12px #ff3b30;
+    }
+
+    /* VERTICAL TOGGLE SWITCH STYLING */
+    .switch-container {
+      position: relative;
+      width: 24px;
+      height: 50px;
+    }
+
+    .switch-container input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider-track {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #2c2c2e;
+      border: 2px solid #555;
+      border-radius: 12px;
+      transition: .2s;
+    }
+
+    .slider-track:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 18px;
+      left: 1px;
+      top: 2px;
+      background-color: #aaa;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6);
+      transition: .2s;
+    }
+
+    input:checked + .slider-track:before {
+      transform: translateY(22px);
+      background-color: #ff3b30;
+    }
+
+    /* CENTERED CALL BUTTONS */
+    .centered-call-row {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .btn-call-action {
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .btn-red-start { background: #ff3b30; color: white; }
+    .btn-red-start:hover { background: #d70015; }
+
+    .btn-pink-start { background: #f48fb1; color: #000; }
+    .btn-pink-start:hover { background: #f06292; }
+
+    .btn-purple { background: #af52de; color: white; cursor: pointer; font-weight: bold; }
+    .btn-red-end { background: #ff3b30; color: white; cursor: pointer; font-weight: bold; }
+
+    #status { font-weight: bold; color: #30d158; margin-bottom: 4px; }
+
+    /* DYNAMIC MULTI-PEER MESH GRID */
+    .video-grid { 
+      display: flex; 
+      justify-content: center; 
+      gap: 15px; 
+      flex-wrap: wrap; 
+      margin-top: 15px; 
+    }
+
+    .video-card { 
+      flex: 1 1 42%; 
+      min-width: 280px; 
+      max-width: 480px; 
+    }
+
+    video { 
+      width: 100%; 
+      height: 280px; 
+      background: #000; 
+      border-radius: 12px; 
+      border: 2px solid #333; 
+      object-fit: cover; 
+    }
+
+    /* SENIOR INVITE SINGLE BUTTON */
+    #responderAccessBox {
+      display: none;
+      background: #1c1c1e;
+      border: 2px solid #30d158;
+      border-radius: 20px;
+      padding: 40px 20px;
+      max-width: 450px;
+      margin: 40px auto;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+
+    .btn-mega-enter {
+      background: #30d158;
+      color: #000;
+      font-size: 26px;
+      font-weight: 900;
+      padding: 24px 36px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 6px 20px rgba(48, 209, 88, 0.4);
+    }
+
+    .web-chat-box {
+      background: #1c1c1e;
+      border: 1px solid #63e685;
+      border-radius: 12px;
+      padding: 15px;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    #web-chat-thread {
+      height: 260px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px;
+      overflow-y: auto;
+      background: #121212;
+      text-align: left;
+      margin-bottom: 12px;
+    }
+
+    .maps-box {
+      background: #1c1c1e;
+      border: 1px solid #ff9500;
+      border-radius: 12px;
+      padding: 15px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .maps-filter-bar {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .maps-filter-btn {
+      background: #2c2c2e;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .map-frame-container {
+      width: 100%;
+      height: 500px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #444;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .radio-box {
+      background: #1c1c1e;
+      border: 1px solid #e040fb;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 950px;
+      margin: 0 auto;
+    }
+
+    .radio-genre-bar {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .genre-btn {
+      background: #2c2c2e;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .radio-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .station-bank-container {
+      flex: 1;
+      min-width: 280px;
+      background: #121212;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .station-bank-header {
+      font-size: 13px;
+      font-weight: bold;
+      color: #e040fb;
+      margin: 0 0 10px 0;
+      text-transform: uppercase;
+    }
+
+    .station-bank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .station-bank-item {
+      background: #2c2c2e;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .radio-console {
+      flex: 1.5;
+      min-width: 320px;
+      background: #121212;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .now-playing-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #e040fb;
+      margin: 0;
+    }
+
+    .now-playing-sub {
+      font-size: 13px;
+      color: #aaa;
+      margin-top: -6px;
+    }
+
+    audio {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 8px;
+    }
+
+    .tuner-box {
+      margin-top: 10px;
+      padding-top: 15px;
+      border-top: 1px solid #333;
+      width: 100%;
+      max-width: 480px;
+      text-align: left;
+    }
+
+    .under-construction-box {
+      background: #1c1c1e;
+      border: 2px dashed #ff3b30;
+      border-radius: 16px;
+      padding: 50px 20px;
+      max-width: 500px;
+      margin: 30px auto;
+    }
+
+    /* PRIVACY FOOTER BADGE */
+    .privacy-notice-badge {
+      margin-top: 25px;
+      font-size: 12px;
+      color: #888;
+      background: #18181a;
+      border: 1px solid #2a2a2d;
+      border-radius: 20px;
+      padding: 8px 16px;
+      display: inline-block;
+      max-width: 90%;
+      line-height: 1.4;
+    }
+
+    /* MODAL POPUP FOR LOCATION TROUBLESHOOTING */
+    .location-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .location-modal-content {
+      background: #1c1c1e;
+      border: 2px solid #ff9500;
+      border-radius: 16px;
+      padding: 25px;
+      max-width: 420px;
+      width: 85%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+    }
+
+    /* ========================================================== */
+    /* RESPONSIVE CSS MEDIA QUERIES FOR SMALL PHONES / SMARTPHONES */
+    /* ========================================================== */
+    @media (max-width: 600px) {
+      .top-header {
+        padding: 8px 8px 0 8px;
+        gap: 8px;
+      }
+
+      .app-brand-title {
+        font-size: 20px;
+      }
+
+      .app-header-logo {
+        width: 28px;
+        height: 28px;
+      }
+
+      .tab-bar {
+        gap: 4px;
+      }
+
+      .tab-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+      }
+
+      .sub-tagline {
+        font-size: 9px;
+        margin-top: 1px;
+      }
+
+      .container {
+        padding: 10px 6px;
+      }
+
+      .webphone-main-layout {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px;
+        gap: 12px;
+        margin: 8px auto;
+      }
+
+      .step-row {
+        gap: 6px;
+      }
+
+      .step-label {
+        font-size: 12px;
+        min-width: 45px;
+      }
+
+      .webphone-input {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      .step3-divider {
+        font-size: 12px;
+        margin: 6px 0 2px 0;
+      }
+
+      .webphone-invites-right {
+        padding: 10px;
+      }
+
+      .btn-square-invite {
+        width: 65px;
+        height: 60px;
+        font-size: 10px;
+      }
+
+      .btn-call-action {
+        padding: 10px 18px;
+        font-size: 13px;
+        width: 100%;
+      }
+
+      .centered-call-row {
+        gap: 8px;
+      }
+
+      .privacy-notice-badge {
+        font-size: 10px;
+        padding: 6px 12px;
+        margin-top: 15px;
+      }
+
+      .web-chat-box, .maps-box, .radio-box {
+        padding: 10px;
+      }
+
+      .map-frame-container {
+        height: 350px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOCATION TROUBLESHOOTING MODAL -->
+  <div id="locationModal" class="location-modal-overlay">
+    <div class="location-modal-content">
+      <h3 style="color: #ff9500; margin-top: 0; font-size: 20px;">📍 Enable Location Access</h3>
+      <p style="color: #ccc; font-size: 14px; text-align: left; line-height: 1.5;">
+        To center maps on your current location, allow location access in your device settings:
+      </p>
+      <div style="background: #121212; border: 1px solid #333; border-radius: 8px; padding: 12px; text-align: left; font-size: 12px; color: #aaa; margin-bottom: 20px;">
+        <strong>iPhone / iPad:</strong><br>
+        1. Open <b>Settings</b> → <b>Privacy & Security</b><br>
+        2. Tap <b>Location Services</b> → <b>Safari / Chrome</b><br>
+        3. Select <b>While Using the App</b><br><br>
+        <strong>Desktop Chrome / Safari:</strong><br>
+        Tap the <b>Lock / Sliders icon</b> next to <i>fourthroom.org</i> in your address bar → set Location to <b>Allow</b>.
+      </div>
+      <button onclick="closeLocationModal()" style="background: #ff9500; color: #000; border: none; padding: 10px 24px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">Got It</button>
+    </div>
+  </div>
+
+  <!-- Top Centered Header -->
+  <div id="mainHeader" class="top-header">
+    <div class="brand-container">
+      <h1 class="app-brand-title">
+        <img src="icon.png" alt="Cabin Icon" class="app-header-logo" onerror="this.style.display='none'">
+        ZeroPhone
+      </h1>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab-btn tab-level1-phone active" onclick="switchTab('level1-phone')">
+        Level 1 - WebPhone
+        <span class="sub-tagline">Completely Free</span>
+      </button>
+      <button class="tab-btn tab-level1-text" onclick="switchTab('level1-text')">
+        Level 1 - WebText
+        <span class="sub-tagline">Completely Free</span>
+      </button>
+      <button class="tab-btn tab-level2" onclick="switchTab('level2')">
+        Level 2 - "CellPhone"
+        <span class="sub-tagline">Carrier Text & Calling</span>
+      </button>
+      <button class="tab-btn tab-maps" onclick="switchTab('maps')">
+        📍 Maps
+        <span class="sub-tagline">Wi-Fi & Resource Finder</span>
+      </button>
+      <button class="tab-btn tab-radio" onclick="switchTab('radio')">
+        📻 Radio
+        <span class="sub-tagline">Local Live Streams</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- RESPONDER SINGLE-BUTTON INVITE VIEW -->
+    <div id="responderAccessBox">
+      <h2 id="inviteTitleText" style="font-size:24px; margin-top:0; color:#30d158;">You have been invited to a Call!</h2>
+      <p style="color:#aaa; font-size:15px; margin-bottom:25px;">Tap the big green button below to enter directly:</p>
+      <button id="megaEnterBtn" class="btn-mega-enter">📹 Enter Video</button>
+    </div>
+
+    <!-- TAB 1: LEVEL 1 - WEBPHONE -->
+    <div id="tab-level1-phone" class="tab-content active">
+      <div id="status">Connected to Server</div>
+
+      <!-- MAIN FORM -->
+      <div id="webphoneMainSection">
+        <div class="webphone-main-layout">
+          
+          <!-- LEFT SIDE: STEPS 1 & 2 -->
+          <div class="webphone-steps-left">
+            <div class="step-row">
+              <span class="step-label">Step 1:</span>
+              <input type="text" id="callerName" class="webphone-input" placeholder="Enter Your Name">
+            </div>
+
+            <div class="step-row">
+              <span class="step-label">Step 2:</span>
+              <input type="text" id="roomId" class="webphone-input" placeholder="Enter Room Name">
+            </div>
+
+            <div class="step3-divider">
+              Step 3: Send Invitation via Text/Email ➔<br>THEN Return, & Start Call Below<br>⬇
+            </div>
+          </div>
+
+          <!-- RIGHT SIDE: SMALL SQUARE INVITE BUTTONS & VINTAGE TOGGLE SWITCH -->
+          <div class="webphone-invites-right">
+            <span class="invite-header-text">Send Text or E-mail to Notify Other Party</span>
+            
+            <div class="invites-and-toggle-row">
+              <div class="buttons-column">
+                <button id="inviteVideoBtn" class="btn-square-invite">
+                  <span style="font-size: 18px;">📹</span>
+                  <span>Video Invite</span>
+                </button>
+
+                <button id="inviteVoiceBtn" class="btn-square-invite" style="background: #00a8ff;">
+                  <span style="font-size: 18px;">🎙️</span>
+                  <span>Voice Invite</span>
+                </button>
+              </div>
+
+              <!-- VINTAGE TOGGLE SWITCH PANEL (VERTICAL) -->
+              <div class="vintage-toggle-panel">
+                <div class="toggle-label-group">
+                  <span id="textLightPhone" class="indicator-light active-red"></span>
+                  <span>Text</span>
+                </div>
+
+                <label class="switch-container">
+                  <input type="checkbox" id="phoneInviteToggle" onchange="toggleInviteMode('phone')">
+                  <span class="slider-track"></span>
+                </label>
+
+                <div class="toggle-label-group">
+                  <span id="emailLightPhone" class="indicator-light"></span>
+                  <span>E-mail</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- CENTERED START CALL BUTTONS -->
+        <div class="centered-call-row">
+          <button id="joinVideoBtn" class="btn-call-action btn-red-start">📹 Start Video Call</button>
+          <button id="joinVoiceBtn" class="btn-call-action btn-pink-start">🎙️ Start Voice Call</button>
+        </div>
+      </div>
+
+      <!-- DYNAMIC MULTI-PEER MESH VIDEO GRID -->
+      <div id="videoStreamView" class="video-grid" style="display:none;">
+        <div class="video-card">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px;">Local Stream (You)</h3>
+          <video id="localVideo" autoplay playsinline muted></video>
+        </div>
+      </div>
+
+      <div style="margin-top: 15px; text-align: center;">
+        <button id="hangUpBtn" class="btn-red-end" style="display:none; font-size:18px; padding:12px 28px; font-weight:bold; border-radius:10px;">🔴 End Call</button>
+      </div>
+
+      <!-- PRIVACY NOTICE -->
+      <div class="privacy-notice-badge">
+        🔒 <b>End-to-End Encrypted (AES-256-GCM):</b> All video, voice, and web text are scrambled directly on your device before transmission. Zero data is logged, stored, or shared.
+      </div>
+    </div>
+
+    <!-- TAB 2: LEVEL 1 - WEBTEXT -->
+    <div id="tab-level1-text" class="tab-content">
+      <h2 style="color: #63e685; margin-top: 0;">Level 1 - WebText</h2>
+      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Completely Free Multi-User Web Texting</p>
+
+      <div class="web-chat-box">
+        <div style="display: flex; gap: 12px; margin-bottom: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
+          <input type="text" id="webTextSenderName" placeholder="Your Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 10px 12px; width: 120px; text-align: center;">
+          <input type="text" id="webTextRoomId" placeholder="Room Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 10px 12px; width: 120px; text-align: center;">
+          
+          <button id="inviteTextBtn" class="btn-purple" style="font-size: 14px; padding: 12px 18px; border-radius: 8px;">💬 Send Invite</button>
+
+          <!-- WEBTEXT VERTICAL VINTAGE TOGGLE SWITCH -->
+          <div class="vintage-toggle-panel">
+            <div class="toggle-label-group">
+              <span id="textLightText" class="indicator-light active-red"></span>
+              <span>Text</span>
+            </div>
+
+            <label class="switch-container">
+              <input type="checkbox" id="textInviteToggle" onchange="toggleInviteMode('text')">
+              <span class="slider-track"></span>
+            </label>
+
+            <div class="toggle-label-group">
+              <span id="emailLightText" class="indicator-light"></span>
+              <span>E-mail</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="web-chat-thread">
+          <p style="color: #666; font-style: italic; margin: 0;">Enter your Name and Room Name above to begin web chat...</p>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="webChatInput" placeholder="Type a free web message..." style="flex: 1; text-align: left; background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px;">
+          <button id="sendWebChatBtn" class="btn-purple">Send</button>
+        </div>
+      </div>
+
+      <!-- PRIVACY NOTICE -->
+      <div class="privacy-notice-badge">
+        🔒 <b>End-to-End Encrypted (AES-256-GCM):</b> All video, voice, and web text are scrambled directly on your device before transmission. Zero data is logged, stored, or shared.
+      </div>
+    </div>
+
+    <!-- TAB 3: LEVEL 2 - CELLPHONE -->
+    <div id="tab-level2" class="tab-content">
+      <div class="under-construction-box">
+        <h1 style="color: #ff3b30; font-size: 32px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase;">
+          Under Construction
+        </h1>
+        <p style="color: #aaa; font-size: 15px; margin: 0;">
+          Level 2 Direct Carrier SMS & Ringing Console is currently being updated.
+        </p>
+      </div>
+
+      <!-- PRIVACY NOTICE -->
+      <div class="privacy-notice-badge">
+        🔒 <b>End-to-End Encrypted (AES-256-GCM):</b> All video, voice, and web text are scrambled directly on your device before transmission. Zero data is logged, stored, or shared.
+      </div>
+    </div>
+
+    <!-- TAB 4: MAPS -->
+    <div id="tab-maps" class="tab-content">
+      <h2 style="color: #ff9500; margin-top: 0;">📍 Free Wi-Fi & Resource Maps</h2>
+      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
+
+      <div class="maps-box">
+        <div style="margin-bottom: 14px; display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <button id="btnUseGps" onclick="centerMapOnUser(true)" style="font-size: 13px; padding: 10px 20px; background: #30d158; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+            🎯 Refresh GPS Location
+          </button>
+
+          <span id="geoStatusText" style="font-size: 12px; color: #aaa;">Detecting location...</span>
+        </div>
+
+        <div class="maps-filter-bar">
+          <button class="maps-filter-btn" onclick="loadMapQuery('free wifi', 15)">📶 Closest Public Wifi</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('public library', 14)">📚 City & County Libraries</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('fast food wifi', 14)">🍔 Fast Food Wi-Fi</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('coffee shop wifi', 15)">☕ Coffee Shops Wi-Fi</button>
+          <button class="maps-filter-btn" onclick="loadMapQuery('food bank shelter', 13)">🥫 Food Banks & Resources</button>
+        </div>
+
+        <div class="map-frame-container">
+          <iframe id="googleMapIframe" src="https://www.google.com/maps?q=Seattle+WA&z=14&output=embed" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <!-- PRIVACY NOTICE -->
+      <div class="privacy-notice-badge">
+        🔒 <b>End-to-End Encrypted (AES-256-GCM):</b> All video, voice, and web text are scrambled directly on your device before transmission. Zero data is logged, stored, or shared.
+      </div>
+    </div>
+
+    <!-- TAB 5: RADIO -->
+    <div id="tab-radio" class="tab-content">
+      <h2 style="color: #e040fb; margin-top: 0;">📻 Local Live Internet Radio</h2>
+      <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre to populate the Left Station Bank</p>
+
+      <div class="radio-box">
+        <div class="radio-genre-bar">
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('classical', 'Classical')">🎼 Classical</button>
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('pop', 'Pop / Indie')">🎤 Pop</button>
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('rock', 'Classic Rock')">🎸 Rock N' Roll</button>
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('country', 'Country')">🤠 Country</button>
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('jazz', 'Jazz')">🎷 Jazz</button>
+          <button class="genre-btn" onclick="fetchRadioBrowserGenre('news', 'News / NPR')">📰 News & NPR</button>
+        </div>
+
+        <div class="radio-layout">
+          <div class="station-bank-container">
+            <h4 class="station-bank-header">📻 Station Bank</h4>
+            <div id="stationBankList" class="station-bank-list">
+              <p style="color: #666; font-size: 12px; font-style: italic; margin: 0;">Select a genre above to load stations into this bank...</p>
+            </div>
+          </div>
+
+          <div class="radio-console">
+            <h3 id="radioStationTitle" class="now-playing-title">📻 Select a Station</h3>
+            <span id="radioStationLocation" class="now-playing-sub">Choose a station from the Bank on the left</span>
+
+            <audio id="radioAudioPlayer" controls preload="none">
+              Your browser does not support the audio element.
+            </audio>
+
+            <p id="radioStatusText" style="font-size: 12px; color: #aaa; margin: 0; font-weight: bold;">● Ready to Tune</p>
+
+            <div class="tuner-box">
+              <label for="customStreamInput" style="display:block; font-size: 12px; color: #aaa; font-weight: bold; margin-bottom: 6px;">
+                📻 Search Station Name / Call Letters:
+              </label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="customStreamInput" placeholder="e.g., KEXP, KING, KNKX, KUOW..." style="flex: 1; text-align: left; background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 6px;">
+                <button onclick="searchRadioBrowserCustom()" class="btn-purple" style="font-size: 13px; padding: 8px 14px;">Tune In</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PRIVACY NOTICE -->
+      <div class="privacy-notice-badge">
+        🔒 <b>End-to-End Encrypted (AES-256-GCM):</b> All video, voice, and web text are scrambled directly on your device before transmission. Zero data is logged, stored, or shared.
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const SIGNALING_SERVER = "https://webrtc-signaling-do2l.onrender.com";
+    
+    const socket = io(SIGNALING_SERVER);
+    let localStream;
+    let peerConnections = {};
+    let isAudioOnly = false;
+    let currentCoords = null;
+
+    const roomIdInput = document.getElementById('roomId');
+    const callerNameInput = document.getElementById('callerName');
+    const webTextSenderNameInput = document.getElementById('webTextSenderName');
+    const statusDiv = document.getElementById('status');
+    const hangUpBtn = document.getElementById('hangUpBtn');
+
+    const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+    // WEB CRYPTO API ENGINE (AES-256-GCM)
+    async function deriveAesKey(roomName) {
+      const enc = new TextEncoder();
+      const paddedSecret = roomName.padEnd(32, '0').slice(0, 32);
+      return await window.crypto.subtle.importKey(
+        "raw",
+        enc.encode(paddedSecret),
+        { name: "AES-GCM" },
+        false,
+        ["encrypt", "decrypt"]
+      );
+    }
+
+    async function encryptPayload(plaintext, roomName) {
+      try {
+        const enc = new TextEncoder();
+        const key = await deriveAesKey(roomName);
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+        const ciphertext = await window.crypto.subtle.encrypt(
+          { name: "AES-GCM", iv: iv },
+          key,
+          enc.encode(plaintext)
+        );
+        return {
+          cipher: btoa(String.fromCharCode(...new Uint8Array(ciphertext))),
+          iv: btoa(String.fromCharCode(...iv))
+        };
+      } catch (e) {
+        return { cipher: plaintext, iv: null };
+      }
+    }
+
+    async function decryptPayload(cipherData, ivData, roomName) {
+      try {
+        if (!ivData) return cipherData;
+        const key = await deriveAesKey(roomName);
+        const ciphertext = Uint8Array.from(atob(cipherData), c => c.charCodeAt(0));
+        const iv = Uint8Array.from(atob(ivData), c => c.charCodeAt(0));
+        const decrypted = await window.crypto.subtle.decrypt(
+          { name: "AES-GCM", iv: iv },
+          key,
+          ciphertext
+        );
+        return new TextDecoder().decode(decrypted);
+      } catch (e) {
+        return cipherData;
+      }
+    }
+
+    // Sync Name Inputs
+    callerNameInput.addEventListener('input', (e) => {
+      webTextSenderNameInput.value = e.target.value;
+    });
+    webTextSenderNameInput.addEventListener('input', (e) => {
+      callerNameInput.value = e.target.value;
+    });
+
+    // TOGGLE MODE LOGIC (SMS vs EMAIL)
+    function toggleInviteMode(type) {
+      if (type === 'phone') {
+        const isEmail = document.getElementById('phoneInviteToggle').checked;
+        document.getElementById('textLightPhone').className = isEmail ? 'indicator-light' : 'indicator-light active-red';
+        document.getElementById('emailLightPhone').className = isEmail ? 'indicator-light active-red' : 'indicator-light';
+      } else {
+        const isEmail = document.getElementById('textInviteToggle').checked;
+        document.getElementById('textLightText').className = isEmail ? 'indicator-light' : 'indicator-light active-red';
+        document.getElementById('emailLightText').className = isEmail ? 'indicator-light active-red' : 'indicator-light';
+      }
+    }
+
+    // URL Parameter handling
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomParam = urlParams.get('room');
+    const modeParam = urlParams.get('mode');
+
+    if (roomParam) {
+      roomIdInput.value = roomParam;
+      document.getElementById('webTextRoomId').value = roomParam;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (roomParam) {
+        document.getElementById('mainHeader').style.display = 'none';
+        document.getElementById('webphoneMainSection').style.display = 'none';
+        document.getElementById('videoStreamView').style.display = 'none';
+        document.getElementById('status').style.display = 'none';
+        
+        const enterBtn = document.getElementById('megaEnterBtn');
+        const inviteTitle = document.getElementById('inviteTitleText');
+
+        if (modeParam === 'voice') {
+          inviteTitle.innerText = "You have been invited to a Voice Call!";
+          enterBtn.innerText = "🎙️ Start Voice Call";
+          enterBtn.style.background = "#00a8ff";
+        } else if (modeParam === 'text') {
+          inviteTitle.innerText = "You have been invited to WebText!";
+          enterBtn.innerText = "💬 Open WebText";
+          enterBtn.style.background = "#63e685";
+        } else {
+          inviteTitle.innerText = "You have been invited to a Video Call!";
+          enterBtn.innerText = "📹 Start Video Call";
+          enterBtn.style.background = "#30d158";
+        }
+
+        document.getElementById('responderAccessBox').style.display = 'block';
+      }
+    });
+
+    document.getElementById('megaEnterBtn').addEventListener('click', () => {
+      document.getElementById('responderAccessBox').style.display = 'none';
+      document.getElementById('status').style.display = 'block';
+      
+      if (modeParam === 'voice') {
+        startCall(true);
+      } else if (modeParam === 'text') {
+        switchTab('level1-text');
+      } else {
+        startCall(false);
+      }
+    });
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      if (tabName === 'level1-phone') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-level1-phone').classList.add('active');
+      } else if (tabName === 'level1-text') {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-level1-text').classList.add('active');
+        const r = document.getElementById('webTextRoomId').value.trim() || roomIdInput.value.trim();
+        if (r) socket.emit('join-room', r);
+      } else if (tabName === 'level2') {
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.getElementById('tab-level2').classList.add('active');
+      } else if (tabName === 'maps') {
+        document.querySelectorAll('.tab-btn')[3].classList.add('active');
+        document.getElementById('tab-maps').classList.add('active');
+        if (!currentCoords) centerMapOnUser(false);
+      } else if (tabName === 'radio') {
+        document.querySelectorAll('.tab-btn')[4].classList.add('active');
+        document.getElementById('tab-radio').classList.add('active');
+      }
+    }
+
+    // MAP QUERY ENGINE FOR RESOURCE FILTER BUTTONS
+    function loadMapQuery(resourceTerm, zoomLevel = 14) {
+      const iframe = document.getElementById('googleMapIframe');
+
+      if (currentCoords) {
+        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm)}&ll=${currentCoords.lat},${currentCoords.lng}&z=${zoomLevel}&output=embed`;
+      } else {
+        iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(resourceTerm + ' in Seattle WA')}&z=${zoomLevel}&output=embed`;
+      }
+    }
+
+    // GPS ENGINE & CONDITIONAL HELPER MODAL
+    function centerMapOnUser(showTroubleshootingModal) {
+      const geoStatus = document.getElementById('geoStatusText');
+      if (geoStatus) geoStatus.innerText = "⏳ Requesting GPS location...";
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            currentCoords = { lat: position.coords.latitude, lng: position.coords.longitude };
+            if (geoStatus) {
+              geoStatus.innerText = "📍 GPS Location Locked!";
+              geoStatus.style.color = "#30d158";
+            }
+            document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=${currentCoords.lat},${currentCoords.lng}&z=15&output=embed`;
+          },
+          (err) => {
+            currentCoords = null;
+            if (geoStatus) {
+              geoStatus.innerText = "⚠️ Location paused - Check device permissions";
+              geoStatus.style.color = "#ff9500";
+            }
+            if (showTroubleshootingModal) {
+              document.getElementById('locationModal').style.display = 'flex';
+            }
+          },
+          { enableHighAccuracy: false, timeout: 6000, maximumAge: 300000 }
+        );
+      }
+    }
+
+    function closeLocationModal() {
+      document.getElementById('locationModal').style.display = 'none';
+    }
+
+    // Radio Engine
+    const RADIO_API_BASE = "https://de1.api.radio-browser.info/json/stations/search";
+
+    async function fetchRadioBrowserGenre(tag, labelName) {
+      const bankList = document.getElementById('stationBankList');
+      const statusText = document.getElementById('radioStatusText');
+
+      statusText.innerText = "⏳ Loading station bank...";
+      statusText.style.color = "#ff9500";
+      bankList.innerHTML = '<p style="color:#aaa; font-size:12px; font-style:italic;">Fetching streams...</p>';
+
+      try {
+        const response = await fetch(`${RADIO_API_BASE}?tag=${tag}&countrycode=US&limit=15&is_https=true&order=votes&reverse=true`);
+        const stations = await response.json();
+        const httpsStations = stations.filter(s => s.url_resolved && s.url_resolved.startsWith('https://'));
+
+        if (httpsStations.length > 0) {
+          renderStationBank(httpsStations);
+          selectStationItem(httpsStations[0]);
+        } else {
+          bankList.innerHTML = '<p style="color:#ff3b30; font-size:12px;">No HTTPS stations found.</p>';
+        }
+      } catch (err) {
+        bankList.innerHTML = '<p style="color:#ff3b30; font-size:12px;">Failed to load stations.</p>';
+      }
+    }
+
+    async function searchRadioBrowserCustom() {
+      const queryInput = document.getElementById('customStreamInput');
+      const query = queryInput.value.trim();
+      if (!query) return alert("Please enter a station name or call letters.");
+
+      const bankList = document.getElementById('stationBankList');
+      const statusText = document.getElementById('radioStatusText');
+
+      statusText.innerText = `⏳ Searching database for "${query}"...`;
+      statusText.style.color = "#ff9500";
+
+      try {
+        const response = await fetch(`${RADIO_API_BASE}?name=${encodeURIComponent(query)}&limit=15&is_https=true&order=votes&reverse=true`);
+        const stations = await response.json();
+        const httpsStations = stations.filter(s => s.url_resolved && s.url_resolved.startsWith('https://'));
+
+        if (httpsStations.length > 0) {
+          renderStationBank(httpsStations);
+          selectStationItem(httpsStations[0]);
+        } else {
+          alert("Station Not In Database");
+          statusText.innerText = "● Ready to Tune";
+          statusText.style.color = "#aaa";
+        }
+      } catch (err) {
+        alert("Station Not In Database");
+        statusText.innerText = "● Ready to Tune";
+        statusText.style.color = "#aaa";
+      }
+    }
+
+    function renderStationBank(stations) {
+      const bankList = document.getElementById('stationBankList');
+      bankList.innerHTML = '';
+
+      stations.forEach((st, index) => {
+        const item = document.createElement('div');
+        item.className = `station-bank-item ${index === 0 ? 'active' : ''}`;
+        item.innerHTML = `<span style="font-size:14px; font-weight:bold; color:#fff; display:block;">📻 ${st.name}</span><span style="font-size:11px; color:#aaa;">${st.state || 'Live'} • ${st.codec || 'MP3'}</span>`;
+        item.onclick = () => selectStationItem(st);
+        bankList.appendChild(item);
+      });
+    }
+
+    function selectStationItem(st) {
+      document.getElementById('radioStationTitle').innerText = `📻 ${st.name}`;
+      document.getElementById('radioStationLocation').innerText = `${st.state || 'Live Stream'} • ${st.codec || 'MP3'}`;
+      playRadioStream(st.url_resolved || st.url);
+    }
+
+    function playRadioStream(streamUrl) {
+      const player = document.getElementById('radioAudioPlayer');
+      const statusText = document.getElementById('radioStatusText');
+      player.pause();
+      player.src = streamUrl;
+      player.load();
+      player.play().then(() => {
+        statusText.innerText = "● Live Streaming";
+        statusText.style.color = "#30d158";
+      }).catch(() => {
+        statusText.innerText = "Tap Play arrow on player to listen";
+        statusText.style.color = "#e040fb";
+      });
+    }
+
+    // INVITATION DISPATCHER (SMS vs EMAIL DYNAMIC GENERATOR)
+    function sendInvite(mode) {
+      const name = callerNameInput.value.trim() || webTextSenderNameInput.value.trim() || 'Someone';
+      const currentRoom = roomIdInput.value.trim() || document.getElementById('webTextRoomId').value.trim() || 'room1';
+      const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}&mode=${mode}`;
+      
+      const isEmail = mode === 'text' ? document.getElementById('textInviteToggle').checked : document.getElementById('phoneInviteToggle').checked;
+
+      let typeText = 'Video Call';
+      if (mode === 'voice') typeText = 'Voice Call';
+      if (mode === 'text') typeText = 'WebText Chat';
+
+      if (isEmail) {
+        // E-MAIL INVITATION FORMAT
+        const subject = `ZeroPhone Invitation from ${name}`;
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const emailBody = `Hello!\n\n${name} is hoping to ${typeText} with you @ ${timeStr}.\n\nPress here to join directly:\n${inviteUrl}\n\nSee You Soon,\n${name}`;
+        
+        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+      } else {
+        // SMS TEXT INVITATION FORMAT
+        let typeActionText = 'have a video call with you';
+        if (mode === 'voice') typeActionText = 'speak to you by voice';
+        if (mode === 'text') typeActionText = 'text with you online for free';
+
+        const smsMessage = `Knock, Knock!\n\n${name} would like to ${typeActionText}. Press here to join: ${inviteUrl}`;
+        window.location.href = `sms:?&body=${encodeURIComponent(smsMessage)}`;
+      }
+    }
+
+    document.getElementById('inviteVideoBtn').addEventListener('click', () => sendInvite('video'));
+    document.getElementById('inviteVoiceBtn').addEventListener('click', () => sendInvite('voice'));
+
+    document.getElementById('inviteTextBtn').addEventListener('click', () => {
+      const room = document.getElementById('webTextRoomId').value.trim() || 'room1';
+      roomIdInput.value = room;
+      sendInvite('text');
+    });
+
+    socket.on('connect', () => {
+      statusDiv.innerText = "Connected to Server";
+    });
+
+    // START MULTI-PARTY MESH CALL
+    async function startCall(audioOnly) {
+      isAudioOnly = audioOnly;
+      const roomId = roomIdInput.value.trim();
+      if (!roomId) return alert("Please enter a room name");
+
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: !isAudioOnly, audio: true });
+        document.getElementById('localVideo').srcObject = localStream;
+        document.getElementById('videoStreamView').style.display = isAudioOnly ? 'none' : 'flex';
+        document.getElementById('webphoneMainSection').style.display = 'none';
+      } catch (err) {
+        return alert("Unable to access microphone/camera.");
+      }
+
+      socket.emit('join-room', roomId);
+      statusDiv.innerText = `Joined room: ${roomId}. Waiting for peers...`;
+      
+      hangUpBtn.innerText = isAudioOnly ? "🔴 End Voice Call" : "🔴 End Video Call";
+      hangUpBtn.style.display = 'inline-block';
+    }
+
+    function hangUpCall() {
+      if (localStream) localStream.getTracks().forEach(track => track.stop());
+      
+      Object.keys(peerConnections).forEach(id => {
+        if (peerConnections[id]) peerConnections[id].close();
+      });
+      peerConnections = {};
+
+      const grid = document.getElementById('videoStreamView');
+      grid.innerHTML = `
+        <div class="video-card">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px;">Local Stream (You)</h3>
+          <video id="localVideo" autoplay playsinline muted></video>
+        </div>
+      `;
+
+      statusDiv.innerText = "Call ended.";
+      statusDiv.style.color = "#ff3b30";
+      hangUpBtn.style.display = 'none';
+
+      document.getElementById('mainHeader').style.display = 'flex';
+      document.getElementById('webphoneMainSection').style.display = 'block';
+    }
+
+    hangUpBtn.addEventListener('click', hangUpCall);
+    document.getElementById('joinVideoBtn').addEventListener('click', () => startCall(false));
+    document.getElementById('joinVoiceBtn').addEventListener('click', () => startCall(true));
+
+    socket.on('user-joined', async ({ socketId }) => {
+      statusDiv.innerText = "Peer joining... Connecting media!";
+      const pc = createPeerConnection(socketId);
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      socket.emit('offer', { offer, targetId: socketId, isAudioOnly: isAudioOnly });
+    });
+
+    socket.on('offer', async ({ offer, senderId }) => {
+      statusDiv.innerText = "Connecting media stream...";
+      const pc = createPeerConnection(senderId);
+
+      await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      socket.emit('answer', { answer, targetId: senderId });
+    });
+
+    socket.on('answer', async ({ answer, senderId }) => {
+      statusDiv.innerText = "Live Connected!";
+      statusDiv.style.color = "#30d158";
+      if (peerConnections[senderId]) {
+        await peerConnections[senderId].setRemoteDescription(new RTCSessionDescription(answer));
+      }
+    });
+
+    socket.on('ice-candidate', async ({ candidate, senderId }) => {
+      if (peerConnections[senderId]) {
+        await peerConnections[senderId].addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    });
+
+    socket.on('user-disconnected', ({ socketId }) => {
+      if (peerConnections[socketId]) {
+        peerConnections[socketId].close();
+        delete peerConnections[socketId];
+      }
+      const remoteCard = document.getElementById(`card-${socketId}`);
+      if (remoteCard) remoteCard.remove();
+      
+      const count = Object.keys(peerConnections).length;
+      statusDiv.innerText = count > 0 ? `Connected with ${count} peer(s)` : "Waiting for peers...";
+    });
+
+    function createPeerConnection(targetSocketId) {
+      if (peerConnections[targetSocketId]) return peerConnections[targetSocketId];
+
+      const pc = new RTCPeerConnection(rtcConfig);
+      peerConnections[targetSocketId] = pc;
+
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      pc.ontrack = (event) => {
+        let remoteCard = document.getElementById(`card-${targetSocketId}`);
+        if (!remoteCard) {
+          remoteCard = document.createElement('div');
+          remoteCard.className = 'video-card';
+          remoteCard.id = `card-${targetSocketId}`;
+          remoteCard.innerHTML = `
+            <h3 style="margin: 0 0 8px 0; font-size: 14px;">Peer Stream</h3>
+            <video id="video-${targetSocketId}" autoplay playsinline></video>
+          `;
+          document.getElementById('videoStreamView').appendChild(remoteCard);
+        }
+        const videoEl = document.getElementById(`video-${targetSocketId}`);
+        videoEl.srcObject = event.streams[0];
+        statusDiv.innerText = "Live Connected!";
+      };
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit('ice-candidate', { candidate: event.candidate, targetId: targetSocketId });
+        }
+      };
+
+      return pc;
+    }
+
+    function appendWebMessage(sender, text) {
+      const thread = document.getElementById('web-chat-thread');
+      const placeholder = thread.querySelector('p');
+      if (placeholder) thread.innerHTML = '';
+
+      const msgBox = document.createElement('div');
+      msgBox.style.marginBottom = '8px';
+      msgBox.style.padding = '8px 12px';
+      msgBox.style.borderRadius = '6px';
+      msgBox.style.backgroundColor = '#2c2c2e';
+      msgBox.style.color = '#fff';
+
+      msgBox.innerHTML = '<strong style="color:#63e685;">' + sender + ':</strong> ' + text;
+      thread.appendChild(msgBox);
+      thread.scrollTop = thread.scrollHeight;
+    }
+
+    async function sendWebChatMessage() {
+      const input = document.getElementById('webChatInput');
+      const msg = input.value.trim();
+      const sender = webTextSenderNameInput.value.trim() || callerNameInput.value.trim() || 'Anonymous';
+      const roomId = document.getElementById('webTextRoomId').value.trim() || 'room1';
+
+      if (msg) {
+        socket.emit('join-room', roomId);
+        const encrypted = await encryptPayload(msg, roomId);
+        socket.emit('send-web-chat', { roomId: roomId, cipher: encrypted.cipher, iv: encrypted.iv, sender: sender });
+        appendWebMessage(sender, msg);
+        input.value = '';
+      }
+    }
+
+    document.getElementById('sendWebChatBtn').addEventListener('click', sendWebChatMessage);
+    document.getElementById('webChatInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendWebChatMessage();
+    });
+
+    socket.on('receive-web-chat', async ({ cipher, iv, message, sender }) => {
+      const currentUser = webTextSenderNameInput.value.trim() || callerNameInput.value.trim() || 'Anonymous';
+      const roomId = document.getElementById('webTextRoomId').value.trim() || 'room1';
+      if (sender !== currentUser) {
+        const decryptedText = cipher ? await decryptPayload(cipher, iv, roomId) : message;
+        appendWebMessage(sender, decryptedText);
+      }
+    });
+
+    socket.on('load-chat-history', async (history) => {
+      const thread = document.getElementById('web-chat-thread');
+      const roomId = document.getElementById('webTextRoomId').value.trim() || 'room1';
+      thread.innerHTML = '';
+      for (const item of history) {
+        const text = item.cipher ? await decryptPayload(item.cipher, item.iv, roomId) : item.message;
+        appendWebMessage(item.sender, text);
+      }
+    });
+  </script>
+</body>
+</html>
