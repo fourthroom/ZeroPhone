@@ -621,6 +621,106 @@
       text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.9);
     }
+
+    /* ========================================================== */
+    /* RESPONSIVE CSS MEDIA QUERIES FOR SMALL PHONES / SMARTPHONES */
+    /* ========================================================== */
+    @media (max-width: 600px) {
+      .top-header {
+        padding: 8px 8px 0 8px;
+        gap: 8px;
+      }
+
+      .app-brand-title {
+        font-size: 20px;
+      }
+
+      .app-header-logo {
+        width: 28px;
+        height: 28px;
+      }
+
+      .tab-bar {
+        gap: 4px;
+      }
+
+      .tab-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+      }
+
+      .sub-tagline {
+        font-size: 9px;
+        margin-top: 1px;
+      }
+
+      .container {
+        padding: 10px 6px;
+      }
+
+      .webphone-main-layout {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px;
+        gap: 12px;
+        margin: 8px auto;
+      }
+
+      .step-row {
+        gap: 6px;
+      }
+
+      .step-label {
+        font-size: 12px;
+        min-width: 45px;
+      }
+
+      .webphone-input {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      .step3-divider {
+        font-size: 12px;
+        margin: 6px 0 2px 0;
+      }
+
+      .webphone-invites-right {
+        padding: 10px;
+      }
+
+      .btn-square-invite {
+        width: 65px;
+        height: 60px;
+        font-size: 10px;
+      }
+
+      .btn-call-action {
+        padding: 10px 18px;
+        font-size: 13px;
+        width: 100%;
+      }
+
+      .centered-call-row {
+        gap: 8px;
+      }
+
+      .privacy-notice-badge {
+        font-size: 10px;
+        padding: 6px 12px;
+        margin-top: 15px;
+      }
+
+      .web-chat-box, .maps-box, .radio-box {
+        padding: 10px;
+      }
+
+      .map-frame-container {
+        height: 350px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -974,7 +1074,7 @@
           iv: btoa(String.fromCharCode(...iv))
         };
       } catch (e) {
-        return { cipher: plaintext, iv: null }; // Fallback
+        return { cipher: plaintext, iv: null };
       }
     }
 
