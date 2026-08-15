@@ -59,10 +59,15 @@ io.on('connection', (socket) => {
     socket.to(data.targetId).emit('ice-candidate', { candidate: data.candidate, senderId: socket.id });
   });
 
-  // WebText Counter (Increments count only, ignores text content)
+  // WebText Relay (Forwards AES ciphertext, IV, plaintext fallback, and sender)
   socket.on('send-web-chat', (data) => {
     usageStats.totalWebTextsSent++;
-    socket.to(data.roomId).emit('receive-web-chat', { message: data.message, sender: data.sender });
+    socket.to(data.roomId).emit('receive-web-chat', {
+      cipher: data.cipher,
+      iv: data.iv,
+      message: data.message,
+      sender: data.sender
+    });
   });
 
   // Disconnect Handling
