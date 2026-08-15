@@ -135,119 +135,120 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* RESTRUCTURED STEP-BY-STEP WEBPHONE LAYOUT */
-    .webphone-main-layout {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      max-width: 720px;
-      margin: 15px auto;
-      align-items: flex-start;
+    /* REDESIGNED SIMPLIFIED LEVEL 1 WEBPHONE CARD */
+    .webphone-simplified-card {
       background: #1c1c1e;
       border: 1px solid #333;
       border-radius: 16px;
-      padding: 20px;
-    }
-
-    .webphone-steps-left {
-      flex: 2;
+      max-width: 580px;
+      margin: 15px auto;
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
 
-    .step-row {
+    .step-row-item {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
+      gap: 12px;
+      background: #151516;
+      border: 1px solid #2a2a2d;
+      border-radius: 10px;
+      padding: 12px 14px;
     }
 
-    .step-label {
+    .step-title-green {
+      color: #30d158;
       font-weight: bold;
       font-size: 14px;
-      color: #30d158;
       white-space: nowrap;
-      min-width: 55px;
-      text-align: right;
+      text-align: left;
     }
 
-    .webphone-input {
+    .webphone-input-field {
       flex: 1;
-      padding: 10px 14px;
-      font-size: 15px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 6px;
       background: #2c2c2e;
       color: #fff;
       border: 1px solid #444;
       text-align: left;
     }
 
-    .step3-divider {
-      font-size: 14px;
-      font-weight: bold;
-      color: #30d158;
-      margin: 10px 0 5px 0;
-      text-align: center;
-      line-height: 1.4;
-    }
-
-    /* RIGHT SIDE SMALL SQUARE BUTTONS + VINTAGE TOGGLE PANEL */
-    .webphone-invites-right {
-      flex: 1.4;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      background: #121212;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 12px;
-    }
-
-    .invite-header-text {
-      font-size: 11px;
-      font-weight: bold;
-      color: #aaa;
-      text-align: center;
-      line-height: 1.25;
-      margin-bottom: 2px;
-    }
-
-    .invites-and-toggle-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .buttons-column {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .btn-square-invite {
-      width: 75px;
-      height: 70px;
-      border-radius: 12px;
-      border: none;
-      background: #0a84ff;
+    /* ROUND ACTION BUTTONS */
+    .btn-round-red {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #ff3b30;
       color: #fff;
-      font-weight: bold;
-      font-size: 11px;
+      font-size: 10px;
+      font-weight: 900;
+      border: none;
+      cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-      transition: transform 0.1s;
+      box-shadow: 0 4px 10px rgba(255, 59, 48, 0.35);
+      transition: transform 0.1s, background 0.2s;
+      line-height: 1.1;
+      flex-shrink: 0;
     }
+    .btn-round-red:hover { background: #d70015; }
+    .btn-round-red:active { transform: scale(0.92); }
 
-    .btn-square-invite:hover { background: #0066cc; }
-    .btn-square-invite:active { transform: scale(0.95); }
+    .btn-round-blue {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #0a84ff;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(10, 132, 255, 0.35);
+      transition: transform 0.1s, background 0.2s;
+      line-height: 1.1;
+      flex-shrink: 0;
+    }
+    .btn-round-blue:hover { background: #0066cc; }
+    .btn-round-blue:active { transform: scale(0.92); }
 
-    /* OLD-FASHIONED VERTICAL TOGGLE SWITCH CONTROL */
+    /* SQUARE RED START BUTTON FOR STEP 4 */
+    .btn-square-start-red {
+      width: 65px;
+      height: 60px;
+      background: #ff3b30;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      box-shadow: 0 4px 12px rgba(255, 59, 48, 0.4);
+      transition: transform 0.1s, background 0.2s;
+      flex-shrink: 0;
+      line-height: 1.1;
+    }
+    .btn-square-start-red:hover { background: #d70015; }
+    .btn-square-start-red:active { transform: scale(0.92); }
+
+    /* VINTAGE TOGGLE SWITCH CONTROL */
     .vintage-toggle-panel {
       display: flex;
       flex-direction: column;
@@ -255,23 +256,24 @@
       background: #1c1c1e;
       border: 1px solid #444;
       border-radius: 10px;
-      padding: 8px 6px;
-      gap: 6px;
+      padding: 6px 8px;
+      gap: 4px;
       box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
+      flex-shrink: 0;
     }
 
     .toggle-label-group {
       display: flex;
       align-items: center;
       gap: 4px;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: bold;
       color: #aaa;
     }
 
     .indicator-light {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #333;
       border: 1px solid #555;
@@ -280,14 +282,13 @@
 
     .indicator-light.active-red {
       background: #ff3b30;
-      box-shadow: 0 0 8px #ff3b30, 0 0 12px #ff3b30;
+      box-shadow: 0 0 6px #ff3b30, 0 0 10px #ff3b30;
     }
 
-    /* VERTICAL TOGGLE SWITCH STYLING */
     .switch-container {
       position: relative;
-      width: 24px;
-      height: 50px;
+      width: 22px;
+      height: 44px;
     }
 
     .switch-container input {
@@ -309,48 +310,61 @@
     .slider-track:before {
       position: absolute;
       content: "";
-      height: 20px;
-      width: 18px;
-      left: 1px;
+      height: 16px;
+      width: 14px;
+      left: 2px;
       top: 2px;
       background-color: #aaa;
-      border-radius: 8px;
+      border-radius: 6px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.6);
       transition: .2s;
     }
 
     input:checked + .slider-track:before {
-      transform: translateY(22px);
+      transform: translateY(20px);
       background-color: #ff3b30;
     }
 
-    /* CENTERED CALL BUTTONS */
-    .centered-call-row {
+    /* IN-CALL CONTROLS BAR */
+    .incall-controls-bar {
       display: flex;
       justify-content: center;
+      align-items: center;
       gap: 15px;
       margin-top: 15px;
-      flex-wrap: wrap;
     }
 
-    .btn-call-action {
-      padding: 12px 24px;
-      font-size: 15px;
-      font-weight: bold;
+    .btn-media-toggle {
+      background: #2c2c2e;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 50%;
+      width: 52px;
+      height: 52px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, border 0.2s;
+    }
+    .btn-media-toggle.muted {
+      background: #ff3b30;
+      border-color: #d70015;
+    }
+
+    .btn-red-end { 
+      background: #ff3b30; 
+      color: white; 
+      cursor: pointer; 
+      font-weight: bold; 
+      font-size: 16px; 
+      padding: 12px 24px; 
       border-radius: 10px;
       border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 12px rgba(255, 59, 48, 0.4);
     }
-
-    .btn-red-start { background: #ff3b30; color: white; }
-    .btn-red-start:hover { background: #d70015; }
-
-    .btn-pink-start { background: #f48fb1; color: #000; }
-    .btn-pink-start:hover { background: #f06292; }
-
-    .btn-purple { background: #af52de; color: white; cursor: pointer; font-weight: bold; }
-    .btn-red-end { background: #ff3b30; color: white; cursor: pointer; font-weight: bold; }
+    .btn-red-end:hover { background: #d70015; }
 
     #status { font-weight: bold; color: #30d158; margin-bottom: 4px; }
 
@@ -378,6 +392,40 @@
       object-fit: cover; 
     }
 
+    /* FLOATING RETURN TO ZEROPHONE POPUP */
+    .modal-return-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-return-content {
+      background: #1c1c1e;
+      border: 2px solid #30d158;
+      border-radius: 16px;
+      padding: 30px 20px;
+      max-width: 360px;
+      width: 85%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+    }
+
+    .btn-return-app {
+      background: #30d158;
+      color: #000;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(48, 209, 88, 0.4);
+    }
+
     /* SENIOR INVITE SINGLE BUTTON */
     #responderAccessBox {
       display: none;
@@ -394,10 +442,10 @@
     .btn-mega-enter {
       background: #30d158;
       color: #000;
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 900;
-      padding: 24px 36px;
-      border-radius: 16px;
+      padding: 20px 32px;
+      border-radius: 14px;
       border: none;
       cursor: pointer;
       width: 100%;
@@ -621,109 +669,20 @@
       text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.9);
     }
-
-    /* ========================================================== */
-    /* RESPONSIVE CSS MEDIA QUERIES FOR SMALL PHONES / SMARTPHONES */
-    /* ========================================================== */
-    @media (max-width: 600px) {
-      .top-header {
-        padding: 8px 8px 0 8px;
-        gap: 8px;
-      }
-
-      .app-brand-title {
-        font-size: 20px;
-      }
-
-      .app-header-logo {
-        width: 28px;
-        height: 28px;
-      }
-
-      .tab-bar {
-        gap: 4px;
-      }
-
-      .tab-btn {
-        padding: 6px 10px;
-        font-size: 11px;
-        border-top-left-radius: 6px;
-        border-top-right-radius: 6px;
-      }
-
-      .sub-tagline {
-        font-size: 9px;
-        margin-top: 1px;
-      }
-
-      .container {
-        padding: 10px 6px;
-      }
-
-      .webphone-main-layout {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 12px;
-        gap: 12px;
-        margin: 8px auto;
-      }
-
-      .step-row {
-        gap: 6px;
-      }
-
-      .step-label {
-        font-size: 12px;
-        min-width: 45px;
-      }
-
-      .webphone-input {
-        padding: 8px 10px;
-        font-size: 13px;
-      }
-
-      .step3-divider {
-        font-size: 12px;
-        margin: 6px 0 2px 0;
-      }
-
-      .webphone-invites-right {
-        padding: 10px;
-      }
-
-      .btn-square-invite {
-        width: 65px;
-        height: 60px;
-        font-size: 10px;
-      }
-
-      .btn-call-action {
-        padding: 10px 18px;
-        font-size: 13px;
-        width: 100%;
-      }
-
-      .centered-call-row {
-        gap: 8px;
-      }
-
-      .privacy-notice-badge {
-        font-size: 10px;
-        padding: 6px 12px;
-        margin-top: 15px;
-      }
-
-      .web-chat-box, .maps-box, .radio-box {
-        padding: 10px;
-      }
-
-      .map-frame-container {
-        height: 350px;
-      }
-    }
   </style>
 </head>
 <body>
+
+  <!-- RETURN TO ZEROPHONE MODAL (10s after calling cell) -->
+  <div id="returnModal" class="modal-return-overlay">
+    <div class="modal-return-content">
+      <h3 style="color: #30d158; margin-top: 0; font-size: 20px;">📞 Call Cell Initiated</h3>
+      <p style="color: #ccc; font-size: 14px; margin-bottom: 20px;">
+        When finished notifying your party, return to start your secure video call.
+      </p>
+      <button class="btn-return-app" onclick="closeReturnModal()">Return To ZeroPhone</button>
+    </div>
+  </div>
 
   <!-- LOCATION TROUBLESHOOTING MODAL -->
   <div id="locationModal" class="location-modal-overlay">
@@ -783,52 +742,48 @@
     <div id="responderAccessBox">
       <h2 id="inviteTitleText" style="font-size:24px; margin-top:0; color:#30d158;">You have been invited to a Call!</h2>
       <p style="color:#aaa; font-size:15px; margin-bottom:25px;">Tap the big green button below to enter directly:</p>
-      <button id="megaEnterBtn" class="btn-mega-enter">📹 Enter Video</button>
+      <button id="megaEnterBtn" class="btn-mega-enter">📹 Enter Video Call</button>
     </div>
 
     <!-- TAB 1: LEVEL 1 - WEBPHONE -->
     <div id="tab-level1-phone" class="tab-content active">
       <div id="status">Connected to Server</div>
 
-      <!-- MAIN FORM -->
+      <!-- MAIN SIMPLIFIED LEVEL 1 FORM -->
       <div id="webphoneMainSection">
-        <div class="webphone-main-layout">
+        <div class="webphone-simplified-card">
           
-          <!-- LEFT SIDE: STEPS 1 & 2 -->
-          <div class="webphone-steps-left">
-            <div class="step-row">
-              <span class="step-label">Step 1:</span>
-              <input type="text" id="callerName" class="webphone-input" placeholder="Enter Your Name">
-            </div>
-
-            <div class="step-row">
-              <span class="step-label">Step 2:</span>
-              <input type="text" id="roomId" class="webphone-input" placeholder="Enter Room Name">
-            </div>
-
-            <div class="step3-divider">
-              Step 3: Send Invitation via Text/Email ➔<br>THEN Return, & Start Call Below<br>⬇
-            </div>
+          <!-- STEP 1 -->
+          <div class="step-row-item">
+            <span class="step-title-green">Step 1:</span>
+            <input type="text" id="callerName" class="webphone-input-field" placeholder="Enter Your Name">
           </div>
 
-          <!-- RIGHT SIDE: SMALL SQUARE INVITE BUTTONS & VINTAGE TOGGLE SWITCH -->
-          <div class="webphone-invites-right">
-            <span class="invite-header-text">Send Text or E-mail to Notify Other Party</span>
-            
-            <div class="invites-and-toggle-row">
-              <div class="buttons-column">
-                <button id="inviteVideoBtn" class="btn-square-invite">
-                  <span style="font-size: 18px;">📹</span>
-                  <span>Video Invite</span>
-                </button>
+          <!-- STEP 2 -->
+          <div class="step-row-item">
+            <span class="step-title-green">Step 2:</span>
+            <input type="text" id="roomId" class="webphone-input-field" placeholder="Enter Room Name">
+          </div>
 
-                <button id="inviteVoiceBtn" class="btn-square-invite" style="background: #00a8ff;">
-                  <span style="font-size: 18px;">🎙️</span>
-                  <span>Voice Invite</span>
-                </button>
-              </div>
+          <!-- STEP 3: CALL CELL TO INVITE -->
+          <div class="step-row-item">
+            <span class="step-title-green">Step 3: Call Cell To Invite:</span>
+            <button id="callCellBtn" class="btn-round-red" onclick="triggerCellCall()">
+              <span style="font-size:14px;">📞</span>
+              <span>Call Cell</span>
+            </button>
+          </div>
 
-              <!-- VINTAGE TOGGLE SWITCH PANEL (VERTICAL) -->
+          <!-- SEND TEXT / E-MAIL INVITE -->
+          <div class="step-row-item">
+            <span class="step-title-green">Send Text/E-mail Invite:</span>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <button id="inviteSendBtn" class="btn-round-blue" onclick="sendInvite('video')">
+                <span style="font-size:14px;">✉️</span>
+                <span>Send<br>Invite</span>
+              </button>
+
+              <!-- VINTAGE TOGGLE SWITCH (VERTICAL) -->
               <div class="vintage-toggle-panel">
                 <div class="toggle-label-group">
                   <span id="textLightPhone" class="indicator-light active-red"></span>
@@ -846,15 +801,17 @@
                 </div>
               </div>
             </div>
-
           </div>
 
-        </div>
+          <!-- STEP 4: START VIDEO CALL -->
+          <div class="step-row-item">
+            <span class="step-title-green" style="font-size: 15px;">Step 4: Start Video Call</span>
+            <button id="joinVideoBtn" class="btn-square-start-red" onclick="startCall()">
+              <span style="font-size: 16px;">📹</span>
+              <span>Start Call</span>
+            </button>
+          </div>
 
-        <!-- CENTERED START CALL BUTTONS -->
-        <div class="centered-call-row">
-          <button id="joinVideoBtn" class="btn-call-action btn-red-start">📹 Start Video Call</button>
-          <button id="joinVoiceBtn" class="btn-call-action btn-pink-start">🎙️ Start Voice Call</button>
         </div>
       </div>
 
@@ -866,8 +823,11 @@
         </div>
       </div>
 
-      <div style="margin-top: 15px; text-align: center;">
-        <button id="hangUpBtn" class="btn-red-end" style="display:none; font-size:18px; padding:12px 28px; font-weight:bold; border-radius:10px;">🔴 End Call</button>
+      <!-- IN-CALL CONTROLS: MIC MUTE, CAMERA OFF, END CALL -->
+      <div id="inCallControls" class="incall-controls-bar" style="display:none;">
+        <button id="toggleMicBtn" class="btn-media-toggle" onclick="toggleAudio()" title="Mute/Unmute Mic">🎙️</button>
+        <button id="toggleCamBtn" class="btn-media-toggle" onclick="toggleVideo()" title="Turn Camera On/Off">📹</button>
+        <button id="hangUpBtn" class="btn-red-end" onclick="hangUpCall()">🔴 End Call</button>
       </div>
 
       <!-- PRIVACY NOTICE -->
@@ -886,7 +846,7 @@
           <input type="text" id="webTextSenderName" placeholder="Your Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 10px 12px; width: 120px; text-align: center;">
           <input type="text" id="webTextRoomId" placeholder="Room Name" style="background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 10px 12px; width: 120px; text-align: center;">
           
-          <button id="inviteTextBtn" class="btn-purple" style="font-size: 14px; padding: 12px 18px; border-radius: 8px;">💬 Send Invite</button>
+          <button id="inviteTextBtn" class="btn-round-blue" style="font-size: 11px; width: 50px; height: 50px;" onclick="sendTextTabInvite()">💬<br>Invite</button>
 
           <!-- WEBTEXT VERTICAL VINTAGE TOGGLE SWITCH -->
           <div class="vintage-toggle-panel">
@@ -913,7 +873,7 @@
 
         <div style="display: flex; gap: 8px;">
           <input type="text" id="webChatInput" placeholder="Type a free web message..." style="flex: 1; text-align: left; background: #2c2c2e; color: #fff; border: 1px solid #444; border-radius: 6px; padding: 8px 12px;">
-          <button id="sendWebChatBtn" class="btn-purple">Send</button>
+          <button id="sendWebChatBtn" class="btn-round-blue" style="width: auto; height: auto; padding: 8px 18px; border-radius: 8px; font-size: 13px;">Send</button>
         </div>
       </div>
 
@@ -1012,7 +972,7 @@
               </label>
               <div style="display: flex; gap: 8px;">
                 <input type="text" id="customStreamInput" placeholder="e.g., KEXP, KING, KNKX, KUOW..." style="flex: 1; text-align: left; background: #2c2c2e; border: 1px solid #555; color: #fff; padding: 8px 12px; border-radius: 6px;">
-                <button onclick="searchRadioBrowserCustom()" class="btn-purple" style="font-size: 13px; padding: 8px 14px;">Tune In</button>
+                <button onclick="searchRadioBrowserCustom()" class="btn-round-blue" style="width: auto; height: auto; font-size: 13px; padding: 8px 14px; border-radius: 6px;">Tune In</button>
               </div>
             </div>
 
@@ -1035,14 +995,15 @@
     const socket = io(SIGNALING_SERVER);
     let localStream;
     let peerConnections = {};
-    let isAudioOnly = false;
     let currentCoords = null;
+
+    let isAudioMuted = false;
+    let isVideoMuted = false;
 
     const roomIdInput = document.getElementById('roomId');
     const callerNameInput = document.getElementById('callerName');
     const webTextSenderNameInput = document.getElementById('webTextSenderName');
     const statusDiv = document.getElementById('status');
-    const hangUpBtn = document.getElementById('hangUpBtn');
 
     const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
@@ -1103,6 +1064,18 @@
       callerNameInput.value = e.target.value;
     });
 
+    // STEP 3: TRIGGER CELL CALL & 10s RETURN POPUP
+    function triggerCellCall() {
+      window.location.href = "tel:";
+      setTimeout(() => {
+        document.getElementById('returnModal').style.display = 'flex';
+      }, 10000);
+    }
+
+    function closeReturnModal() {
+      document.getElementById('returnModal').style.display = 'none';
+    }
+
     // TOGGLE MODE LOGIC (SMS vs EMAIL)
     function toggleInviteMode(type) {
       if (type === 'phone') {
@@ -1136,17 +1109,13 @@
         const enterBtn = document.getElementById('megaEnterBtn');
         const inviteTitle = document.getElementById('inviteTitleText');
 
-        if (modeParam === 'voice') {
-          inviteTitle.innerText = "You have been invited to a Voice Call!";
-          enterBtn.innerText = "🎙️ Start Voice Call";
-          enterBtn.style.background = "#00a8ff";
-        } else if (modeParam === 'text') {
+        if (modeParam === 'text') {
           inviteTitle.innerText = "You have been invited to WebText!";
           enterBtn.innerText = "💬 Open WebText";
           enterBtn.style.background = "#63e685";
         } else {
           inviteTitle.innerText = "You have been invited to a Video Call!";
-          enterBtn.innerText = "📹 Start Video Call";
+          enterBtn.innerText = "📹 Enter Video Call";
           enterBtn.style.background = "#30d158";
         }
 
@@ -1158,12 +1127,10 @@
       document.getElementById('responderAccessBox').style.display = 'none';
       document.getElementById('status').style.display = 'block';
       
-      if (modeParam === 'voice') {
-        startCall(true);
-      } else if (modeParam === 'text') {
+      if (modeParam === 'text') {
         switchTab('level1-text');
       } else {
-        startCall(false);
+        startCall();
       }
     });
 
@@ -1216,7 +1183,7 @@
               geoStatus.innerText = "📍 GPS Location Locked!";
               geoStatus.style.color = "#30d158";
             }
-            document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=${currentCoords.lat},${currentCoords.lng}&z=15&output=embed`;
+            document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=${currentCoords.lat},${currentCoords.lng}&z=${15}&output=embed`;
           },
           (err) => {
             currentCoords = null;
@@ -1330,7 +1297,7 @@
     }
 
     // INVITATION DISPATCHER (SMS vs EMAIL DYNAMIC GENERATOR)
-    function sendInvite(mode) {
+    function sendInvite(mode = 'video') {
       const name = callerNameInput.value.trim() || webTextSenderNameInput.value.trim() || 'Someone';
       const currentRoom = roomIdInput.value.trim() || document.getElementById('webTextRoomId').value.trim() || 'room1';
       const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}&mode=${mode}`;
@@ -1338,20 +1305,16 @@
       const isEmail = mode === 'text' ? document.getElementById('textInviteToggle').checked : document.getElementById('phoneInviteToggle').checked;
 
       let typeText = 'Video Call';
-      if (mode === 'voice') typeText = 'Voice Call';
       if (mode === 'text') typeText = 'WebText Chat';
 
       if (isEmail) {
-        // E-MAIL INVITATION FORMAT
         const subject = `ZeroPhone Invitation from ${name}`;
         const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const emailBody = `Hello!\n\n${name} is hoping to ${typeText} with you @ ${timeStr}.\n\nPress here to join directly:\n${inviteUrl}\n\nSee You Soon,\n${name}`;
         
         window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
       } else {
-        // SMS TEXT INVITATION FORMAT
         let typeActionText = 'have a video call with you';
-        if (mode === 'voice') typeActionText = 'speak to you by voice';
         if (mode === 'text') typeActionText = 'text with you online for free';
 
         const smsMessage = `Knock, Knock!\n\n${name} would like to ${typeActionText}. Press here to join: ${inviteUrl}`;
@@ -1359,39 +1322,70 @@
       }
     }
 
-    document.getElementById('inviteVideoBtn').addEventListener('click', () => sendInvite('video'));
-    document.getElementById('inviteVoiceBtn').addEventListener('click', () => sendInvite('voice'));
-
-    document.getElementById('inviteTextBtn').addEventListener('click', () => {
+    function sendTextTabInvite() {
       const room = document.getElementById('webTextRoomId').value.trim() || 'room1';
       roomIdInput.value = room;
       sendInvite('text');
-    });
+    }
 
     socket.on('connect', () => {
       statusDiv.innerText = "Connected to Server";
     });
 
-    // START MULTI-PARTY MESH CALL
-    async function startCall(audioOnly) {
-      isAudioOnly = audioOnly;
+    // START MULTI-PARTY VIDEO CALL
+    async function startCall() {
       const roomId = roomIdInput.value.trim();
       if (!roomId) return alert("Please enter a room name");
 
       try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: !isAudioOnly, audio: true });
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         document.getElementById('localVideo').srcObject = localStream;
-        document.getElementById('videoStreamView').style.display = isAudioOnly ? 'none' : 'flex';
+        document.getElementById('videoStreamView').style.display = 'flex';
+        document.getElementById('inCallControls').style.display = 'flex';
         document.getElementById('webphoneMainSection').style.display = 'none';
       } catch (err) {
-        return alert("Unable to access microphone/camera.");
+        return alert("Unable to access microphone/camera. Please grant permissions.");
       }
 
       socket.emit('join-room', roomId);
       statusDiv.innerText = `Joined room: ${roomId}. Waiting for peers...`;
-      
-      hangUpBtn.innerText = isAudioOnly ? "🔴 End Voice Call" : "🔴 End Video Call";
-      hangUpBtn.style.display = 'inline-block';
+    }
+
+    // IN-CALL CONTROLS: AUDIO & VIDEO MUTE TOGGLES
+    function toggleAudio() {
+      if (localStream) {
+        const audioTrack = localStream.getAudioTracks()[0];
+        if (audioTrack) {
+          isAudioMuted = !isAudioMuted;
+          audioTrack.enabled = !isAudioMuted;
+          const micBtn = document.getElementById('toggleMicBtn');
+          if (isAudioMuted) {
+            micBtn.innerHTML = "🎙️🚫";
+            micBtn.classList.add('muted');
+          } else {
+            micBtn.innerHTML = "🎙️";
+            micBtn.classList.remove('muted');
+          }
+        }
+      }
+    }
+
+    function toggleVideo() {
+      if (localStream) {
+        const videoTrack = localStream.getVideoTracks()[0];
+        if (videoTrack) {
+          isVideoMuted = !isVideoMuted;
+          videoTrack.enabled = !isVideoMuted;
+          const camBtn = document.getElementById('toggleCamBtn');
+          if (isVideoMuted) {
+            camBtn.innerHTML = "📹🚫";
+            camBtn.classList.add('muted');
+          } else {
+            camBtn.innerHTML = "📹";
+            camBtn.classList.remove('muted');
+          }
+        }
+      }
     }
 
     function hangUpCall() {
@@ -1412,15 +1406,20 @@
 
       statusDiv.innerText = "Call ended.";
       statusDiv.style.color = "#ff3b30";
-      hangUpBtn.style.display = 'none';
-
+      
+      document.getElementById('inCallControls').style.display = 'none';
+      document.getElementById('videoStreamView').style.display = 'none';
       document.getElementById('mainHeader').style.display = 'flex';
       document.getElementById('webphoneMainSection').style.display = 'block';
-    }
 
-    hangUpBtn.addEventListener('click', hangUpCall);
-    document.getElementById('joinVideoBtn').addEventListener('click', () => startCall(false));
-    document.getElementById('joinVoiceBtn').addEventListener('click', () => startCall(true));
+      // Reset Mute Buttons
+      isAudioMuted = false;
+      isVideoMuted = false;
+      document.getElementById('toggleMicBtn').innerHTML = "🎙️";
+      document.getElementById('toggleMicBtn').classList.remove('muted');
+      document.getElementById('toggleCamBtn').innerHTML = "📹";
+      document.getElementById('toggleCamBtn').classList.remove('muted');
+    }
 
     socket.on('user-joined', async ({ socketId }) => {
       statusDiv.innerText = "Peer joining... Connecting media!";
@@ -1428,7 +1427,7 @@
 
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      socket.emit('offer', { offer, targetId: socketId, isAudioOnly: isAudioOnly });
+      socket.emit('offer', { offer, targetId: socketId, isAudioOnly: false });
     });
 
     socket.on('offer', async ({ offer, senderId }) => {
