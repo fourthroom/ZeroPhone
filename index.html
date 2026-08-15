@@ -198,6 +198,8 @@
       transition: transform 0.1s, background 0.2s;
       line-height: 1.1;
       flex-shrink: 0;
+      text-decoration: none;
+      box-sizing: border-box;
     }
     .btn-round-red:hover { background: #d70015; }
     .btn-round-red:active { transform: scale(0.92); }
@@ -220,6 +222,8 @@
       transition: transform 0.1s, background 0.2s;
       line-height: 1.1;
       flex-shrink: 0;
+      text-decoration: none;
+      box-sizing: border-box;
     }
     .btn-round-blue:hover { background: #0066cc; }
     .btn-round-blue:active { transform: scale(0.92); }
@@ -768,10 +772,10 @@
           <!-- STEP 3: CALL CELL TO INVITE -->
           <div class="step-row-item">
             <span class="step-title-green">Step 3: Call Cell To Invite:</span>
-            <button id="callCellBtn" class="btn-round-red" onclick="triggerCellCall()">
+            <a id="callCellBtn" href="tel:" class="btn-round-red" onclick="triggerCellCall(event)">
               <span style="font-size:14px;">📞</span>
               <span>Call Cell</span>
-            </button>
+            </a>
           </div>
 
           <!-- SEND TEXT / E-MAIL INVITE -->
@@ -1065,8 +1069,16 @@
     });
 
     // STEP 3: TRIGGER CELL CALL & 10s RETURN POPUP
-    function triggerCellCall() {
-      window.location.href = "tel:";
+    function triggerCellCall(event) {
+      const number = prompt("Enter phone number to call (optional):", "");
+      const callLink = document.getElementById('callCellBtn');
+      
+      if (number && number.trim()) {
+        callLink.href = `tel:${encodeURIComponent(number.trim())}`;
+      } else {
+        callLink.href = "tel:";
+      }
+
       setTimeout(() => {
         document.getElementById('returnModal').style.display = 'flex';
       }, 10000);
