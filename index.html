@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
   <!-- SEO PRIMARY META TAGS FOR GOOGLE SEARCH -->
   <title>ZeroPhone — Encrypted Browser Video Calling, WebText & Local Resources</title>
@@ -36,12 +36,17 @@
 
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body { 
       font-family: system-ui, -apple-system, sans-serif; 
       background: #121212; 
       color: #fff; 
       margin: 0; 
       padding: 0; 
+      overflow-x: hidden;
     }
 
     /* Top Centered Header */
@@ -130,7 +135,6 @@
       max-width: 100%;
       margin: 0 auto;
       text-align: center;
-      box-sizing: border-box;
     }
 
     .tab-content { display: none; }
@@ -200,7 +204,6 @@
       line-height: 1.1;
       flex-shrink: 0;
       text-decoration: none;
-      box-sizing: border-box;
     }
     .btn-round-red:hover { background: #d70015; }
     .btn-round-red:active { transform: scale(0.92); }
@@ -224,7 +227,6 @@
       line-height: 1.1;
       flex-shrink: 0;
       text-decoration: none;
-      box-sizing: border-box;
     }
     .btn-round-blue:hover { background: #0066cc; }
     .btn-round-blue:active { transform: scale(0.92); }
@@ -373,56 +375,60 @@
 
     #status { font-weight: bold; color: #30d158; margin-bottom: 4px; }
 
-    /* LARGE FULL-SIZE VIDEO GRID (TABLETS & COMPUTERS) */
+    /* ALL-SCREEN SQUARE (1:1) DYNAMIC VIDEO GRID */
     .video-grid { 
-      display: flex; 
+      display: grid;
+      grid-template-columns: minmax(0, 480px);
+      gap: 12px; 
       justify-content: center; 
-      align-items: center;
-      gap: 14px; 
-      flex-wrap: wrap; 
-      margin-top: 10px; 
+      align-content: center;
+      margin: 10px auto; 
       width: 100%;
-      box-sizing: border-box;
+      max-width: 900px;
+    }
+
+    /* 2 People: 2 Columns */
+    .video-grid.peers-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* 3 or 4 People: Strict 2x2 Grid (Laptops, Tablets, and Small Phones) */
+    .video-grid.peers-3,
+    .video-grid.peers-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(2, auto);
     }
 
     .video-card { 
-      flex: 1 1 calc(50% - 20px); 
-      min-width: 300px; 
-      max-width: 100%; 
+      width: 100%; 
       display: flex;
       flex-direction: column;
       align-items: center;
-      box-sizing: border-box;
+      position: relative;
     }
 
+    /* Strict 1:1 Square Framing on All Devices */
     video { 
       width: 100%; 
-      height: 42vh; 
-      min-height: 280px; 
-      max-height: 500px; 
+      aspect-ratio: 1 / 1; 
       background: #000; 
       border-radius: 14px; 
       border: 2px solid #333; 
       object-fit: cover; 
+      display: block;
     }
 
-    /* PHONE-ONLY 2x2 FIT (Screens under 520px) */
+    #localVideo {
+      transform: scaleX(-1); /* Clean mirror preview */
+    }
+
+    /* Small Screen Optimization */
     @media (max-width: 520px) {
       .video-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
         gap: 8px;
-        margin-top: 8px;
-      }
-      .video-card {
-        min-width: 0;
-        max-width: 100%;
-        flex: none;
+        margin-top: 6px;
       }
       video {
-        height: auto;
-        min-height: 0;
-        aspect-ratio: 1 / 1;
         border-radius: 8px;
       }
       .video-card h3 {
@@ -1022,6 +1028,21 @@
 
     const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
+    // DYNAMIC GRID LAYOUT ADJUSTER (SQUARE FRAMES FOR 1, 2, 3, AND 4 PARTICIPANTS)
+    function updateGridLayout() {
+      const grid = document.getElementById('videoStreamView');
+      if (!grid) return;
+      const count = grid.querySelectorAll('.video-card').length;
+      grid.classList.remove('peers-2', 'peers-3', 'peers-4');
+      if (count === 2) {
+        grid.classList.add('peers-2');
+      } else if (count === 3) {
+        grid.classList.add('peers-3');
+      } else if (count >= 4) {
+        grid.classList.add('peers-4');
+      }
+    }
+
     // WEB CRYPTO API ENGINE (AES-256-GCM)
     async function deriveAesKey(roomName) {
       const enc = new TextEncoder();
@@ -1361,21 +1382,56 @@
       statusDiv.style.color = "#ff9500";
     });
 
-    // START MULTI-PARTY VIDEO CALL
+    // START MULTI-PARTY VIDEO CALL WITH ANDROID-SAFE PERMISSIONS & FALLBACKS
     async function startCall() {
       const roomId = roomIdInput.value.trim();
       if (!roomId) return alert("Please enter a room name");
 
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        document.getElementById('localVideo').srcObject = localStream;
-        document.getElementById('videoStreamView').style.display = 'flex';
-        document.getElementById('inCallControls').style.display = 'flex';
-        document.getElementById('webphoneMainSection').style.display = 'none';
-      } catch (err) {
-        return alert("Unable to access microphone/camera. Please grant permissions.");
+      // Adaptive constraints compatible with Motorola / Android hardware
+      const mediaConfigs = [
+        {
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } }
+        },
+        {
+          audio: true,
+          video: { facingMode: 'user' }
+        },
+        {
+          audio: true,
+          video: true
+        }
+      ];
+
+      localStream = null;
+      for (const config of mediaConfigs) {
+        try {
+          localStream = await navigator.mediaDevices.getUserMedia(config);
+          if (localStream) break;
+        } catch (e) {
+          console.warn("Attempting relaxed media constraints for device...", e);
+        }
       }
 
+      if (!localStream) {
+        return alert("Unable to access microphone/camera. Please check your browser and Android app permissions.");
+      }
+
+      const localVid = document.getElementById('localVideo');
+      localVid.srcObject = localStream;
+      
+      // Explicit play invocation required by Android/Mobile Chrome
+      try {
+        await localVid.play();
+      } catch (err) {
+        console.warn("Autoplay interaction note:", err);
+      }
+
+      document.getElementById('videoStreamView').style.display = 'grid';
+      document.getElementById('inCallControls').style.display = 'flex';
+      document.getElementById('webphoneMainSection').style.display = 'none';
+
+      updateGridLayout();
       socket.emit('join-room', roomId);
       statusDiv.innerText = `Joined room: ${roomId}. Waiting for peers...`;
     }
@@ -1418,7 +1474,10 @@
     }
 
     function hangUpCall() {
-      if (localStream) localStream.getTracks().forEach(track => track.stop());
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+      }
       
       Object.keys(peerConnections).forEach(id => {
         if (peerConnections[id]) peerConnections[id].close();
@@ -1448,6 +1507,8 @@
       document.getElementById('toggleMicBtn').classList.remove('muted');
       document.getElementById('toggleCamBtn').innerHTML = "📹";
       document.getElementById('toggleCamBtn').classList.remove('muted');
+      
+      updateGridLayout();
     }
 
     socket.on('user-joined', async ({ socketId }) => {
@@ -1494,6 +1555,7 @@
       
       const count = Object.keys(peerConnections).length;
       statusDiv.innerText = count > 0 ? `Connected with ${count} peer(s)` : "Waiting for peers...";
+      updateGridLayout();
     });
 
     function createPeerConnection(targetSocketId) {
@@ -1502,7 +1564,9 @@
       const pc = new RTCPeerConnection(rtcConfig);
       peerConnections[targetSocketId] = pc;
 
-      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+      if (localStream) {
+        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+      }
 
       pc.ontrack = (event) => {
         let remoteCard = document.getElementById(`card-${targetSocketId}`);
@@ -1515,9 +1579,13 @@
             <video id="video-${targetSocketId}" autoplay playsinline></video>
           `;
           document.getElementById('videoStreamView').appendChild(remoteCard);
+          updateGridLayout();
         }
         const videoEl = document.getElementById(`video-${targetSocketId}`);
         videoEl.srcObject = event.streams[0];
+        
+        // Explicit play for remote feeds on Android mobile
+        videoEl.play().catch(e => console.warn("Remote stream play trigger:", e));
         statusDiv.innerText = "Live Connected!";
       };
 
