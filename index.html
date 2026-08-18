@@ -1175,3 +1175,389 @@
     // GPS ENGINE & CONDITIONAL HELPER MODAL
     function centerMapOnUser(showTroubleshootingModal) {
       const geoStatus = document.getElementById('geoStatusText');
+      if (geoStatus) geoStatus.innerText = "⏳ Requesting GPS location...";
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            currentCoords = { lat: position.coords.latitude, lng: position.coords.longitude };
+            if (geoStatus) {
+              geoStatus.innerText = "📍 GPS Location Locked!";
+              geoStatus.style.color = "#30d158";
+            }
+            document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=${currentCoords.lat},${currentCoords.lng}&z=${15}&output=embed`;
+          },
+          (err) => {
+            currentCoords = null;
+            if (geoStatus) {
+              geoStatus.innerText = "⚠️ Location paused - Check device permissions";
+              geoStatus.style.color = "#ff9500";
+            }
+            if (showTroubleshootingModal) {
+              document.getElementById('locationModal').style.display = 'flex';
+            }
+          },
+          { enableHighAccuracy: false, timeout: 6000, maximumAge: 300000 }
+        );
+      }
+    }
+
+    function closeLocationModal() {
+      document.getElementById('locationModal').style.display = 'none';
+    }
+
+    // Radio Engine
+    const RADIO_API_BASE = "https://de1.api.radio-browser.info/json/stations/search";
+
+    async function fetchRadioBrowserGenre(tag, labelName) {
+      const bankList = document.getElementById('stationBankList');
+      const statusText = document.getElementById('radioStatusText');
+
+      statusText.innerText = "⏳ Loading station bank...";
+      statusText.style.color = "#ff9500";
+      bankList.innerHTML = '<p style="color:#aaa; font-size:12px; font-style:italic;">Fetching streams...</p>';
+
+      try {
+        const response = await fetch(`${RADIO_API_BASE}?tag=${tag}&countrycode=US&limit=15&is_https=true&order=votes&reverse=true`);
+        const stations = await response.json();
+        const httpsStations = stations.filter(s => s.url_resolved && s.url_resolved.startsWith('https://'));
+
+        if (httpsStations.length > 0) {
+          renderStationBank(httpsStations);
+          selectStationItem(httpsStations[0]);
+        } else {
+          bankList.innerHTML = '<p style="color:#ff3b30; font-size:12px;">No HTTPS stations found.</p>';
+        }
+      } catch (err) {
+        bankList.innerHTML = '<p style="color:#ff3b30; font-size:12px;">Failed to load stations.</p>';
+      }
+    }
+
+    async function searchRadioBrowserCustom() {
+      const queryInput = document.getElementById('customStreamInput');
+      const query = queryInput.value.trim();
+      if (!query) return alert("Please enter a station name or call letters.");
+
+      const bankList = document.getElementById('stationBankList');
+      const statusText = document.getElementById('radioStatusText');
+
+      statusText.innerText = `⏳ Searching database for "${query}"...`;
+      statusText.style.color = "#ff9500";
+
+      try {
+        const response = await fetch(`${RADIO_API_BASE}?name=${encodeURIComponent(query)}&limit=15&is_https=true&order=votes&reverse=true`);
+        const stations = await response.json();
+        const httpsStations = stations.filter(s => s.url_resolved && s.url_resolved.startsWith('https://'));
+
+        if (httpsStations.length > 0) {
+          renderStationBank(httpsStations);
+          selectStationItem(httpsStations[0]);
+        } else {
+          alert("Station Not In Database");
+          statusText.innerText = "● Ready to Tune";
+          statusText.style.color = "#aaa";
+        }
+      } catch (err) {
+        alert("Station Not In Database");
+        statusText.innerText = "● Ready to Tune";
+        statusText.style.color = "#aaa";
+      }
+    }
+
+    function renderStationBank(stations) {
+      const bankList = document.getElementById('stationBankList');
+      bankList.innerHTML = '';
+
+      stations.forEach((st, index) => {
+        const item = document.createElement('div');
+        item.className = `station-bank-item ${index === 0 ? 'active' : ''}`;
+        item.innerHTML = `<span style="font-size:14px; font-weight:bold; color:#fff; display:block;">📻 ${st.name}</span><span style="font-size:11px; color:#aaa;">${st.state || 'Live'} • ${st.codec || 'MP3'}</span>`;
+        item.onclick = () => selectStationItem(st);
+        bankList.appendChild(item);
+      });
+    }
+
+    function selectStationItem(st) {
+      document.getElementById('radioStationTitle').innerText = `📻 ${st.name}`;
+      document.getElementById('radioStationLocation').innerText = `${st.state || 'Live Stream'} • ${st.codec || 'MP3'}`;
+      playRadioStream(st.url_resolved || st.url);
+    }
+
+    function playRadioStream(streamUrl) {
+      const player = document.getElementById('radioAudioPlayer');
+      const statusText = document.getElementById('radioStatusText');
+      player.pause();
+      player.src = streamUrl;
+      player.load();
+      player.play().then(() => {
+        statusText.innerText = "● Live Streaming";
+        statusText.style.color = "#30d158";
+      }).catch(() => {
+        statusText.innerText = "Tap Play arrow on player to listen";
+        statusText.style.color = "#e040fb";
+      });
+    }
+
+    // INVITATION DISPATCHER (SMS vs EMAIL DYNAMIC GENERATOR)
+    function sendInvite(mode = 'video') {
+      const name = callerNameInput.value.trim() || webTextSenderNameInput.value.trim() || 'Someone';
+      const currentRoom = roomIdInput.value.trim() || document.getElementById('webTextRoomId').value.trim() || 'room1';
+      const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}&mode=${mode}`;
+      
+      const isEmail = mode === 'text' ? document.getElementById('textInviteToggle').checked : document.getElementById('phoneInviteToggle').checked;
+
+      let typeText = 'Video Call';
+      if (mode === 'text') typeText = 'WebText Chat';
+
+      if (isEmail) {
+        const subject = `ZeroPhone Invitation from ${name}`;
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const emailBody = `Hello!\n\n${name} is hoping to ${typeText} with you @ ${timeStr}.\n\nPress here to join directly:\n${inviteUrl}\n\nSee You Soon,\n${name}`;
+        
+        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+      } else {
+        let typeActionText = 'have a video call with you';
+        if (mode === 'text') typeActionText = 'text with you online for free';
+
+        const smsMessage = `Knock, Knock!\n\n${name} would like to ${typeActionText}. Press here to join: ${inviteUrl}`;
+        window.location.href = `sms:?&body=${encodeURIComponent(smsMessage)}`;
+      }
+    }
+
+    function sendTextTabInvite() {
+      const room = document.getElementById('webTextRoomId').value.trim() || 'room1';
+      roomIdInput.value = room;
+      sendInvite('text');
+    }
+
+    socket.on('connect', () => {
+      statusDiv.innerText = "Connected to Server";
+    });
+
+    // START MULTI-PARTY VIDEO CALL
+    async function startCall() {
+      const roomId = roomIdInput.value.trim();
+      if (!roomId) return alert("Please enter a room name");
+
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById('localVideo').srcObject = localStream;
+        document.getElementById('videoStreamView').style.display = 'grid';
+        document.getElementById('inCallControls').style.display = 'flex';
+        document.getElementById('webphoneMainSection').style.display = 'none';
+      } catch (err) {
+        return alert("Unable to access microphone/camera. Please grant permissions.");
+      }
+
+      socket.emit('join-room', roomId);
+      statusDiv.innerText = `Joined room: ${roomId}. Waiting for peers...`;
+    }
+
+    // IN-CALL CONTROLS: AUDIO & VIDEO MUTE TOGGLES
+    function toggleAudio() {
+      if (localStream) {
+        const audioTrack = localStream.getAudioTracks()[0];
+        if (audioTrack) {
+          isAudioMuted = !isAudioMuted;
+          audioTrack.enabled = !isAudioMuted;
+          const micBtn = document.getElementById('toggleMicBtn');
+          if (isAudioMuted) {
+            micBtn.innerHTML = "🎙️🚫";
+            micBtn.classList.add('muted');
+          } else {
+            micBtn.innerHTML = "🎙️";
+            micBtn.classList.remove('muted');
+          }
+        }
+      }
+    }
+
+    function toggleVideo() {
+      if (localStream) {
+        const videoTrack = localStream.getVideoTracks()[0];
+        if (videoTrack) {
+          isVideoMuted = !isVideoMuted;
+          videoTrack.enabled = !isVideoMuted;
+          const camBtn = document.getElementById('toggleCamBtn');
+          if (isVideoMuted) {
+            camBtn.innerHTML = "📹🚫";
+            camBtn.classList.add('muted');
+          } else {
+            camBtn.innerHTML = "📹";
+            camBtn.classList.remove('muted');
+          }
+        }
+      }
+    }
+
+    function hangUpCall() {
+      if (localStream) localStream.getTracks().forEach(track => track.stop());
+      
+      Object.keys(peerConnections).forEach(id => {
+        if (peerConnections[id]) peerConnections[id].close();
+      });
+      peerConnections = {};
+
+      const grid = document.getElementById('videoStreamView');
+      grid.innerHTML = `
+        <div class="video-card">
+          <h3 style="margin: 0 0 8px 0; font-size: 14px;">Local Stream (You)</h3>
+          <video id="localVideo" autoplay playsinline muted></video>
+        </div>
+      `;
+
+      statusDiv.innerText = "Call ended.";
+      statusDiv.style.color = "#ff3b30";
+      
+      document.getElementById('inCallControls').style.display = 'none';
+      document.getElementById('videoStreamView').style.display = 'none';
+      document.getElementById('mainHeader').style.display = 'flex';
+      document.getElementById('webphoneMainSection').style.display = 'block';
+
+      // Reset Mute Buttons
+      isAudioMuted = false;
+      isVideoMuted = false;
+      document.getElementById('toggleMicBtn').innerHTML = "🎙️";
+      document.getElementById('toggleMicBtn').classList.remove('muted');
+      document.getElementById('toggleCamBtn').innerHTML = "📹";
+      document.getElementById('toggleCamBtn').classList.remove('muted');
+    }
+
+    socket.on('user-joined', async ({ socketId }) => {
+      statusDiv.innerText = "Peer joining... Connecting media!";
+      const pc = createPeerConnection(socketId);
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      socket.emit('offer', { offer, targetId: socketId, isAudioOnly: false });
+    });
+
+    socket.on('offer', async ({ offer, senderId }) => {
+      statusDiv.innerText = "Connecting media stream...";
+      const pc = createPeerConnection(senderId);
+
+      await pc.setRemoteDescription(new RTCSessionDescription(offer));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      socket.emit('answer', { answer, targetId: senderId });
+    });
+
+    socket.on('answer', async ({ answer, senderId }) => {
+      statusDiv.innerText = "Live Connected!";
+      statusDiv.style.color = "#30d158";
+      if (peerConnections[senderId]) {
+        await peerConnections[senderId].setRemoteDescription(new RTCSessionDescription(answer));
+      }
+    });
+
+    socket.on('ice-candidate', async ({ candidate, senderId }) => {
+      if (peerConnections[senderId]) {
+        await peerConnections[senderId].addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    });
+
+    socket.on('user-disconnected', ({ socketId }) => {
+      if (peerConnections[socketId]) {
+        peerConnections[socketId].close();
+        delete peerConnections[socketId];
+      }
+      const remoteCard = document.getElementById(`card-${socketId}`);
+      if (remoteCard) remoteCard.remove();
+      
+      const count = Object.keys(peerConnections).length;
+      statusDiv.innerText = count > 0 ? `Connected with ${count} peer(s)` : "Waiting for peers...";
+    });
+
+    function createPeerConnection(targetSocketId) {
+      if (peerConnections[targetSocketId]) return peerConnections[targetSocketId];
+
+      const pc = new RTCPeerConnection(rtcConfig);
+      peerConnections[targetSocketId] = pc;
+
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      pc.ontrack = (event) => {
+        let remoteCard = document.getElementById(`card-${targetSocketId}`);
+        if (!remoteCard) {
+          remoteCard = document.createElement('div');
+          remoteCard.className = 'video-card';
+          remoteCard.id = `card-${targetSocketId}`;
+          remoteCard.innerHTML = `
+            <h3 style="margin: 0 0 8px 0; font-size: 14px;">Peer Stream</h3>
+            <video id="video-${targetSocketId}" autoplay playsinline></video>
+          `;
+          document.getElementById('videoStreamView').appendChild(remoteCard);
+        }
+        const videoEl = document.getElementById(`video-${targetSocketId}`);
+        videoEl.srcObject = event.streams[0];
+        statusDiv.innerText = "Live Connected!";
+      };
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit('ice-candidate', { candidate: event.candidate, targetId: targetSocketId });
+        }
+      };
+
+      return pc;
+    }
+
+    function appendWebMessage(sender, text) {
+      const thread = document.getElementById('web-chat-thread');
+      const placeholder = thread.querySelector('p');
+      if (placeholder) thread.innerHTML = '';
+
+      const msgBox = document.createElement('div');
+      msgBox.style.marginBottom = '8px';
+      msgBox.style.padding = '8px 12px';
+      msgBox.style.borderRadius = '6px';
+      msgBox.style.backgroundColor = '#2c2c2e';
+      msgBox.style.color = '#fff';
+
+      msgBox.innerHTML = '<strong style="color:#63e685;">' + sender + ':</strong> ' + text;
+      thread.appendChild(msgBox);
+      thread.scrollTop = thread.scrollHeight;
+    }
+
+    async function sendWebChatMessage() {
+      const input = document.getElementById('webChatInput');
+      const msg = input.value.trim();
+      const sender = webTextSenderNameInput.value.trim() || callerNameInput.value.trim() || 'Anonymous';
+      const roomId = document.getElementById('webTextRoomId').value.trim() || 'room1';
+
+      if (msg) {
+        socket.emit('join-room', roomId);
+        const encrypted = await encryptPayload(msg, roomId);
+        socket.emit('send-web-chat', { roomId: roomId, cipher: encrypted.cipher, iv: encrypted.iv, sender: sender });
+        appendWebMessage(sender, msg);
+        input.value = '';
+      }
+    }
+
+    document.getElementById('sendWebChatBtn').addEventListener('click', sendWebChatMessage);
+    document.getElementById('webChatInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendWebChatMessage();
+    });
+
+    socket.on('receive-web-chat', async ({ cipher, iv, message, sender }) => {
+      const currentUser = webTextSenderNameInput.value.trim() || callerNameInput.value.trim() || 'Anonymous';
+      const roomId = document.getElementById('webTextRoomId').value.trim() || 'room1';
+      if (sender !== currentUser) {
+        const decryptedText = cipher ? await decryptPayload(cipher, iv, roomId) : message;
+        appendWebMessage(sender, decryptedText);
+      }
+    });
+
+    socket.on('load-chat-history', async (history) => {
+      const thread = document.getElementById('web-chat-thread');
+      const roomId = document.getElementById('webTextRoomId').value.trim() || 'room1';
+      thread.innerHTML = '';
+      for (const item of history) {
+        const text = item.cipher ? await decryptPayload(item.cipher, item.iv, roomId) : item.message;
+        appendWebMessage(item.sender, text);
+      }
+    });
+  </script>
+</body>
+</html>
