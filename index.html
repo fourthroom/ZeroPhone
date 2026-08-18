@@ -4,28 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- SEO PRIMARY META TAGS FOR GOOGLE SEARCH -->
   <title>ZeroPhone — Encrypted Browser Video Calling, WebText & Local Resources</title>
   <meta name="description" content="ZeroPhone is a completely free, privacy-first web utility featuring end-to-end AES-256-GCM encrypted video calling, voice calls, free WebText, local Wi-Fi maps, and live radio.">
   <meta name="keywords" content="ZeroPhone, fourthroom.org, AES-256 encryption, free video call, browser calling, WebRTC, free web text, local radio streams, public wifi maps">
   <meta name="author" content="FourthRoom">
   <link rel="canonical" href="https://fourthroom.org/">
 
-  <!-- OPEN GRAPH / FACEBOOK / MESSENGER / TEXT PREVIEWS -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://fourthroom.org/">
   <meta property="og:title" content="ZeroPhone — Encrypted Web Calling & WebText">
   <meta property="og:description" content="Instant, private video and voice calling right from your browser powered by AES-256-GCM encryption. No downloads or accounts required.">
   <meta property="og:image" content="https://fourthroom.org/icon.png">
 
-  <!-- TWITTER CARD META TAGS -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:url" content="https://fourthroom.org/">
   <meta name="twitter:title" content="ZeroPhone — AES-256 Encrypted Web Calling & WebText">
   <meta name="twitter:description" content="Completely free, end-to-end encrypted video and voice calls directly in your browser.">
   <meta name="twitter:image" content="https://fourthroom.org/icon.png">
 
-  <!-- BROWSER TAB FAVICON & PWA ICONS -->
   <link rel="icon" type="image/png" href="icon.png">
   <link rel="shortcut icon" type="image/png" href="icon.png">
   <link rel="apple-touch-icon" href="icon.png">
@@ -372,28 +368,46 @@
 
     #status { font-weight: bold; color: #30d158; margin-bottom: 4px; }
 
-    /* DYNAMIC MULTI-PEER MESH GRID */
+    /* DYNAMIC RESPONSIVE MULTI-PEER GRID (OPTION 1) */
     .video-grid { 
-      display: flex; 
-      justify-content: center; 
-      gap: 15px; 
-      flex-wrap: wrap; 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+      gap: 12px; 
       margin-top: 15px; 
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .video-card { 
-      flex: 1 1 42%; 
-      min-width: 280px; 
-      max-width: 480px; 
+      width: 100%; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
     }
 
     video { 
       width: 100%; 
-      height: 280px; 
+      height: 240px; 
       background: #000; 
       border-radius: 12px; 
       border: 2px solid #333; 
       object-fit: cover; 
+    }
+
+    /* Small Screen / Phone Viewport Optimizations */
+    @media (max-width: 520px) {
+      .video-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+      video {
+        height: 140px;
+      }
+      .video-card h3 {
+        font-size: 11px !important;
+        margin-bottom: 4px !important;
+      }
     }
 
     /* FLOATING RETURN TO ZEROPHONE POPUP */
@@ -677,7 +691,6 @@
 </head>
 <body>
 
-  <!-- RETURN TO ZEROPHONE MODAL (10s after calling cell) -->
   <div id="returnModal" class="modal-return-overlay">
     <div class="modal-return-content">
       <h3 style="color: #30d158; margin-top: 0; font-size: 20px;">📞 Call Cell Initiated</h3>
@@ -688,7 +701,6 @@
     </div>
   </div>
 
-  <!-- LOCATION TROUBLESHOOTING MODAL -->
   <div id="locationModal" class="location-modal-overlay">
     <div class="location-modal-content">
       <h3 style="color: #ff9500; margin-top: 0; font-size: 20px;">📍 Enable Location Access</h3>
@@ -707,7 +719,6 @@
     </div>
   </div>
 
-  <!-- Top Centered Header -->
   <div id="mainHeader" class="top-header">
     <div class="brand-container">
       <h1 class="app-brand-title">
@@ -742,34 +753,28 @@
 
   <div class="container">
 
-    <!-- RESPONDER SINGLE-BUTTON INVITE VIEW -->
     <div id="responderAccessBox">
       <h2 id="inviteTitleText" style="font-size:24px; margin-top:0; color:#30d158;">You have been invited to a Call!</h2>
       <p style="color:#aaa; font-size:15px; margin-bottom:25px;">Tap the big green button below to enter directly:</p>
       <button id="megaEnterBtn" class="btn-mega-enter">📹 Enter Video Call</button>
     </div>
 
-    <!-- TAB 1: LEVEL 1 - WEBPHONE -->
     <div id="tab-level1-phone" class="tab-content active">
       <div id="status">Connected to Server</div>
 
-      <!-- MAIN SIMPLIFIED LEVEL 1 FORM -->
       <div id="webphoneMainSection">
         <div class="webphone-simplified-card">
           
-          <!-- STEP 1 -->
           <div class="step-row-item">
             <span class="step-title-green">Step 1:</span>
             <input type="text" id="callerName" class="webphone-input-field" placeholder="Enter Your Name">
           </div>
 
-          <!-- STEP 2 -->
           <div class="step-row-item">
             <span class="step-title-green">Step 2:</span>
             <input type="text" id="roomId" class="webphone-input-field" placeholder="Enter Room Name">
           </div>
 
-          <!-- STEP 3: CALL CELL TO INVITE -->
           <div class="step-row-item">
             <span class="step-title-green">Step 3: Call Cell To Invite:</span>
             <a id="callCellBtn" href="tel:" class="btn-round-red" onclick="triggerCellCall(event)">
@@ -778,7 +783,6 @@
             </a>
           </div>
 
-          <!-- SEND TEXT / E-MAIL INVITE -->
           <div class="step-row-item">
             <span class="step-title-green">Send Text/E-mail Invite:</span>
             <div style="display:flex; align-items:center; gap:12px;">
@@ -787,7 +791,6 @@
                 <span>Send<br>Invite</span>
               </button>
 
-              <!-- VINTAGE TOGGLE SWITCH (VERTICAL) -->
               <div class="vintage-toggle-panel">
                 <div class="toggle-label-group">
                   <span id="textLightPhone" class="indicator-light active-red"></span>
@@ -807,7 +810,6 @@
             </div>
           </div>
 
-          <!-- STEP 4: START VIDEO CALL -->
           <div class="step-row-item">
             <span class="step-title-green" style="font-size: 15px;">Step 4: Start Video Call</span>
             <button id="joinVideoBtn" class="btn-square-start-red" onclick="startCall()">
@@ -819,7 +821,6 @@
         </div>
       </div>
 
-      <!-- DYNAMIC MULTI-PEER MESH VIDEO GRID -->
       <div id="videoStreamView" class="video-grid" style="display:none;">
         <div class="video-card">
           <h3 style="margin: 0 0 8px 0; font-size: 14px;">Local Stream (You)</h3>
@@ -827,20 +828,17 @@
         </div>
       </div>
 
-      <!-- IN-CALL CONTROLS: MIC MUTE, CAMERA OFF, END CALL -->
       <div id="inCallControls" class="incall-controls-bar" style="display:none;">
         <button id="toggleMicBtn" class="btn-media-toggle" onclick="toggleAudio()" title="Mute/Unmute Mic">🎙️</button>
         <button id="toggleCamBtn" class="btn-media-toggle" onclick="toggleVideo()" title="Turn Camera On/Off">📹</button>
         <button id="hangUpBtn" class="btn-red-end" onclick="hangUpCall()">🔴 End Call</button>
       </div>
 
-      <!-- PRIVACY NOTICE -->
       <div class="privacy-notice-badge">
         🔒 <b>End-to-End Encrypted (AES-256-GCM):</b> All video, voice, and web text are scrambled directly on your device before transmission. Zero data is logged, stored, or shared.
       </div>
     </div>
 
-    <!-- TAB 2: LEVEL 1 - WEBTEXT -->
     <div id="tab-level1-text" class="tab-content">
       <h2 style="color: #63e685; margin-top: 0;">Level 1 - WebText</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Completely Free Multi-User Web Texting</p>
@@ -852,7 +850,6 @@
           
           <button id="inviteTextBtn" class="btn-round-blue" style="font-size: 11px; width: 50px; height: 50px;" onclick="sendTextTabInvite()">💬<br>Invite</button>
 
-          <!-- WEBTEXT VERTICAL VINTAGE TOGGLE SWITCH -->
           <div class="vintage-toggle-panel">
             <div class="toggle-label-group">
               <span id="textLightText" class="indicator-light active-red"></span>
@@ -881,13 +878,11 @@
         </div>
       </div>
 
-      <!-- PRIVACY NOTICE -->
       <div class="privacy-notice-badge">
         🔒 <b>End-to-End Encrypted (AES-256-GCM):</b> All video, voice, and web text are scrambled directly on your device before transmission. Zero data is logged, stored, or shared.
       </div>
     </div>
 
-    <!-- TAB 3: LEVEL 2 - CELLPHONE -->
     <div id="tab-level2" class="tab-content">
       <div class="under-construction-box">
         <h1 style="color: #ff3b30; font-size: 32px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase;">
@@ -898,13 +893,11 @@
         </p>
       </div>
 
-      <!-- PRIVACY NOTICE -->
       <div class="privacy-notice-badge">
         🔒 <b>End-to-End Encrypted (AES-256-GCM):</b> All video, voice, and web text are scrambled directly on your device before transmission. Zero data is logged, stored, or shared.
       </div>
     </div>
 
-    <!-- TAB 4: MAPS -->
     <div id="tab-maps" class="tab-content">
       <h2 style="color: #ff9500; margin-top: 0;">📍 Free Wi-Fi & Resource Maps</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Find local internet access points and essential resources nearby</p>
@@ -931,13 +924,11 @@
         </div>
       </div>
 
-      <!-- PRIVACY NOTICE -->
       <div class="privacy-notice-badge">
         🔒 <b>End-to-End Encrypted (AES-256-GCM):</b> All video, voice, and web text are scrambled directly on your device before transmission. Zero data is logged, stored, or shared.
       </div>
     </div>
 
-    <!-- TAB 5: RADIO -->
     <div id="tab-radio" class="tab-content">
       <h2 style="color: #e040fb; margin-top: 0;">📻 Local Live Internet Radio</h2>
       <p style="color: #aaa; font-size: 13px; margin-top: -10px;">Select a genre to populate the Left Station Bank</p>
@@ -985,7 +976,6 @@
 
       </div>
 
-      <!-- PRIVACY NOTICE -->
       <div class="privacy-notice-badge">
         🔒 <b>End-to-End Encrypted (AES-256-GCM):</b> All video, voice, and web text are scrambled directly on your device before transmission. Zero data is logged, stored, or shared.
       </div>
@@ -1185,389 +1175,3 @@
     // GPS ENGINE & CONDITIONAL HELPER MODAL
     function centerMapOnUser(showTroubleshootingModal) {
       const geoStatus = document.getElementById('geoStatusText');
-      if (geoStatus) geoStatus.innerText = "⏳ Requesting GPS location...";
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            currentCoords = { lat: position.coords.latitude, lng: position.coords.longitude };
-            if (geoStatus) {
-              geoStatus.innerText = "📍 GPS Location Locked!";
-              geoStatus.style.color = "#30d158";
-            }
-            document.getElementById('googleMapIframe').src = `https://www.google.com/maps?q=${currentCoords.lat},${currentCoords.lng}&z=${15}&output=embed`;
-          },
-          (err) => {
-            currentCoords = null;
-            if (geoStatus) {
-              geoStatus.innerText = "⚠️ Location paused - Check device permissions";
-              geoStatus.style.color = "#ff9500";
-            }
-            if (showTroubleshootingModal) {
-              document.getElementById('locationModal').style.display = 'flex';
-            }
-          },
-          { enableHighAccuracy: false, timeout: 6000, maximumAge: 300000 }
-        );
-      }
-    }
-
-    function closeLocationModal() {
-      document.getElementById('locationModal').style.display = 'none';
-    }
-
-    // Radio Engine
-    const RADIO_API_BASE = "https://de1.api.radio-browser.info/json/stations/search";
-
-    async function fetchRadioBrowserGenre(tag, labelName) {
-      const bankList = document.getElementById('stationBankList');
-      const statusText = document.getElementById('radioStatusText');
-
-      statusText.innerText = "⏳ Loading station bank...";
-      statusText.style.color = "#ff9500";
-      bankList.innerHTML = '<p style="color:#aaa; font-size:12px; font-style:italic;">Fetching streams...</p>';
-
-      try {
-        const response = await fetch(`${RADIO_API_BASE}?tag=${tag}&countrycode=US&limit=15&is_https=true&order=votes&reverse=true`);
-        const stations = await response.json();
-        const httpsStations = stations.filter(s => s.url_resolved && s.url_resolved.startsWith('https://'));
-
-        if (httpsStations.length > 0) {
-          renderStationBank(httpsStations);
-          selectStationItem(httpsStations[0]);
-        } else {
-          bankList.innerHTML = '<p style="color:#ff3b30; font-size:12px;">No HTTPS stations found.</p>';
-        }
-      } catch (err) {
-        bankList.innerHTML = '<p style="color:#ff3b30; font-size:12px;">Failed to load stations.</p>';
-      }
-    }
-
-    async function searchRadioBrowserCustom() {
-      const queryInput = document.getElementById('customStreamInput');
-      const query = queryInput.value.trim();
-      if (!query) return alert("Please enter a station name or call letters.");
-
-      const bankList = document.getElementById('stationBankList');
-      const statusText = document.getElementById('radioStatusText');
-
-      statusText.innerText = `⏳ Searching database for "${query}"...`;
-      statusText.style.color = "#ff9500";
-
-      try {
-        const response = await fetch(`${RADIO_API_BASE}?name=${encodeURIComponent(query)}&limit=15&is_https=true&order=votes&reverse=true`);
-        const stations = await response.json();
-        const httpsStations = stations.filter(s => s.url_resolved && s.url_resolved.startsWith('https://'));
-
-        if (httpsStations.length > 0) {
-          renderStationBank(httpsStations);
-          selectStationItem(httpsStations[0]);
-        } else {
-          alert("Station Not In Database");
-          statusText.innerText = "● Ready to Tune";
-          statusText.style.color = "#aaa";
-        }
-      } catch (err) {
-        alert("Station Not In Database");
-        statusText.innerText = "● Ready to Tune";
-        statusText.style.color = "#aaa";
-      }
-    }
-
-    function renderStationBank(stations) {
-      const bankList = document.getElementById('stationBankList');
-      bankList.innerHTML = '';
-
-      stations.forEach((st, index) => {
-        const item = document.createElement('div');
-        item.className = `station-bank-item ${index === 0 ? 'active' : ''}`;
-        item.innerHTML = `<span style="font-size:14px; font-weight:bold; color:#fff; display:block;">📻 ${st.name}</span><span style="font-size:11px; color:#aaa;">${st.state || 'Live'} • ${st.codec || 'MP3'}</span>`;
-        item.onclick = () => selectStationItem(st);
-        bankList.appendChild(item);
-      });
-    }
-
-    function selectStationItem(st) {
-      document.getElementById('radioStationTitle').innerText = `📻 ${st.name}`;
-      document.getElementById('radioStationLocation').innerText = `${st.state || 'Live Stream'} • ${st.codec || 'MP3'}`;
-      playRadioStream(st.url_resolved || st.url);
-    }
-
-    function playRadioStream(streamUrl) {
-      const player = document.getElementById('radioAudioPlayer');
-      const statusText = document.getElementById('radioStatusText');
-      player.pause();
-      player.src = streamUrl;
-      player.load();
-      player.play().then(() => {
-        statusText.innerText = "● Live Streaming";
-        statusText.style.color = "#30d158";
-      }).catch(() => {
-        statusText.innerText = "Tap Play arrow on player to listen";
-        statusText.style.color = "#e040fb";
-      });
-    }
-
-    // INVITATION DISPATCHER (SMS vs EMAIL DYNAMIC GENERATOR)
-    function sendInvite(mode = 'video') {
-      const name = callerNameInput.value.trim() || webTextSenderNameInput.value.trim() || 'Someone';
-      const currentRoom = roomIdInput.value.trim() || document.getElementById('webTextRoomId').value.trim() || 'room1';
-      const inviteUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(currentRoom)}&mode=${mode}`;
-      
-      const isEmail = mode === 'text' ? document.getElementById('textInviteToggle').checked : document.getElementById('phoneInviteToggle').checked;
-
-      let typeText = 'Video Call';
-      if (mode === 'text') typeText = 'WebText Chat';
-
-      if (isEmail) {
-        const subject = `ZeroPhone Invitation from ${name}`;
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const emailBody = `Hello!\n\n${name} is hoping to ${typeText} with you @ ${timeStr}.\n\nPress here to join directly:\n${inviteUrl}\n\nSee You Soon,\n${name}`;
-        
-        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
-      } else {
-        let typeActionText = 'have a video call with you';
-        if (mode === 'text') typeActionText = 'text with you online for free';
-
-        const smsMessage = `Knock, Knock!\n\n${name} would like to ${typeActionText}. Press here to join: ${inviteUrl}`;
-        window.location.href = `sms:?&body=${encodeURIComponent(smsMessage)}`;
-      }
-    }
-
-    function sendTextTabInvite() {
-      const room = document.getElementById('webTextRoomId').value.trim() || 'room1';
-      roomIdInput.value = room;
-      sendInvite('text');
-    }
-
-    socket.on('connect', () => {
-      statusDiv.innerText = "Connected to Server";
-    });
-
-    // START MULTI-PARTY VIDEO CALL
-    async function startCall() {
-      const roomId = roomIdInput.value.trim();
-      if (!roomId) return alert("Please enter a room name");
-
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        document.getElementById('localVideo').srcObject = localStream;
-        document.getElementById('videoStreamView').style.display = 'flex';
-        document.getElementById('inCallControls').style.display = 'flex';
-        document.getElementById('webphoneMainSection').style.display = 'none';
-      } catch (err) {
-        return alert("Unable to access microphone/camera. Please grant permissions.");
-      }
-
-      socket.emit('join-room', roomId);
-      statusDiv.innerText = `Joined room: ${roomId}. Waiting for peers...`;
-    }
-
-    // IN-CALL CONTROLS: AUDIO & VIDEO MUTE TOGGLES
-    function toggleAudio() {
-      if (localStream) {
-        const audioTrack = localStream.getAudioTracks()[0];
-        if (audioTrack) {
-          isAudioMuted = !isAudioMuted;
-          audioTrack.enabled = !isAudioMuted;
-          const micBtn = document.getElementById('toggleMicBtn');
-          if (isAudioMuted) {
-            micBtn.innerHTML = "🎙️🚫";
-            micBtn.classList.add('muted');
-          } else {
-            micBtn.innerHTML = "🎙️";
-            micBtn.classList.remove('muted');
-          }
-        }
-      }
-    }
-
-    function toggleVideo() {
-      if (localStream) {
-        const videoTrack = localStream.getVideoTracks()[0];
-        if (videoTrack) {
-          isVideoMuted = !isVideoMuted;
-          videoTrack.enabled = !isVideoMuted;
-          const camBtn = document.getElementById('toggleCamBtn');
-          if (isVideoMuted) {
-            camBtn.innerHTML = "📹🚫";
-            camBtn.classList.add('muted');
-          } else {
-            camBtn.innerHTML = "📹";
-            camBtn.classList.remove('muted');
-          }
-        }
-      }
-    }
-
-    function hangUpCall() {
-      if (localStream) localStream.getTracks().forEach(track => track.stop());
-      
-      Object.keys(peerConnections).forEach(id => {
-        if (peerConnections[id]) peerConnections[id].close();
-      });
-      peerConnections = {};
-
-      const grid = document.getElementById('videoStreamView');
-      grid.innerHTML = `
-        <div class="video-card">
-          <h3 style="margin: 0 0 8px 0; font-size: 14px;">Local Stream (You)</h3>
-          <video id="localVideo" autoplay playsinline muted></video>
-        </div>
-      `;
-
-      statusDiv.innerText = "Call ended.";
-      statusDiv.style.color = "#ff3b30";
-      
-      document.getElementById('inCallControls').style.display = 'none';
-      document.getElementById('videoStreamView').style.display = 'none';
-      document.getElementById('mainHeader').style.display = 'flex';
-      document.getElementById('webphoneMainSection').style.display = 'block';
-
-      // Reset Mute Buttons
-      isAudioMuted = false;
-      isVideoMuted = false;
-      document.getElementById('toggleMicBtn').innerHTML = "🎙️";
-      document.getElementById('toggleMicBtn').classList.remove('muted');
-      document.getElementById('toggleCamBtn').innerHTML = "📹";
-      document.getElementById('toggleCamBtn').classList.remove('muted');
-    }
-
-    socket.on('user-joined', async ({ socketId }) => {
-      statusDiv.innerText = "Peer joining... Connecting media!";
-      const pc = createPeerConnection(socketId);
-
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-      socket.emit('offer', { offer, targetId: socketId, isAudioOnly: false });
-    });
-
-    socket.on('offer', async ({ offer, senderId }) => {
-      statusDiv.innerText = "Connecting media stream...";
-      const pc = createPeerConnection(senderId);
-
-      await pc.setRemoteDescription(new RTCSessionDescription(offer));
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-
-      socket.emit('answer', { answer, targetId: senderId });
-    });
-
-    socket.on('answer', async ({ answer, senderId }) => {
-      statusDiv.innerText = "Live Connected!";
-      statusDiv.style.color = "#30d158";
-      if (peerConnections[senderId]) {
-        await peerConnections[senderId].setRemoteDescription(new RTCSessionDescription(answer));
-      }
-    });
-
-    socket.on('ice-candidate', async ({ candidate, senderId }) => {
-      if (peerConnections[senderId]) {
-        await peerConnections[senderId].addIceCandidate(new RTCIceCandidate(candidate));
-      }
-    });
-
-    socket.on('user-disconnected', ({ socketId }) => {
-      if (peerConnections[socketId]) {
-        peerConnections[socketId].close();
-        delete peerConnections[socketId];
-      }
-      const remoteCard = document.getElementById(`card-${socketId}`);
-      if (remoteCard) remoteCard.remove();
-      
-      const count = Object.keys(peerConnections).length;
-      statusDiv.innerText = count > 0 ? `Connected with ${count} peer(s)` : "Waiting for peers...";
-    });
-
-    function createPeerConnection(targetSocketId) {
-      if (peerConnections[targetSocketId]) return peerConnections[targetSocketId];
-
-      const pc = new RTCPeerConnection(rtcConfig);
-      peerConnections[targetSocketId] = pc;
-
-      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-      pc.ontrack = (event) => {
-        let remoteCard = document.getElementById(`card-${targetSocketId}`);
-        if (!remoteCard) {
-          remoteCard = document.createElement('div');
-          remoteCard.className = 'video-card';
-          remoteCard.id = `card-${targetSocketId}`;
-          remoteCard.innerHTML = `
-            <h3 style="margin: 0 0 8px 0; font-size: 14px;">Peer Stream</h3>
-            <video id="video-${targetSocketId}" autoplay playsinline></video>
-          `;
-          document.getElementById('videoStreamView').appendChild(remoteCard);
-        }
-        const videoEl = document.getElementById(`video-${targetSocketId}`);
-        videoEl.srcObject = event.streams[0];
-        statusDiv.innerText = "Live Connected!";
-      };
-
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          socket.emit('ice-candidate', { candidate: event.candidate, targetId: targetSocketId });
-        }
-      };
-
-      return pc;
-    }
-
-    function appendWebMessage(sender, text) {
-      const thread = document.getElementById('web-chat-thread');
-      const placeholder = thread.querySelector('p');
-      if (placeholder) thread.innerHTML = '';
-
-      const msgBox = document.createElement('div');
-      msgBox.style.marginBottom = '8px';
-      msgBox.style.padding = '8px 12px';
-      msgBox.style.borderRadius = '6px';
-      msgBox.style.backgroundColor = '#2c2c2e';
-      msgBox.style.color = '#fff';
-
-      msgBox.innerHTML = '<strong style="color:#63e685;">' + sender + ':</strong> ' + text;
-      thread.appendChild(msgBox);
-      thread.scrollTop = thread.scrollHeight;
-    }
-
-    async function sendWebChatMessage() {
-      const input = document.getElementById('webChatInput');
-      const msg = input.value.trim();
-      const sender = webTextSenderNameInput.value.trim() || callerNameInput.value.trim() || 'Anonymous';
-      const roomId = document.getElementById('webTextRoomId').value.trim() || 'room1';
-
-      if (msg) {
-        socket.emit('join-room', roomId);
-        const encrypted = await encryptPayload(msg, roomId);
-        socket.emit('send-web-chat', { roomId: roomId, cipher: encrypted.cipher, iv: encrypted.iv, sender: sender });
-        appendWebMessage(sender, msg);
-        input.value = '';
-      }
-    }
-
-    document.getElementById('sendWebChatBtn').addEventListener('click', sendWebChatMessage);
-    document.getElementById('webChatInput').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') sendWebChatMessage();
-    });
-
-    socket.on('receive-web-chat', async ({ cipher, iv, message, sender }) => {
-      const currentUser = webTextSenderNameInput.value.trim() || callerNameInput.value.trim() || 'Anonymous';
-      const roomId = document.getElementById('webTextRoomId').value.trim() || 'room1';
-      if (sender !== currentUser) {
-        const decryptedText = cipher ? await decryptPayload(cipher, iv, roomId) : message;
-        appendWebMessage(sender, decryptedText);
-      }
-    });
-
-    socket.on('load-chat-history', async (history) => {
-      const thread = document.getElementById('web-chat-thread');
-      const roomId = document.getElementById('webTextRoomId').value.trim() || 'room1';
-      thread.innerHTML = '';
-      for (const item of history) {
-        const text = item.cipher ? await decryptPayload(item.cipher, item.iv, roomId) : item.message;
-        appendWebMessage(item.sender, text);
-      }
-    });
-  </script>
-</body>
-</html>
