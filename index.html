@@ -4,24 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
+  <!-- SEO PRIMARY META TAGS FOR GOOGLE SEARCH -->
   <title>ZeroPhone — Encrypted Browser Video Calling, WebText & Local Resources</title>
   <meta name="description" content="ZeroPhone is a completely free, privacy-first web utility featuring end-to-end AES-256-GCM encrypted video calling, voice calls, free WebText, local Wi-Fi maps, and live radio.">
   <meta name="keywords" content="ZeroPhone, fourthroom.org, AES-256 encryption, free video call, browser calling, WebRTC, free web text, local radio streams, public wifi maps">
   <meta name="author" content="FourthRoom">
   <link rel="canonical" href="https://fourthroom.org/">
 
+  <!-- OPEN GRAPH / FACEBOOK / MESSENGER / TEXT PREVIEWS -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://fourthroom.org/">
   <meta property="og:title" content="ZeroPhone — Encrypted Web Calling & WebText">
   <meta property="og:description" content="Instant, private video and voice calling right from your browser powered by AES-256-GCM encryption. No downloads or accounts required.">
   <meta property="og:image" content="https://fourthroom.org/icon.png">
 
+  <!-- TWITTER CARD META TAGS -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:url" content="https://fourthroom.org/">
   <meta name="twitter:title" content="ZeroPhone — AES-256 Encrypted Web Calling & WebText">
   <meta name="twitter:description" content="Completely free, end-to-end encrypted video and voice calls directly in your browser.">
   <meta name="twitter:image" content="https://fourthroom.org/icon.png">
 
+  <!-- BROWSER TAB FAVICON & PWA ICONS -->
   <link rel="icon" type="image/png" href="icon.png">
   <link rel="shortcut icon" type="image/png" href="icon.png">
   <link rel="apple-touch-icon" href="icon.png">
@@ -122,10 +126,11 @@
     }
 
     .container {
-      padding: 15px;
-      max-width: 1400px;
+      padding: 10px 15px;
+      max-width: 100%;
       margin: 0 auto;
       text-align: center;
+      box-sizing: border-box;
     }
 
     .tab-content { display: none; }
@@ -368,22 +373,22 @@
 
     #status { font-weight: bold; color: #30d158; margin-bottom: 4px; }
 
-    /* EXPANSIVE DESKTOP & TABLET VIDEO GRID */
+    /* LARGE FULL-SIZE VIDEO GRID (TABLETS & COMPUTERS) */
     .video-grid { 
       display: flex; 
       justify-content: center; 
-      align-items: stretch;
-      gap: 16px; 
+      align-items: center;
+      gap: 14px; 
       flex-wrap: wrap; 
-      margin-top: 15px; 
+      margin-top: 10px; 
       width: 100%;
       box-sizing: border-box;
     }
 
     .video-card { 
       flex: 1 1 calc(50% - 20px); 
-      min-width: 320px; 
-      max-width: 680px; 
+      min-width: 300px; 
+      max-width: 100%; 
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -392,14 +397,16 @@
 
     video { 
       width: 100%; 
-      height: 360px; 
+      height: 42vh; 
+      min-height: 280px; 
+      max-height: 500px; 
       background: #000; 
-      border-radius: 12px; 
+      border-radius: 14px; 
       border: 2px solid #333; 
       object-fit: cover; 
     }
 
-    /* PHONE 2x2 FIT (Screens under 520px) */
+    /* PHONE-ONLY 2x2 FIT (Screens under 520px) */
     @media (max-width: 520px) {
       .video-grid {
         display: grid;
@@ -414,6 +421,7 @@
       }
       video {
         height: auto;
+        min-height: 0;
         aspect-ratio: 1 / 1;
         border-radius: 8px;
       }
