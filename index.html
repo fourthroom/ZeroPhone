@@ -368,11 +368,12 @@
 
     #status { font-weight: bold; color: #30d158; margin-bottom: 4px; }
 
-    /* RESPONSIVE MULTI-PEER VIDEO GRID */
+    /* RESPONSIVE MULTI-PEER VIDEO GRID (UNCROPPED ASPECT RATIO) */
     .video-grid { 
       display: flex; 
       justify-content: center; 
-      gap: 15px; 
+      align-items: center;
+      gap: 12px; 
       flex-wrap: wrap; 
       margin-top: 15px; 
       width: 100%;
@@ -380,9 +381,9 @@
     }
 
     .video-card { 
-      flex: 1 1 42%; 
-      min-width: 280px; 
-      max-width: 480px; 
+      flex: 1 1 45%; 
+      min-width: 260px; 
+      max-width: 460px; 
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -391,14 +392,16 @@
 
     video { 
       width: 100%; 
-      height: 280px; 
+      height: auto;
+      max-height: 260px;
+      aspect-ratio: 16 / 9;
       background: #000; 
       border-radius: 12px; 
       border: 2px solid #333; 
-      object-fit: cover; 
+      object-fit: contain;
     }
 
-    /* PHONE-ONLY 2x2 FIT (Screens under 520px) */
+    /* PHONE 2x2 FIT (Screens under 520px) */
     @media (max-width: 520px) {
       .video-grid {
         display: grid;
@@ -412,8 +415,8 @@
         flex: none;
       }
       video {
-        height: auto;
-        aspect-ratio: 1 / 1;
+        aspect-ratio: 4 / 3;
+        max-height: 160px;
         border-radius: 8px;
       }
       .video-card h3 {
@@ -1344,6 +1347,12 @@
 
     socket.on('connect', () => {
       statusDiv.innerText = "Connected to Server";
+      statusDiv.style.color = "#30d158";
+    });
+
+    socket.on('connect_error', () => {
+      statusDiv.innerText = "Waking up server (please wait)...";
+      statusDiv.style.color = "#ff9500";
     });
 
     // START MULTI-PARTY VIDEO CALL
